@@ -2,7 +2,7 @@
 
 A conversational web app that helps UK citizens discover what benefits and support they're entitled to. Describe your situation in plain English, answer a few questions, and get a prioritised bundle of entitlements — including what to claim first and what it unlocks.
 
-**Status:** V0.1 (Situation Screener) — supports any life situation.
+**Status:** V0.2 (Full England Coverage) — 52 entitlements, 48 eligibility rules, 61 eval scenarios at 96%.
 
 ## What It Does
 
@@ -25,16 +25,16 @@ The gateway cascade — "claim X first because it unlocks Y and Z" — is the co
 
 ## Situations Covered
 
-Any life situation is supported. The engine evaluates all 50+ entitlements based on the user's data, regardless of situation classification. Common situations include:
+Any life situation is supported. The engine evaluates all 52 entitlements across every major DWP, HMRC, NHS, DfE, DfT, and MoJ scheme based on the user's data, regardless of situation classification. Common situations include:
 
 | Situation | Example trigger | Key entitlements |
 |-----------|----------------|-----------------|
 | Ageing parent | "My mum can't cope" | Attendance Allowance, Pension Credit, Carer's Allowance, Council Tax Reduction |
 | New baby | "We're expecting a baby" | Child Benefit, Maternity Allowance, Healthy Start, Tax-Free Childcare |
 | Child struggling at school | "My child has ADHD" | DLA (Child), EHCP Assessment, Free School Meals |
-| Lost job | "I've been made redundant" | Universal Credit, Council Tax Support, Social Tariff Broadband, Warm Home Discount |
-| Health condition / disability | "I have MS and can't work" | PIP, Blue Badge, Council Tax Disability Reduction, UC |
-| Bereavement | "My husband died" | Bereavement Support Payment, UC, Council Tax Single Person Discount |
+| Lost job | "I've been made redundant" | Universal Credit, Council Tax Support, Social Tariff Broadband, Warm Home Discount, Cold Weather Payment |
+| Health condition / disability | "I have MS and can't work" | PIP, Free NHS Prescriptions, Blue Badge, Motability, VED Exemption, UC |
+| Bereavement | "My husband died" | Bereavement Support Payment, Funeral Expenses Payment, UC, Council Tax Single Person Discount |
 | Separation | "Going through a divorce" | UC, Council Tax Support, Free School Meals |
 | Mixed / novel | "I'm homeless with no income" | UC, Council Tax Support, Warm Home Discount |
 
@@ -156,7 +156,7 @@ src/
 │
 ├── engine/                          # Entitlement engine (deterministic)
 │   ├── bundle-builder.ts            # Orchestrator: eligibility → values → cascade → conflicts → plan
-│   ├── eligibility-rules.ts         # Rule map: 30+ entitlements with field-level checks
+│   ├── eligibility-rules.ts         # Rule map: 48 entitlements with field-level checks
 │   ├── cascade-resolver.ts          # Groups entitlements by gateway dependency
 │   ├── conflict-resolver.ts         # Resolves mutually exclusive entitlements
 │   ├── value-estimator.ts           # Calculates estimated annual values from benefit rates
@@ -172,13 +172,13 @@ src/
 │   └── useConversation.ts           # Main hook: state, message handling, extraction, bundle building
 │
 ├── types/
-│   ├── person.ts                    # PersonData (25+ fields), ChildData, CaredForPerson
+│   ├── person.ts                    # PersonData (30+ fields), ChildData, CaredForPerson
 │   ├── entitlements.ts              # EntitlementBundle, CascadedGroup, ConflictResolution
 │   └── conversation.ts              # SituationId, ConversationStage, Message, QuickReply
 │
 ├── data/
-│   ├── entitlements.json            # Master data model: 50+ entitlements, dependencies, conflicts
-│   └── benefit-rates.json           # GOV.UK rates for 2025–26 tax year
+│   ├── entitlements.json            # Master data model: 52 entitlements, 45 dependency edges, 5 conflicts
+│   └── benefit-rates.json           # GOV.UK rates for 2025–26 tax year (incl. NHS charges, childcare)
 │
 └── utils/
     ├── format-currency.ts
@@ -192,7 +192,7 @@ tests/
 │
 └── nova-eval/                       # LLM evaluation framework
     ├── run-eval.ts                  # Entry point: runs all scenarios, scores, reports
-    ├── test-scenarios.ts            # 42 scenarios across 10 categories
+    ├── test-scenarios.ts            # 61 scenarios across 14 categories (A-N)
     ├── bedrock-client.ts            # AWS Bedrock Converse API wrapper
     ├── scoring.ts                   # Field-by-field comparison + weighted scoring
     └── report.ts                    # Console table + JSON report generation
@@ -230,7 +230,7 @@ The parser (`claude.ts`) extracts these tags via regex. A code-based fallback (`
 
 When the conversation reaches `complete`, `buildBundle()` runs:
 
-1. **Eligibility check** — Run deterministic rules against PersonData for all 50+ entitlements
+1. **Eligibility check** — Run deterministic rules against PersonData for all 52 entitlements (48 with specific rules)
 2. **Value estimation** — Calculate estimated annual value using GOV.UK benefit rates
 3. **Cascade resolution** — Group entitlements by their gateway (what unlocks what)
 4. **Conflict resolution** — Identify mutually exclusive pairs, recommend the better option
@@ -263,9 +263,21 @@ Pension Credit (GATEWAY — claim first)
   ├── Council Tax Reduction (full — automatic)
   ├── Housing Benefit (if renting)
   ├── Warm Home Discount (£150/year — automatic)
-  ├── Free prescriptions
-  ├── Free dental treatment
+  ├── Free NHS Prescriptions
+  ├── Free NHS Dental Treatment
+  ├── Free NHS Sight Tests
+  ├── NHS Travel Cost Refunds
+  ├── Cold Weather Payment
   └── Free TV licence (if 75+)
+
+Universal Credit (GATEWAY)
+  ├── Free School Meals
+  ├── Healthy Start Vouchers
+  ├── 15 Hours Free Childcare (2yr olds)
+  ├── Free NHS Prescriptions / Dental / Sight Tests
+  ├── ECO4 Home Insulation
+  ├── Help with Court Fees
+  └── Cold Weather Payment
 ```
 
 Claiming Pension Credit first can unlock £3,000–5,000+ in additional entitlements that the person would otherwise miss.
@@ -276,7 +288,7 @@ Claiming Pension Credit first can unlock £3,000–5,000+ in additional entitlem
 
 The master data file (41KB) defines:
 
-- **50+ entitlements** with eligibility rules, application methods, GOV.UK URLs, difficulty ratings
+- **52 entitlements** with eligibility rules, application methods, GOV.UK URLs, difficulty ratings
 - **Dependency edges** — which entitlements unlock which (gateway, strengthens, qualifies)
 - **Conflict edges** — mutually exclusive pairs with resolution logic
 - **10+ situations** with trigger phrases and primary/secondary entitlements
@@ -304,7 +316,7 @@ A comprehensive test suite evaluates LLM accuracy for structured extraction.
 npx tsx tests/nova-eval/run-eval.ts
 ```
 
-### Test Categories (42 scenarios)
+### Test Categories (61 scenarios)
 
 | Category | Count | Tests |
 |----------|-------|-------|
@@ -318,6 +330,10 @@ npx tsx tests/nova-eval/run-eval.ts
 | H: Bereavement | 3 | Young widow with children, elderly widower, carer bereavement |
 | I: Separation | 3 | Divorce with kids, DV + no income, joint mortgage |
 | J: Mixed / novel | 4 | Homeless + addiction, early retirement, student + baby, business failure |
+| K: NHS health costs | 6 | PC cascade to NHS, diabetes + LIS, pregnancy exemption, PPC, UC + NHS, LIS gateway |
+| L: Childcare & education | 5 | 2yr UC childcare, working parents 30hrs, student parent, Sure Start, 16-19 bursary |
+| M: Housing & energy | 4 | Pensioner renting, SMI mortgage, WaterSure, ECO4 insulation |
+| N: Transport & legal | 3 | PIP mobility + transport, court fee remission, funeral expenses |
 
 ### Scoring
 
@@ -334,8 +350,8 @@ Pass threshold: 80% overall, no scenario below 60%.
 
 | Metric | Model-only | Model + code fallback |
 |--------|-----------|----------------------|
-| Overall score | 85.9% | **95.0%** |
-| Scenarios passed | 42/42 | 42/42 |
+| Overall score | 85.9% | **96.0%** |
+| Scenarios passed | 61/61 | 61/61 |
 | Avg latency | 810ms | 810ms |
 | Est. cost/conversation | $0.001 | $0.001 |
 | Conversations per dollar | ~1,013 | ~1,013 |
