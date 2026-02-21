@@ -5,7 +5,13 @@ import { buildBundle } from '../engine/bundle-builder.ts'
 import { sendMessage } from '../services/claude.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
 
-const OPENING_MESSAGE = `Tell me what's going on — in your own words. Or if one of these fits, tap it to get started.`
+const OPENING_MESSAGE = `Hi! I'm here to help you find out what benefits and support you might be entitled to.
+
+I'll ask you a few questions about your situation — things like your household, housing, and income — then show you what you could claim, how much it might be worth, and how to apply.
+
+This is guidance, not formal benefits advice — but it's a good place to start.
+
+Tell me what's going on, in your own words. Or if one of these fits, tap it to get started.`
 
 const SITUATION_QUICK_REPLIES: QuickReply[] = [
   { label: "My parent is struggling to cope", value: "My mum can't cope on her own anymore" },
