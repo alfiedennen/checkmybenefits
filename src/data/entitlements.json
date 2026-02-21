@@ -654,6 +654,157 @@
       "conflicts_with": []
     },
     {
+      "id": "free_nhs_prescriptions",
+      "name": "Free NHS Prescriptions",
+      "short_description": "Free prescriptions if you're 60+, pregnant, have a medical exemption, or on qualifying benefits (UC/PC). Saves £9.90 per item.",
+      "admin_body": "nhs",
+      "application_method": ["automatic_if_qualifying", "exemption_certificate"],
+      "application_url": "https://www.nhs.uk/nhs-services/help-with-health-costs/free-prescriptions-and-pharmacy-services/",
+      "estimated_annual_value_range": [50, 120],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Exempt if: age 60+, under 16, 16-18 in full-time education, pregnant or within 12 months of birth, specified medical condition (diabetes, hypo/hyperthyroidism, epilepsy, etc.), on qualifying benefit (UC/PC/IS/JSA-IR), HC2 certificate holder." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "free_nhs_dental",
+      "name": "Free NHS Dental Treatment",
+      "short_description": "Free dental treatment if you're on qualifying benefits, pregnant, under 18, or have an HC2 certificate.",
+      "admin_body": "nhs",
+      "application_method": ["automatic_if_qualifying", "exemption_certificate"],
+      "application_url": "https://www.nhs.uk/nhs-services/dentists/dental-costs/free-nhs-dental-treatment/",
+      "estimated_annual_value_range": [70, 310],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Exempt if: under 18, 18 in full-time education, pregnant or within 12 months of birth, on qualifying benefit (UC/PC/IS/JSA-IR), HC2 certificate holder. NHS dental bands: Band 1 £26.80, Band 2 £73.50, Band 3 £319.10." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "free_nhs_sight_tests",
+      "name": "Free NHS Sight Tests",
+      "short_description": "Free eye tests if you're 60+, under 16, on qualifying benefits, or have certain conditions like diabetes or glaucoma.",
+      "admin_body": "nhs",
+      "application_method": ["automatic_at_optician"],
+      "application_url": "https://www.nhs.uk/nhs-services/opticians/free-nhs-eye-tests-and-optical-vouchers/",
+      "estimated_annual_value_range": [25, 50],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Free if: age 60+, under 16, 16-18 in full-time education, on qualifying benefit (UC/PC/IS/JSA-IR), HC2/HC3 holder, diabetes, glaucoma, aged 40+ with family history of glaucoma, registered blind/partially sighted." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "nhs_optical_vouchers",
+      "name": "NHS Optical Vouchers",
+      "short_description": "Help with the cost of glasses or contact lenses. £39-£215 depending on prescription.",
+      "admin_body": "nhs",
+      "application_method": ["automatic_at_optician"],
+      "application_url": "https://www.nhs.uk/nhs-services/opticians/free-nhs-eye-tests-and-optical-vouchers/",
+      "estimated_annual_value_range": [39, 215],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Available if: under 16, 16-18 in full-time education, on qualifying benefit (UC/PC/IS/JSA-IR), HC2/HC3 holder, complex lens prescription. Voucher value depends on prescription strength." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "nhs_low_income_scheme",
+      "name": "NHS Low Income Scheme (HC2/HC3)",
+      "short_description": "Helps with NHS costs if you're on low income but not on qualifying benefits. HC2 = full help, HC3 = partial help.",
+      "admin_body": "nhs",
+      "application_method": ["paper_form"],
+      "application_url": "https://www.nhs.uk/nhs-services/help-with-health-costs/nhs-low-income-scheme-lis/",
+      "estimated_annual_value_range": [100, 500],
+      "claiming_difficulty": "moderate",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "household_capital", "operator": "<", "value": 16000 },
+          { "note": "For people not already on qualifying benefits (those get automatic exemption). Assessed on income vs outgoings. HC2 = full help, HC3 = partial help." }
+        ]
+      },
+      "unlocks": [
+        "free_nhs_prescriptions",
+        "free_nhs_dental",
+        "free_nhs_sight_tests",
+        "nhs_optical_vouchers",
+        "nhs_travel_costs"
+      ],
+      "conflicts_with": []
+    },
+    {
+      "id": "nhs_travel_costs",
+      "name": "NHS Travel Cost Refunds",
+      "short_description": "Refund of travel costs to hospital for NHS treatment if you're on qualifying benefits or HC2/HC3.",
+      "admin_body": "nhs",
+      "application_method": ["claim_form_at_hospital"],
+      "application_url": "https://www.nhs.uk/nhs-services/help-with-health-costs/healthcare-travel-costs-scheme-htcs/",
+      "estimated_annual_value_range": [50, 500],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Available if: on qualifying benefit (UC/PC/IS/JSA-IR), HC2/HC3 holder, or receiving War Pension. Must be referred by NHS for treatment at a hospital or other NHS premises." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "maternity_exemption_cert",
+      "name": "Maternity Exemption Certificate",
+      "short_description": "Free prescriptions and dental treatment if pregnant or gave birth in the last 12 months. Apply through GP or midwife.",
+      "admin_body": "nhs",
+      "application_method": ["gp_or_midwife"],
+      "application_url": "https://www.nhs.uk/nhs-services/help-with-health-costs/free-prescriptions-and-pharmacy-services/",
+      "estimated_annual_value_range": [50, 300],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "is_pregnant", "operator": "==", "value": true, "note": "Or within 12 months of giving birth" }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "prescription_prepayment_cert",
+      "name": "Prescription Prepayment Certificate (PPC)",
+      "short_description": "Saves money if you pay for prescriptions regularly. 3-month PPC £32.05, 12-month PPC £111.60 vs £9.90 per item.",
+      "admin_body": "nhs",
+      "application_method": ["online"],
+      "application_url": "https://www.nhs.uk/nhs-services/prescriptions-and-pharmacies/save-money-with-a-prescription-prepayment-certificate-ppc/",
+      "estimated_annual_value_range": [0, 200],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Worth buying if you need 4+ items in 3 months or 12+ items in 12 months. Not needed if already exempt (age, benefits, medical condition)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
       "id": "section_75_claim",
       "name": "Section 75 Credit Card Claim",
       "short_description": "Joint liability with retailer for purchases £100-£30,000 on credit card. Card issuer must refund if retailer fails.",
@@ -694,7 +845,17 @@
     { "from": "carers_allowance", "to": "carers_credit", "type": "gateway" },
     { "from": "carers_allowance", "to": "uc_carer_element", "type": "gateway", "condition": "also on UC" },
     { "from": "child_benefit", "to": "ni_credits_non_working_parent", "type": "gateway", "critical": true },
-    { "from": "free_school_meals", "to": "pupil_premium_for_school", "type": "triggers" }
+    { "from": "free_school_meals", "to": "pupil_premium_for_school", "type": "triggers" },
+    { "from": "pension_credit", "to": "nhs_travel_costs", "type": "gateway" },
+    { "from": "pension_credit", "to": "free_nhs_sight_tests", "type": "gateway" },
+    { "from": "universal_credit", "to": "free_nhs_prescriptions", "type": "gateway" },
+    { "from": "universal_credit", "to": "free_nhs_dental", "type": "gateway" },
+    { "from": "universal_credit", "to": "free_nhs_sight_tests", "type": "gateway" },
+    { "from": "nhs_low_income_scheme", "to": "free_nhs_prescriptions", "type": "gateway" },
+    { "from": "nhs_low_income_scheme", "to": "free_nhs_dental", "type": "gateway" },
+    { "from": "nhs_low_income_scheme", "to": "free_nhs_sight_tests", "type": "gateway" },
+    { "from": "nhs_low_income_scheme", "to": "nhs_optical_vouchers", "type": "gateway" },
+    { "from": "nhs_low_income_scheme", "to": "nhs_travel_costs", "type": "gateway" }
   ],
 
   "conflict_edges": [

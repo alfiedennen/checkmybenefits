@@ -293,6 +293,136 @@ const RULE_MAP: Record<string, RuleChecker> = {
     return { id: 'blue_badge', eligible: false, confidence: 'likely' }
   },
 
+  free_nhs_prescriptions: (person) => {
+    const age = person.age ?? 30
+    // Age 60+ = automatic exemption
+    if (age >= 60)
+      return { id: 'free_nhs_prescriptions', eligible: true, confidence: 'likely' }
+    // Pregnant = automatic exemption (maternity exemption cert)
+    if (person.is_pregnant)
+      return { id: 'free_nhs_prescriptions', eligible: true, confidence: 'likely' }
+    // Medical exemption certificate (diabetes, thyroid, epilepsy, etc.)
+    if (person.has_medical_exemption)
+      return { id: 'free_nhs_prescriptions', eligible: true, confidence: 'likely' }
+    // On qualifying benefit (UC, PC, IS, JSA-IR) — low income bands proxy this
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'free_nhs_prescriptions', eligible: true, confidence: 'possible' }
+    return { id: 'free_nhs_prescriptions', eligible: false, confidence: 'likely' }
+  },
+
+  free_nhs_dental: (person) => {
+    const age = person.age ?? 30
+    // Under 18 or pregnant = exempt
+    if (age < 18 || person.is_pregnant)
+      return { id: 'free_nhs_dental', eligible: true, confidence: 'likely' }
+    // On qualifying benefit — low income proxy
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'free_nhs_dental', eligible: true, confidence: 'possible' }
+    // Age 60+ on low income likely on PC
+    if (age >= 60)
+      return { id: 'free_nhs_dental', eligible: true, confidence: 'possible' }
+    return { id: 'free_nhs_dental', eligible: false, confidence: 'likely' }
+  },
+
+  free_nhs_sight_tests: (person) => {
+    const age = person.age ?? 30
+    // Age 60+ = free
+    if (age >= 60)
+      return { id: 'free_nhs_sight_tests', eligible: true, confidence: 'likely' }
+    // Under 16 = free
+    if (age < 16)
+      return { id: 'free_nhs_sight_tests', eligible: true, confidence: 'likely' }
+    // Diabetes or glaucoma (proxied by has_disability_or_health_condition)
+    if (person.has_disability_or_health_condition && person.has_medical_exemption)
+      return { id: 'free_nhs_sight_tests', eligible: true, confidence: 'likely' }
+    // On qualifying benefit
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'free_nhs_sight_tests', eligible: true, confidence: 'possible' }
+    return { id: 'free_nhs_sight_tests', eligible: false, confidence: 'likely' }
+  },
+
+  nhs_optical_vouchers: (person) => {
+    const age = person.age ?? 30
+    // Children and people on qualifying benefits
+    if (age < 16)
+      return { id: 'nhs_optical_vouchers', eligible: true, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'nhs_optical_vouchers', eligible: true, confidence: 'possible' }
+    return { id: 'nhs_optical_vouchers', eligible: false, confidence: 'likely' }
+  },
+
+  nhs_low_income_scheme: (person) => {
+    // For people NOT already on qualifying benefits but on low income
+    const capital = person.household_capital ?? 0
+    if (capital >= 16000)
+      return { id: 'nhs_low_income_scheme', eligible: false, confidence: 'likely' }
+    // If already on very low income (likely on UC/PC), they get auto-exemption, not LIS
+    if (person.income_band === 'under_7400')
+      return { id: 'nhs_low_income_scheme', eligible: false, confidence: 'likely' }
+    // Target: low-to-moderate income not on qualifying benefits
+    if (
+      person.income_band === 'under_16000' ||
+      person.income_band === 'under_25000'
+    )
+      return { id: 'nhs_low_income_scheme', eligible: true, confidence: 'possible' }
+    if (person.income_band === 'under_12570')
+      return { id: 'nhs_low_income_scheme', eligible: true, confidence: 'worth_checking' }
+    return { id: 'nhs_low_income_scheme', eligible: false, confidence: 'likely' }
+  },
+
+  nhs_travel_costs: (person) => {
+    // On qualifying benefit or HC2/HC3
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'nhs_travel_costs', eligible: true, confidence: 'possible' }
+    const age = person.age ?? 30
+    if (age >= SPA)
+      return { id: 'nhs_travel_costs', eligible: true, confidence: 'possible' }
+    return { id: 'nhs_travel_costs', eligible: false, confidence: 'likely' }
+  },
+
+  maternity_exemption_cert: (person) => {
+    if (person.is_pregnant)
+      return { id: 'maternity_exemption_cert', eligible: true, confidence: 'likely' }
+    return { id: 'maternity_exemption_cert', eligible: false, confidence: 'likely' }
+  },
+
+  prescription_prepayment_cert: (person) => {
+    const age = person.age ?? 30
+    // Not needed if already exempt (age 60+, pregnant, medical exemption, low income on benefits)
+    if (age >= 60 || person.is_pregnant || person.has_medical_exemption)
+      return { id: 'prescription_prepayment_cert', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'prescription_prepayment_cert', eligible: false, confidence: 'likely' }
+    // Worth flagging for people with health conditions who pay for prescriptions
+    if (person.has_disability_or_health_condition)
+      return { id: 'prescription_prepayment_cert', eligible: true, confidence: 'worth_checking' }
+    return { id: 'prescription_prepayment_cert', eligible: false, confidence: 'likely' }
+  },
+
   bereavement_support_payment: (person) => {
     if (person.is_bereaved && person.deceased_relationship === 'partner')
       return { id: 'bereavement_support_payment', eligible: true, confidence: 'possible' }

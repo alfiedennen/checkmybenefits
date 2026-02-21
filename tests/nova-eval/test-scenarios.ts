@@ -21,7 +21,7 @@ export interface Turn {
 export interface TestScenario {
   id: string
   name: string
-  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J'
+  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K'
   /** Stage the conversation is in when this message is sent */
   stage: ConversationStage
   /** Existing person data context (simulates accumulated state) */
@@ -799,6 +799,110 @@ const J4_SELF_EMPLOYED_BUSINESS_FAILED: TestScenario = {
 }
 
 // ──────────────────────────────────────────────
+// Category K: NHS Health Costs
+// ──────────────────────────────────────────────
+
+const K1_PENSIONER_ON_PC: TestScenario = {
+  id: 'K1',
+  name: 'Pensioner on Pension Credit — free prescriptions, dental, sight tests cascade',
+  category: 'K',
+  stage: 'intake',
+  userMessage: "I'm 62, single, on Pension Credit. I pay for my prescriptions and dental — is there help?",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 62,
+      relationship_status: 'single',
+    },
+  },
+}
+
+const K2_DIABETES_MODERATE_INCOME: TestScenario = {
+  id: 'K2',
+  name: 'Diabetes at moderate income — medical exemption for prescriptions + NHS LIS',
+  category: 'K',
+  stage: 'intake',
+  userMessage: "I'm 35, I have diabetes, earning £18,000 a year. I spend a fortune on prescriptions and dental.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 35,
+      has_disability_or_health_condition: true,
+      has_medical_exemption: true,
+      gross_annual_income: 18000,
+      income_band: 'under_25000',
+    },
+  },
+}
+
+const K3_PREGNANT_EARNING_30K: TestScenario = {
+  id: 'K3',
+  name: 'Pregnant, earning £30k — maternity exemption cert',
+  category: 'K',
+  stage: 'intake',
+  userMessage: "I'm pregnant with my first baby. I earn about £30,000. Do I get free prescriptions?",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      is_pregnant: true,
+      expecting_first_child: true,
+      gross_annual_income: 30000,
+      income_band: 'under_50270',
+    },
+  },
+}
+
+const K4_LOTS_OF_PRESCRIPTIONS: TestScenario = {
+  id: 'K4',
+  name: 'No benefits but lots of prescriptions — PPC',
+  category: 'K',
+  stage: 'intake',
+  userMessage: "I'm 45, I earn £40k, no benefits. I'm on lots of medication — about 6 prescriptions a month. It's costing me a fortune.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 45,
+      gross_annual_income: 40000,
+      income_band: 'under_50270',
+      has_medical_exemption: true,
+    },
+  },
+}
+
+const K5_UC_WITH_KIDS: TestScenario = {
+  id: 'K5',
+  name: 'On UC with two kids — free prescriptions, dental, sight tests cascade',
+  category: 'K',
+  stage: 'intake',
+  userMessage: "I'm on Universal Credit with two kids aged 8 and 3. I didn't know I could get free dental and eye tests.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      children: [
+        { age: 8, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 3, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+    },
+  },
+}
+
+const K6_JUST_ABOVE_PC_THRESHOLD: TestScenario = {
+  id: 'K6',
+  name: '70, just above Pension Credit threshold — NHS Low Income Scheme',
+  category: 'K',
+  stage: 'intake',
+  userMessage: "I'm 70, I'm just above the Pension Credit threshold. My income is about £14,000 a year. I pay for everything — prescriptions, dental, glasses.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 70,
+      gross_annual_income: 14000,
+      income_band: 'under_16000',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
 // Export all scenarios
 // ──────────────────────────────────────────────
 
@@ -854,4 +958,11 @@ export const ALL_SCENARIOS: TestScenario[] = [
   J2_EARLY_RETIREMENT_SAVINGS_LOW,
   J3_STUDENT_WITH_BABY,
   J4_SELF_EMPLOYED_BUSINESS_FAILED,
+  // Category K: NHS Health Costs
+  K1_PENSIONER_ON_PC,
+  K2_DIABETES_MODERATE_INCOME,
+  K3_PREGNANT_EARNING_30K,
+  K4_LOTS_OF_PRESCRIPTIONS,
+  K5_UC_WITH_KIDS,
+  K6_JUST_ABOVE_PC_THRESHOLD,
 ]

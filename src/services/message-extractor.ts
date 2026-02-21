@@ -83,6 +83,10 @@ export function extractFromMessage(text: string): Partial<PersonData> {
     result.disability_benefit_received = disabilityBenefit
   }
 
+  if (extractMedicalExemption(text)) {
+    result.has_medical_exemption = true
+  }
+
   return result
 }
 
@@ -543,6 +547,11 @@ function extractDisabilityBenefitReceived(text: string): PersonData['disability_
     return 'attendance_allowance_lower'
 
   return undefined
+}
+
+function extractMedicalExemption(text: string): boolean {
+  // Medical conditions that qualify for free NHS prescriptions
+  return /\b(?:diabetes|diabetic|hypothyroid|hyperthyroid|thyroid\s+(?:condition|problem)|epilepsy|epileptic|addison'?s|myasthenia\s+gravis|hypoparathyroidism|on\s+(?:lots\s+of|regular|daily)\s+(?:medication|prescriptions?|tablets|pills)|(?:lots\s+of|regular|monthly)\s+prescriptions?|free\s+prescriptions?|medical\s+exemption|exemption\s+cert(?:ificate)?)/i.test(text)
 }
 
 // ── Helpers ─────────────────────────────────────────

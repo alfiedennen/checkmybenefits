@@ -95,6 +95,7 @@ SITUATION-SPECIFIC QUESTIONS:
 - For bereavement: Ask about relationship to deceased (partner/parent), when it happened, current living situation, income. Set is_bereaved: true, deceased_relationship: "partner" or "parent".
 - For separation/divorce: Ask about children, housing situation (who stays in the home), income change. Set relationship_status: "separated".
 - For disability benefits: If they mention PIP, DLA, or Attendance Allowance, extract disability_benefit_received with the specific level.
+- For NHS health costs: If they mention prescriptions, medication, dental costs, or eye tests, ask about frequency. If they have diabetes, epilepsy, thyroid conditions, or other qualifying medical conditions, set has_medical_exemption: true. If they mention "lots of prescriptions" or "regular medication", note this for prescription prepayment certificates.
 
 SENSITIVITY:
 - For bereavement, health conditions, and separation: slower pace, extra empathy
@@ -183,7 +184,8 @@ Map answers to these fields:
   "needs_help_with_daily_living": boolean,
   "mobility_difficulty": boolean,
   "is_bereaved": boolean,
-  "deceased_relationship": "partner" | "parent" | "child" | "sibling"
+  "deceased_relationship": "partner" | "parent" | "child" | "sibling",
+  "has_medical_exemption": boolean
 }
 
 IMPORTANT RULES:

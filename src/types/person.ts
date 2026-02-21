@@ -93,6 +93,7 @@ export interface PersonData {
   deceased_relationship?: string
   recently_redundant?: boolean
   ni_contribution_years?: number
+  has_medical_exemption?: boolean
 }
 
 export function createEmptyPerson(): PersonData {

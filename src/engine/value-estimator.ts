@@ -129,6 +129,50 @@ function specificEstimate(id: string, personData: PersonData): ValueRange | null
         high: rates.free_school_meals.estimated_annual_value * personData.children.length,
       }
 
+    case 'free_nhs_prescriptions':
+      // Average person gets ~12 prescriptions/year, £9.90 each
+      return {
+        low: rates.nhs_prescription_charge * 4,
+        high: rates.nhs_prescription_charge * 12,
+      }
+
+    case 'free_nhs_dental':
+      // Band 1 to Band 3
+      return {
+        low: rates.nhs_dental_band_1,
+        high: rates.nhs_dental_band_3,
+      }
+
+    case 'free_nhs_sight_tests':
+      return {
+        low: rates.nhs_sight_test_cost,
+        high: rates.nhs_sight_test_cost * 2,
+      }
+
+    case 'nhs_optical_vouchers':
+      return { low: 39, high: 215 }
+
+    case 'nhs_low_income_scheme':
+      // Aggregate value of all NHS costs it covers
+      return { low: 100, high: 500 }
+
+    case 'nhs_travel_costs':
+      return { low: 50, high: 500 }
+
+    case 'maternity_exemption_cert':
+      // Prescriptions + dental during pregnancy
+      return {
+        low: rates.nhs_prescription_charge * 4,
+        high: rates.nhs_prescription_charge * 12 + rates.nhs_dental_band_2,
+      }
+
+    case 'prescription_prepayment_cert':
+      // Saving vs pay-per-item: PPC costs £111.60/yr, saves if >12 items
+      return {
+        low: 0,
+        high: Math.round(rates.nhs_prescription_charge * 24 - rates.nhs_ppc_12_month),
+      }
+
     default:
       return null
   }
