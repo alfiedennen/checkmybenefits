@@ -87,6 +87,15 @@ export function extractFromMessage(text: string): Partial<PersonData> {
     result.has_medical_exemption = true
   }
 
+  if (extractWaterMeter(text)) {
+    result.on_water_meter = true
+  }
+
+  const ucMonths = extractMonthsOnUC(text)
+  if (ucMonths !== undefined) {
+    result.months_on_uc = ucMonths
+  }
+
   return result
 }
 
@@ -546,6 +555,19 @@ function extractDisabilityBenefitReceived(text: string): PersonData['disability_
   if (/\b(?:attendance\s+allowance)\b/.test(lower))
     return 'attendance_allowance_lower'
 
+  return undefined
+}
+
+function extractWaterMeter(text: string): boolean {
+  return /\b(?:water\s+meter|metered\s+water|on\s+a\s+meter)\b/i.test(text)
+}
+
+function extractMonthsOnUC(text: string): number | undefined {
+  // "on UC for a year" / "been on universal credit for 18 months"
+  const yearMatch = text.match(/\b(?:on\s+(?:UC|universal\s+credit)\s+(?:for\s+)?(?:about\s+|around\s+|over\s+)?(?:a\s+year|one\s+year|1\s+year|twelve\s+months|12\s+months))\b/i)
+  if (yearMatch) return 12
+  const monthMatch = text.match(/\b(?:on\s+(?:UC|universal\s+credit)\s+(?:for\s+)?(?:about\s+|around\s+|over\s+)?(\d{1,2})\s+months?)\b/i)
+  if (monthMatch) return parseInt(monthMatch[1], 10)
   return undefined
 }
 

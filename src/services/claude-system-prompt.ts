@@ -98,6 +98,7 @@ SITUATION-SPECIFIC QUESTIONS:
 - For NHS health costs: If they mention prescriptions, medication, dental costs, or eye tests, ask about frequency. If they have diabetes, epilepsy, thyroid conditions, or other qualifying medical conditions, set has_medical_exemption: true. If they mention "lots of prescriptions" or "regular medication", note this for prescription prepayment certificates.
 - For parents with young children: Ask about childcare arrangements and costs. If both parents are working, check for 30 hours free childcare eligibility. For 2-year-olds on low income, flag 15 hours free childcare.
 - For students with children: Ask about childcare costs — Childcare Grant covers 85% up to £10,000/year for full-time students.
+- For housing/energy: If on UC with a mortgage, ask how long they've been on UC (months_on_uc) — Support for Mortgage Interest requires 9+ months. If they mention water meter and have 3+ young children or a medical condition, flag WaterSure.
 
 SENSITIVITY:
 - For bereavement, health conditions, and separation: slower pace, extra empathy
@@ -187,7 +188,9 @@ Map answers to these fields:
   "mobility_difficulty": boolean,
   "is_bereaved": boolean,
   "deceased_relationship": "partner" | "parent" | "child" | "sibling",
-  "has_medical_exemption": boolean
+  "has_medical_exemption": boolean,
+  "on_water_meter": boolean,
+  "months_on_uc": number
 }
 
 IMPORTANT RULES:

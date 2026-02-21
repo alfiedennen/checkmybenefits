@@ -21,7 +21,7 @@ export interface Turn {
 export interface TestScenario {
   id: string
   name: string
-  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L'
+  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M'
   /** Stage the conversation is in when this message is sent */
   stage: ConversationStage
   /** Existing person data context (simulates accumulated state) */
@@ -995,6 +995,81 @@ const L5_17YR_OLD_IN_COLLEGE: TestScenario = {
 }
 
 // ──────────────────────────────────────────────
+// Category M: Housing, Energy & Water
+// ──────────────────────────────────────────────
+
+const M1_PENSIONER_RENTING: TestScenario = {
+  id: 'M1',
+  name: '70, renting privately, pension only — Housing Benefit + Winter Fuel',
+  category: 'M',
+  stage: 'intake',
+  userMessage: "I'm 70, living on my own. I rent privately for £650 a month. I'm just on my state pension.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 70,
+      relationship_status: 'single',
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 650,
+      employment_status: 'retired',
+    },
+  },
+}
+
+const M2_UC_MORTGAGE_STRUGGLING: TestScenario = {
+  id: 'M2',
+  name: 'On UC for a year, struggling with mortgage — SMI',
+  category: 'M',
+  stage: 'intake',
+  userMessage: "I've been on UC for a year now. I'm struggling to pay my mortgage — it's £1,000 a month. I earn about £8,000 part-time.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      housing_tenure: 'mortgage',
+      monthly_housing_cost: 1000,
+      months_on_uc: 12,
+      gross_annual_income: 8000,
+      income_band: 'under_12570',
+    },
+  },
+}
+
+const M3_UC_WATER_METER_4_KIDS: TestScenario = {
+  id: 'M3',
+  name: 'On UC, water meter, 4 kids — WaterSure',
+  category: 'M',
+  stage: 'intake',
+  userMessage: "I'm on Universal Credit with 4 kids aged 1, 3, 5, and 8. We're on a water meter and the bills are massive.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      on_water_meter: true,
+      children: [
+        { age: 1, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+        { age: 3, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+        { age: 5, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 8, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+    },
+  },
+}
+
+const M4_PENSION_CREDIT_COLD_HOUSE: TestScenario = {
+  id: 'M4',
+  name: 'On Pension Credit, cold house, no insulation — Cold Weather + ECO4',
+  category: 'M',
+  stage: 'intake',
+  userMessage: "I'm 75, on Pension Credit. My house is freezing — the walls have no insulation and the heating barely works.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 75,
+      employment_status: 'retired',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
 // Export all scenarios
 // ──────────────────────────────────────────────
 
@@ -1063,4 +1138,9 @@ export const ALL_SCENARIOS: TestScenario[] = [
   L3_STUDENT_WITH_3YR_OLD,
   L4_PREGNANT_FIRST_BABY_UC,
   L5_17YR_OLD_IN_COLLEGE,
+  // Category M: Housing, Energy & Water
+  M1_PENSIONER_RENTING,
+  M2_UC_MORTGAGE_STRUGGLING,
+  M3_UC_WATER_METER_4_KIDS,
+  M4_PENSION_CREDIT_COLD_HOUSE,
 ]

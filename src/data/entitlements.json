@@ -932,6 +932,118 @@
       "conflicts_with": []
     },
     {
+      "id": "housing_benefit_legacy",
+      "name": "Housing Benefit (Pension-age)",
+      "short_description": "Help with rent for pension-age people not on Universal Credit. Can cover full rent if on Pension Credit Guarantee.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "paper_form"],
+      "application_url": "https://www.gov.uk/housing-benefit",
+      "estimated_annual_value_range": [1000, 8000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": "state_pension_age" },
+          { "field": "housing_tenure", "operator": "in", "value": ["rent_social", "rent_private"] },
+          { "note": "For pension-age renters not on UC. Working-age claimants should be on UC housing element instead. Amount depends on rent, household size, and income." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["universal_credit"]
+    },
+    {
+      "id": "support_mortgage_interest",
+      "name": "Support for Mortgage Interest (SMI)",
+      "short_description": "Loan to help pay mortgage interest if on UC for 9+ months. Repaid when you sell your home.",
+      "admin_body": "dwp",
+      "application_method": ["phone"],
+      "application_url": "https://www.gov.uk/support-for-mortgage-interest",
+      "estimated_annual_value_range": [1000, 5000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "housing_tenure", "operator": "==", "value": "mortgage" },
+          { "note": "Must be on UC/IS/JSA-IR/ESA-IR/PC for 9+ consecutive months (39 weeks). Covers mortgage interest only, not capital. Provided as a loan secured against property." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "winter_fuel_payment",
+      "name": "Winter Fuel Payment",
+      "short_description": "£200-£300/year for pension-age households to help with heating costs. Usually paid automatically.",
+      "admin_body": "dwp",
+      "application_method": ["automatic_if_state_pension"],
+      "application_url": "https://www.gov.uk/winter-fuel-payment",
+      "estimated_annual_value_range": [200, 300],
+      "claiming_difficulty": "automatic",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": "state_pension_age" },
+          { "note": "Paid automatically if receiving State Pension or another social security benefit. £200 if under 80, £300 if 80+. From 2025, taxable for income above £35,000." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "cold_weather_payment",
+      "name": "Cold Weather Payment",
+      "short_description": "£25 for each 7-day period of very cold weather if on qualifying benefits.",
+      "admin_body": "dwp",
+      "application_method": ["automatic"],
+      "application_url": "https://www.gov.uk/cold-weather-payment",
+      "estimated_annual_value_range": [25, 150],
+      "claiming_difficulty": "automatic",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Automatic if on Pension Credit, IS, JSA-IR, ESA-IR, or UC with specific elements (LCWRA, disabled child, carer). Triggered when local temperature is recorded at or forecast to be 0°C or below for 7 consecutive days." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "watersure",
+      "name": "WaterSure",
+      "short_description": "Caps water bill at the average if you're on qualifying benefits, have a water meter, and high essential water use.",
+      "admin_body": "water_company",
+      "application_method": ["apply_to_water_company"],
+      "application_url": "https://www.gov.uk/help-with-your-water-bills",
+      "estimated_annual_value_range": [100, 300],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Must have: (1) water meter, (2) qualifying benefit (UC/PC/IS/JSA-IR/ESA-IR/Housing Benefit/CTR), AND (3) high essential water use due to medical condition or 3+ children under school age. Caps bill at average." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "eco_home_insulation",
+      "name": "ECO4 Home Insulation",
+      "short_description": "Free or heavily subsidised home insulation and heating improvements. Worth £1,000-£10,000+.",
+      "admin_body": "energy_supplier",
+      "application_method": ["apply_via_supplier_or_council"],
+      "application_url": "https://www.gov.uk/energy-company-obligation",
+      "estimated_annual_value_range": [1000, 10000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "On qualifying benefit (UC/PC/IS/JSA-IR/ESA-IR/Child Tax Credit) OR via Local Authority Flex referral (low income + poor energy efficiency). Covers cavity wall insulation, loft insulation, heating system upgrades, solid wall insulation." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
       "id": "section_75_claim",
       "name": "Section 75 Credit Card Claim",
       "short_description": "Joint liability with retailer for purchases £100-£30,000 on credit card. Card issuer must refund if retailer fails.",
@@ -984,7 +1096,13 @@
     { "from": "nhs_low_income_scheme", "to": "nhs_optical_vouchers", "type": "gateway" },
     { "from": "nhs_low_income_scheme", "to": "nhs_travel_costs", "type": "gateway" },
     { "from": "universal_credit", "to": "free_childcare_15hrs_disadvantaged", "type": "gateway" },
-    { "from": "universal_credit", "to": "sure_start_maternity_grant", "type": "gateway" }
+    { "from": "universal_credit", "to": "sure_start_maternity_grant", "type": "gateway" },
+    { "from": "pension_credit", "to": "housing_benefit_legacy", "type": "gateway" },
+    { "from": "pension_credit", "to": "cold_weather_payment", "type": "gateway", "auto": true },
+    { "from": "universal_credit", "to": "cold_weather_payment", "type": "gateway", "condition": "LCWRA, disabled child, or carer element" },
+    { "from": "universal_credit", "to": "support_mortgage_interest", "type": "gateway", "condition": "9+ months on UC + mortgage" },
+    { "from": "universal_credit", "to": "eco_home_insulation", "type": "qualifies" },
+    { "from": "pension_credit", "to": "eco_home_insulation", "type": "qualifies" }
   ],
 
   "conflict_edges": [

@@ -94,6 +94,8 @@ export interface PersonData {
   recently_redundant?: boolean
   ni_contribution_years?: number
   has_medical_exemption?: boolean
+  on_water_meter?: boolean
+  months_on_uc?: number
 }
 
 export function createEmptyPerson(): PersonData {

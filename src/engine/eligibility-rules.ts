@@ -498,6 +498,83 @@ const RULE_MAP: Record<string, RuleChecker> = {
     return { id: 'childcare_grant_students', eligible: false, confidence: 'likely' }
   },
 
+  housing_benefit_legacy: (person) => {
+    const age = person.age ?? 30
+    if (age < SPA)
+      return { id: 'housing_benefit_legacy', eligible: false, confidence: 'likely' }
+    if (person.housing_tenure !== 'rent_social' && person.housing_tenure !== 'rent_private')
+      return { id: 'housing_benefit_legacy', eligible: false, confidence: 'likely' }
+    return { id: 'housing_benefit_legacy', eligible: true, confidence: 'possible' }
+  },
+
+  support_mortgage_interest: (person) => {
+    if (person.housing_tenure !== 'mortgage')
+      return { id: 'support_mortgage_interest', eligible: false, confidence: 'likely' }
+    // Must be on UC/qualifying benefit for 9+ months
+    const monthsOnUC = person.months_on_uc ?? 0
+    if (monthsOnUC >= 9)
+      return { id: 'support_mortgage_interest', eligible: true, confidence: 'possible' }
+    // On low income with mortgage — worth flagging even if not yet at 9 months
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'support_mortgage_interest', eligible: true, confidence: 'worth_checking' }
+    return { id: 'support_mortgage_interest', eligible: false, confidence: 'likely' }
+  },
+
+  winter_fuel_payment: (person) => {
+    const age = person.age ?? 30
+    if (age >= SPA)
+      return { id: 'winter_fuel_payment', eligible: true, confidence: 'likely' }
+    return { id: 'winter_fuel_payment', eligible: false, confidence: 'likely' }
+  },
+
+  cold_weather_payment: (person) => {
+    // On qualifying benefit — automatic when cold
+    const age = person.age ?? 30
+    if (age >= SPA)
+      return { id: 'cold_weather_payment', eligible: true, confidence: 'possible' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570'
+    )
+      return { id: 'cold_weather_payment', eligible: true, confidence: 'possible' }
+    return { id: 'cold_weather_payment', eligible: false, confidence: 'likely' }
+  },
+
+  watersure: (person) => {
+    // Must have water meter + qualifying benefit + high essential use
+    if (!person.on_water_meter)
+      return { id: 'watersure', eligible: false, confidence: 'likely' }
+    // Qualifying benefit proxy
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    ) {
+      // High essential use: medical condition or 3+ young children
+      const youngChildren = person.children.filter((c) => c.age < 5).length
+      if (youngChildren >= 3 || person.has_disability_or_health_condition)
+        return { id: 'watersure', eligible: true, confidence: 'possible' }
+    }
+    return { id: 'watersure', eligible: false, confidence: 'likely' }
+  },
+
+  eco_home_insulation: (person) => {
+    // On qualifying benefit or LA-flex (low income + poor energy efficiency)
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'eco_home_insulation', eligible: true, confidence: 'possible' }
+    if (person.income_band === 'under_25000')
+      return { id: 'eco_home_insulation', eligible: true, confidence: 'worth_checking' }
+    return { id: 'eco_home_insulation', eligible: false, confidence: 'likely' }
+  },
+
   '16_19_bursary': (person) => {
     // Check if any child is 16-19 in education
     const hasChild16to19 = person.children.some((c) => c.age >= 16 && c.age <= 19 && c.in_education)

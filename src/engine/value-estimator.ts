@@ -209,6 +209,35 @@ function specificEstimate(id: string, personData: PersonData): ValueRange | null
     case 'student_maintenance_loan':
       return { low: 4000, high: 14000 }
 
+    case 'winter_fuel_payment':
+      return {
+        low: rates.winter_fuel_payment_under_80,
+        high: rates.winter_fuel_payment_80_plus,
+      }
+
+    case 'cold_weather_payment':
+      return {
+        low: rates.cold_weather_payment_per_period,
+        high: rates.cold_weather_payment_per_period * 6,
+      }
+
+    case 'housing_benefit_legacy': {
+      const rent = personData.monthly_housing_cost ?? 500
+      return {
+        low: Math.round(rent * 6),
+        high: Math.round(rent * 12),
+      }
+    }
+
+    case 'support_mortgage_interest': {
+      // Rough estimate: covers interest portion of mortgage
+      const mortgage = personData.monthly_housing_cost ?? 800
+      return {
+        low: Math.round(mortgage * 0.3 * 12),
+        high: Math.round(mortgage * 0.6 * 12),
+      }
+    }
+
     default:
       return null
   }
