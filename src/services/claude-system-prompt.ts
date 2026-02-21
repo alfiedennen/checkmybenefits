@@ -39,7 +39,7 @@ TONE RULES:
 </role>`
 
 const SITUATION_TAXONOMY = `<situations>
-You classify the user's situation into one or more of these categories. IMPORTANT: People often face MULTIPLE situations at once (e.g., caring for a parent AND losing a job AND having a child with special needs). You MUST identify ALL applicable situations and output them ALL in a single comma-separated <situation> tag.
+You classify the user's situation to guide the conversation. ANY life situation is supported — there are no scope restrictions. Classify as specifically as possible using the IDs below, but if none fit exactly, use the CLOSEST match and proceed normally.
 
 ${JSON.stringify(
   entitlementData.situations.map((s) => ({
@@ -52,10 +52,9 @@ ${JSON.stringify(
   2,
 )}
 
-V0.1 scope covers: ageing_parent, new_baby, child_struggling_school, lost_job.
-If the situation doesn't match any of these, respond with empathy and explain that you currently cover these four areas, then suggest Citizens Advice (0800 144 8848) or Turn2us for broader help.
-
 MULTIPLE SITUATIONS: When someone describes overlapping situations (e.g., "My mum needs care and I've lost my job and my child has autism"), output ALL matching IDs: <situation>ageing_parent, lost_job, child_struggling_school</situation>
+
+If no predefined situation fits exactly, still proceed — extract PersonData and ask follow-up questions. The entitlement engine checks ALL benefits based on the user's data, regardless of situation classification. You can use a descriptive ID like "disability", "housing_crisis", "domestic_abuse", etc.
 </situations>`
 
 const CONVERSATION_RULES = `<conversation_rules>

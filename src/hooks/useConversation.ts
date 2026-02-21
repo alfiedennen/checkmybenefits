@@ -8,17 +8,19 @@ import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
 
 const OPENING_MESSAGE = `Hi! I'm here to help you find out what benefits and support you might be entitled to.
 
-I'll ask you a few questions about your situation — things like your household, housing, and income — then show you what you could claim, how much it might be worth, and how to apply.
+Tell me what's going on in your own words — whatever your situation, I'll ask a few questions and show you what you could claim, how much it might be worth, and how to apply.
 
 This is guidance, not formal benefits advice — but it's a good place to start.
 
-Tell me what's going on, in your own words. Or if one of these fits, tap it to get started.`
+Or tap one of these to get started.`
 
 const SITUATION_QUICK_REPLIES: QuickReply[] = [
   { label: "My parent is struggling to cope", value: "My mum can't cope on her own anymore" },
   { label: "We're expecting a baby", value: "We're expecting a baby" },
   { label: "My child is struggling at school", value: "My child is struggling at school" },
   { label: "I've lost my job", value: "I've just lost my job" },
+  { label: "I have a health condition", value: "I have a health condition that affects my daily life" },
+  { label: "Something else", value: "I need help but my situation doesn't fit these categories" },
 ]
 
 const FALLBACK_MESSAGE = `I'm sorry, I'm having trouble connecting right now. In the meantime, you can contact Citizens Advice on 0800 144 8848 or visit citizensadvice.org.uk for help with benefits and entitlements.`

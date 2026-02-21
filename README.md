@@ -81,7 +81,7 @@ User message
 npm install
 
 # Create environment file
-echo 'ANTHROPIC_API_KEY="sk-ant-api03-your-key-here"' > .env.local
+echo 'ANTHROPIC_API_KEY="your-key-here"' > .env.local
 
 # Start development (app + API proxy)
 npm run dev:full

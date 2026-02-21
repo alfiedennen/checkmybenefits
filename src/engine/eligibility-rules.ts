@@ -302,18 +302,3 @@ function isCoupleish(person: PersonData): boolean {
   )
 }
 
-/**
- * Given a situation, return which entitlement IDs are relevant
- * (both primary and secondary).
- */
-export function getRelevantEntitlementIds(situations: SituationId[], dataModel: { situations: Array<{ id: string; primary_entitlements: string[]; secondary_entitlements: string[] }> }): string[] {
-  const ids = new Set<string>()
-  for (const sit of situations) {
-    const sitDef = dataModel.situations.find((s) => s.id === sit)
-    if (sitDef) {
-      for (const id of sitDef.primary_entitlements) ids.add(id)
-      for (const id of sitDef.secondary_entitlements) ids.add(id)
-    }
-  }
-  return [...ids]
-}

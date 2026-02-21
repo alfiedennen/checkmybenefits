@@ -42,12 +42,15 @@ export function WelcomeHero({ onGetStarted }: Props) {
         </div>
 
         <div className="welcome-hero-covers">
-          <h3 className="welcome-hero-section-heading">Situations we currently cover</h3>
+          <h3 className="welcome-hero-section-heading">Common situations people ask about</h3>
           <ul className="welcome-hero-situations">
-            <li>Caring for an ageing parent</li>
-            <li>Expecting or just had a baby</li>
-            <li>Child struggling at school</li>
-            <li>Recently lost your job</li>
+            <li>Caring for a family member</li>
+            <li>Having a baby or young children</li>
+            <li>A child with additional needs</li>
+            <li>Lost your job or reduced income</li>
+            <li>Health condition or disability</li>
+            <li>Bereavement or separation</li>
+            <li>And many more...</li>
           </ul>
         </div>
 
@@ -56,7 +59,6 @@ export function WelcomeHero({ onGetStarted }: Props) {
           <ul className="welcome-hero-limitations-list">
             <li>This is guidance, not formal benefits advice</li>
             <li>We can't guarantee eligibility — results are estimates based on what you tell us</li>
-            <li>We currently cover 4 situations, with more coming soon</li>
           </ul>
         </div>
 

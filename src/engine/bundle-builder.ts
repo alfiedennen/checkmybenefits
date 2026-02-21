@@ -6,12 +6,11 @@ import type {
   EntitlementDefinition,
   DependencyEdge,
   ConflictEdge,
-  SituationDefinition,
   ClaimingDifficulty,
   ActionPriority,
 } from '../types/entitlements.ts'
 import type { SituationId } from '../types/conversation.ts'
-import { checkEligibility, getRelevantEntitlementIds } from './eligibility-rules.ts'
+import { checkEligibility } from './eligibility-rules.ts'
 import { resolveCascade } from './cascade-resolver.ts'
 import { resolveConflicts } from './conflict-resolver.ts'
 import { estimateValue } from './value-estimator.ts'
@@ -20,7 +19,6 @@ import entitlementData from '../data/entitlements.json'
 const allEntitlements = entitlementData.entitlements as EntitlementDefinition[]
 const dependencyEdges = entitlementData.dependency_edges as DependencyEdge[]
 const conflictEdges = entitlementData.conflict_edges as ConflictEdge[]
-const situations = entitlementData.situations as SituationDefinition[]
 
 /**
  * Master orchestrator: eligibility + values + cascade + conflicts → EntitlementBundle
@@ -29,12 +27,8 @@ export function buildBundle(
   personData: PersonData,
   situationIds: SituationId[],
 ): EntitlementBundle {
-  // 1. Get relevant entitlements for the situation
-  const relevantIds = getRelevantEntitlementIds(situationIds, { situations })
-  const relevantEntitlements = allEntitlements.filter((e) => relevantIds.includes(e.id))
-
-  // 2. Check eligibility
-  const eligibilityResults = checkEligibility(relevantEntitlements, personData, situationIds)
+  // 1. Check eligibility of ALL entitlements against PersonData
+  const eligibilityResults = checkEligibility(allEntitlements, personData, situationIds)
   const eligibleIds = new Set(eligibilityResults.map((r) => r.id))
 
   // 3. Build EntitlementResult objects with values
@@ -72,7 +66,7 @@ export function buildBundle(
   const totalHigh = allResults.reduce((sum, r) => sum + r.estimated_annual_value.high, 0)
 
   // 7. Build action plan
-  const actionPlan = buildActionPlan(cascade, situationIds)
+  const actionPlan = buildActionPlan(cascade, situationIds, personData)
 
   return {
     total_estimated_annual_value: { low: totalLow, high: totalHigh },
@@ -195,8 +189,11 @@ function getWhyThisMatters(
 function buildActionPlan(
   cascade: ReturnType<typeof resolveCascade>,
   situationIds: SituationId[],
+  personData: PersonData,
 ): ActionPlanStep[] {
-  const isUrgent = situationIds.includes('lost_job')
+  const isUrgent = situationIds.includes('lost_job') ||
+    personData.employment_status === 'unemployed' ||
+    personData.recently_redundant === true
   const steps: ActionPlanStep[] = []
 
   // Week 1: Gateway entitlements

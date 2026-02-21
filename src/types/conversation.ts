@@ -1,16 +1,7 @@
 import type { PersonData, IncomeBand, HousingTenure } from './person.ts'
 import type { EntitlementBundle } from './entitlements.ts'
 
-export type SituationId =
-  | 'ageing_parent'
-  | 'new_baby'
-  | 'child_struggling_school'
-  | 'lost_job'
-  | 'separation'
-  | 'bereavement'
-  | 'retirement_low_income'
-  | 'health_condition'
-  | 'consumer_dispute'
+export type SituationId = string
 
 export type ConversationStage =
   | 'intake'
