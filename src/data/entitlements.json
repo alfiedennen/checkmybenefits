@@ -1,0 +1,830 @@
+{
+  "$schema": "entitlement-engine/v0.1",
+  "description": "Structured data model for the UK Entitlement Engine. Each entitlement has computable eligibility rules, dependency edges (gateway/cascade), conflict edges (mutual exclusions), and metadata for prioritisation.",
+
+  "v01_situations": ["ageing_parent", "new_baby", "child_struggling_school", "lost_job"],
+  "v01_note": "Only these four situations are implemented in V0.1. Other situations in the 'situations' array are documented for V0.2+ and should trigger graceful fallback with signposting.",
+
+  "enums": {
+    "nation": ["england", "scotland", "wales", "northern_ireland"],
+    "housing_tenure": ["own_outright", "mortgage", "rent_social", "rent_private", "living_with_family", "homeless"],
+    "employment_status": ["employed", "self_employed", "unemployed", "retired", "student", "carer_fulltime", "sick_disabled"],
+    "relationship_status": ["single", "couple_married", "couple_civil_partner", "couple_cohabiting", "separated", "widowed"],
+    "disability_benefit_level": ["none", "dla_lower_care", "dla_middle_care", "dla_higher_care", "dla_lower_mobility", "dla_higher_mobility", "pip_daily_living_standard", "pip_daily_living_enhanced", "pip_mobility_standard", "pip_mobility_enhanced", "attendance_allowance_lower", "attendance_allowance_higher"],
+    "claiming_difficulty": ["automatic", "easy", "moderate", "complex", "adversarial"],
+    "admin_body_type": ["dwp", "hmrc", "local_council", "nhs", "energy_supplier", "water_company", "broadband_provider", "train_operator", "airline", "employer", "tribunal"]
+  },
+
+  "person_schema": {
+    "description": "The core data the engine collects about a citizen. Gathered conversationally, used to assess eligibility across all entitlements simultaneously.",
+    "fields": {
+      "age": { "type": "integer", "required": true },
+      "date_of_birth": { "type": "date", "required": false, "note": "Needed for state pension age calculation" },
+      "nation": { "type": "enum:nation", "required": true },
+      "postcode": { "type": "string", "required": true, "note": "Determines local council, local schemes" },
+      "local_authority": { "type": "string", "derived_from": "postcode" },
+      "relationship_status": { "type": "enum:relationship_status", "required": true },
+      "employment_status": { "type": "enum:employment_status", "required": true },
+      "gross_annual_income": { "type": "number", "required": true, "note": "Individual" },
+      "partner_gross_annual_income": { "type": "number", "required": false },
+      "household_capital": { "type": "number", "required": true, "note": "Savings, investments. Exclude primary residence." },
+      "housing_tenure": { "type": "enum:housing_tenure", "required": true },
+      "monthly_housing_cost": { "type": "number", "required": true, "note": "Rent or mortgage payment" },
+      "children": {
+        "type": "array",
+        "items": {
+          "age": "integer",
+          "has_additional_needs": "boolean",
+          "disability_benefit": "enum:disability_benefit_level",
+          "in_education": "boolean"
+        }
+      },
+      "has_disability_or_health_condition": { "type": "boolean", "required": true },
+      "disability_benefit_received": { "type": "enum:disability_benefit_level", "required": false },
+      "needs_help_with_daily_living": { "type": "boolean", "required": false, "note": "Proxy for AA/PIP eligibility" },
+      "mobility_difficulty": { "type": "boolean", "required": false },
+      "is_carer": { "type": "boolean", "required": true },
+      "carer_hours_per_week": { "type": "number", "required": false },
+      "cared_for_person": {
+        "type": "object",
+        "required": false,
+        "fields": {
+          "relationship": "string",
+          "age": "integer",
+          "disability_benefit": "enum:disability_benefit_level",
+          "needs_help_daily_living": "boolean"
+        }
+      },
+      "is_pregnant": { "type": "boolean", "required": false },
+      "expecting_first_child": { "type": "boolean", "required": false },
+      "is_bereaved": { "type": "boolean", "required": false },
+      "deceased_relationship": { "type": "string", "required": false },
+      "recently_redundant": { "type": "boolean", "required": false },
+      "ni_contribution_years": { "type": "integer", "required": false, "note": "For state pension, contribution-based JSA" }
+    }
+  },
+
+  "entitlements": [
+    {
+      "id": "pension_credit",
+      "name": "Pension Credit",
+      "short_description": "Top-up for pensioners on low income. The most powerful gateway benefit in the system.",
+      "admin_body": "dwp",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.gov.uk/pension-credit/how-to-claim",
+      "estimated_annual_value_range": [1000, 8000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": "state_pension_age" },
+          { "field": "household_capital", "operator": "<", "value": "no_upper_limit_for_guarantee_credit", "note": "Capital over £10,000 reduces award by £1/week per £500 for Savings Credit, but Guarantee Credit has no upper capital limit" },
+          { "field": "gross_annual_income", "operator": "<", "value": "threshold_calculated", "note": "Guarantee Credit tops up weekly income to £227.10 (single) or £346.60 (couple) as of 2025/26" }
+        ],
+        "income_thresholds_weekly_2025_26": {
+          "single": 227.10,
+          "couple": 346.60
+        },
+        "note": "Attendance Allowance is DISREGARDED as income for PC calculation. Receiving AA does not reduce PC."
+      },
+      "unlocks": [
+        "council_tax_reduction_full",
+        "housing_benefit",
+        "warm_home_discount",
+        "cold_weather_payments",
+        "free_tv_licence_75plus",
+        "free_nhs_dental",
+        "free_nhs_prescriptions",
+        "nhs_travel_costs",
+        "free_sight_tests",
+        "social_tariff_broadband",
+        "social_tariff_water",
+        "social_tariff_energy",
+        "royal_mail_redirect_discount",
+        "funeral_expenses_payment"
+      ],
+      "conflicts_with": ["universal_credit"]
+    },
+    {
+      "id": "attendance_allowance",
+      "name": "Attendance Allowance",
+      "short_description": "For people over state pension age who need help with daily living. No means test.",
+      "admin_body": "dwp",
+      "application_method": ["paper_form"],
+      "application_url": "https://www.gov.uk/attendance-allowance/how-to-claim",
+      "estimated_annual_value_range": [3843, 5741],
+      "claiming_difficulty": "complex",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": "state_pension_age" },
+          { "field": "needs_help_with_daily_living", "operator": "==", "value": true }
+        ],
+        "means_tested": false,
+        "rates_weekly_2025_26": {
+          "lower_rate": 73.90,
+          "higher_rate": 110.40
+        },
+        "note": "NO MEANS TEST. Not affected by income or savings. Key barrier is awareness and form completion, not eligibility."
+      },
+      "unlocks": [
+        "carers_allowance_for_carer",
+        "pension_credit_strengthened",
+        "council_tax_disability_reduction"
+      ],
+      "conflicts_with": ["pip_daily_living"]
+    },
+    {
+      "id": "universal_credit",
+      "name": "Universal Credit",
+      "short_description": "Main working-age benefit combining income support, housing, childcare, carer, and disability elements.",
+      "admin_body": "dwp",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/universal-credit/how-to-claim",
+      "estimated_annual_value_range": [4000, 25000],
+      "claiming_difficulty": "complex",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": 18 },
+          { "field": "age", "operator": "<", "value": "state_pension_age" },
+          { "field": "household_capital", "operator": "<", "value": 16000 },
+          { "field": "employment_status", "operator": "in", "value": ["unemployed", "employed", "self_employed", "carer_fulltime", "sick_disabled"], "note": "Can claim while working if income low enough" }
+        ],
+        "elements": [
+          { "name": "standard_allowance", "monthly_2025_26": { "single_under_25": 316.98, "single_25_plus": 400.14, "couple_both_under_25": 497.55, "couple_one_25_plus": 628.10 }},
+          { "name": "child_element", "monthly_2025_26": { "first_child": 339.00, "subsequent": 292.81 }},
+          { "name": "disabled_child_addition", "monthly_2025_26": { "lower": 158.76, "higher": 495.87 }},
+          { "name": "lcwra_element", "monthly_2025_26": 423.27, "note": "Limited capability for work and work-related activity" },
+          { "name": "carer_element", "monthly_2025_26": 201.68 },
+          { "name": "childcare_element", "monthly_2025_26": { "one_child_max": 1031.88, "two_children_max": 1768.94 }, "note": "Covers 85% of costs up to cap" },
+          { "name": "housing_element", "note": "Based on LHA rates for area and household size" }
+        ],
+        "five_week_wait": true,
+        "advance_available": true
+      },
+      "unlocks": [
+        "council_tax_support_working_age",
+        "free_school_meals",
+        "healthy_start",
+        "sure_start_maternity_grant",
+        "free_early_education_2yr",
+        "nhs_low_income_scheme",
+        "social_tariff_broadband",
+        "social_tariff_water",
+        "discretionary_housing_payment"
+      ],
+      "conflicts_with": ["pension_credit", "tax_free_childcare"]
+    },
+    {
+      "id": "council_tax_support_working_age",
+      "name": "Council Tax Support (Working Age)",
+      "short_description": "Reduction in council tax for working-age people on low income. 300+ different local schemes.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "paper_form"],
+      "application_url": null,
+      "application_url_note": "Varies by council. Look up at council website.",
+      "estimated_annual_value_range": [500, 2500],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": "<", "value": "state_pension_age" },
+          { "note": "Rules vary by council. Over 300 different schemes in England alone. No national standardisation." }
+        ],
+        "the_300_council_problem": "Each billing authority sets its own scheme. Some mirror the old national CTB scheme, others have minimum payments (e.g. 20% of bill regardless), income tapers, capital limits, and band caps. The engine needs to know the specific rules for each council."
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "council_tax_reduction_full",
+      "name": "Council Tax Reduction (Pension Age)",
+      "short_description": "National scheme for pension-age people. Pension Credit Guarantee = likely 100% reduction.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "paper_form"],
+      "estimated_annual_value_range": [1000, 3000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": "state_pension_age" },
+          { "note": "National scheme (unlike working-age). Pension Credit Guarantee receipt = likely full reduction. Otherwise means-tested with £16k capital limit." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "carers_allowance",
+      "name": "Carer's Allowance",
+      "short_description": "£83.30/week for people caring 35+ hours/week for someone on a qualifying disability benefit.",
+      "admin_body": "dwp",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/carers-allowance/how-to-claim",
+      "estimated_annual_value_range": [4332, 4332],
+      "claiming_difficulty": "moderate",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "is_carer", "operator": "==", "value": true },
+          { "field": "carer_hours_per_week", "operator": ">=", "value": 35 },
+          { "field": "gross_annual_income", "operator": "<", "value": 7852, "note": "Earnings limit £196/week after deductions as of 2025/26" },
+          { "field": "cared_for_person.disability_benefit", "operator": "in", "value": ["dla_middle_care", "dla_higher_care", "pip_daily_living_standard", "pip_daily_living_enhanced", "attendance_allowance_lower", "attendance_allowance_higher"] }
+        ],
+        "rate_weekly_2025_26": 83.30
+      },
+      "unlocks": [
+        "carers_credit",
+        "uc_carer_element",
+        "council_tax_carer_discount"
+      ],
+      "conflicts_with": ["state_pension_overlapping"],
+      "conflict_note": "Cannot receive CA on top of State Pension if SP is higher, but underlying entitlement to CA is preserved and triggers passported benefits and carer premiums."
+    },
+    {
+      "id": "carers_credit",
+      "name": "Carer's Credit",
+      "short_description": "NI credits protecting state pension for carers. 20+ hours/week. No payment now, protects future pension.",
+      "admin_body": "hmrc",
+      "application_method": ["paper_form"],
+      "application_url": "https://www.gov.uk/carers-credit",
+      "estimated_annual_value_range": [0, 0],
+      "estimated_lifetime_value_note": "Each qualifying year adds ~£300/year to state pension for life from retirement. Over a 20-year retirement, one year of Carer's Credit is worth ~£6,000.",
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "is_carer", "operator": "==", "value": true },
+          { "field": "carer_hours_per_week", "operator": ">=", "value": 20 }
+        ],
+        "note": "Much lower threshold than Carer's Allowance (20hrs vs 35hrs). No earnings limit. Massively under-claimed."
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "child_benefit",
+      "name": "Child Benefit",
+      "short_description": "£26.05/week for first child, £17.25 for subsequent children. ALWAYS claim even if high earner — NI credits.",
+      "admin_body": "hmrc",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/child-benefit/how-to-claim",
+      "estimated_annual_value_range": [900, 2200],
+      "claiming_difficulty": "easy",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "children", "operator": "has_any", "value": true },
+          { "note": "Universal. But High Income Child Benefit Charge applies if highest earner >£60k (1% per £200 over £60k, fully clawed back at £80k). CRITICAL: Always claim and opt out of payment if >£80k, because the NI credit for non-working parent is attached to the Child Benefit claim, not the payment." }
+        ]
+      },
+      "unlocks": ["ni_credits_non_working_parent"],
+      "conflicts_with": [],
+      "critical_note": "Parents who don't claim Child Benefit because of HICBC may lose state pension years. This is one of the biggest hidden losses in the system."
+    },
+    {
+      "id": "marriage_allowance",
+      "name": "Marriage Allowance",
+      "short_description": "Transfer £1,260 personal allowance to basic-rate spouse. Worth up to £252/year, backdatable 4 years (up to £1,259).",
+      "admin_body": "hmrc",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/marriage-allowance",
+      "estimated_annual_value_range": [252, 252],
+      "backdate_value": 1259,
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "relationship_status", "operator": "in", "value": ["couple_married", "couple_civil_partner"] },
+          { "field": "one_partner_income", "operator": "<", "value": 12570, "note": "One partner must be a non-taxpayer (income below personal allowance)" },
+          { "field": "other_partner_income", "operator": "between", "value": [12571, 50270], "note": "Other partner must be basic-rate taxpayer" }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "tax_free_childcare",
+      "name": "Tax-Free Childcare",
+      "short_description": "Government adds 20% to childcare payments. Up to £2,000/child/year (£4,000 if disabled).",
+      "admin_body": "hmrc",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/tax-free-childcare",
+      "estimated_annual_value_range": [500, 2000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "children", "operator": "has_any_under", "value": 12 },
+          { "field": "both_parents_working", "operator": "==", "value": true, "note": "Each parent must earn equivalent of 16hrs/week at NMW" },
+          { "field": "neither_parent_income", "operator": "<", "value": 100000 },
+          { "note": "Must reconfirm eligibility every 3 months or account suspends" }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["universal_credit"],
+      "conflict_note": "MUTUALLY EXCLUSIVE with UC childcare element. UC childcare element (85% of costs) is usually better for lower-income families. The engine must calculate both and show which is better."
+    },
+    {
+      "id": "free_school_meals",
+      "name": "Free School Meals",
+      "short_description": "Free meals for school-age children in families on qualifying benefits.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "estimated_annual_value_range": [400, 500],
+      "claiming_difficulty": "easy",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "children", "operator": "has_any_school_age", "value": true },
+          { "note": "Qualifying benefits include UC with net earned income <£7,400, Income Support, income-based JSA, income-related ESA, Pension Credit Guarantee, Child Tax Credit (if income <£16,190)" }
+        ]
+      },
+      "unlocks": ["pupil_premium_for_school"],
+      "unlocks_note": "Claiming FSM triggers Pupil Premium funding for the school (£1,480/pupil in 2025/26). Even if family doesn't want the meals, registering helps the school.",
+      "conflicts_with": []
+    },
+    {
+      "id": "pip",
+      "name": "Personal Independence Payment",
+      "short_description": "For working-age people with long-term health conditions or disabilities. Not means tested.",
+      "admin_body": "dwp",
+      "application_method": ["phone_then_paper"],
+      "application_url": "https://www.gov.uk/pip/how-to-claim",
+      "estimated_annual_value_range": [1800, 10000],
+      "claiming_difficulty": "adversarial",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": 16 },
+          { "field": "age", "operator": "<", "value": "state_pension_age" },
+          { "field": "has_disability_or_health_condition", "operator": "==", "value": true },
+          { "note": "Assessment based on daily living and mobility descriptors. Not diagnosis-based." }
+        ],
+        "means_tested": false,
+        "rates_weekly_2025_26": {
+          "daily_living_standard": 73.90,
+          "daily_living_enhanced": 110.40,
+          "mobility_standard": 29.20,
+          "mobility_enhanced": 77.05
+        }
+      },
+      "unlocks": [
+        "blue_badge",
+        "vehicle_excise_duty_exemption",
+        "motability_scheme",
+        "carers_allowance_for_carer",
+        "council_tax_disability_reduction",
+        "access_to_work"
+      ],
+      "conflicts_with": ["attendance_allowance"]
+    },
+    {
+      "id": "dla_child",
+      "name": "Disability Living Allowance (Child)",
+      "short_description": "For children under 16 with care or mobility needs. Not means tested. Gateway to Carer's Allowance.",
+      "admin_body": "dwp",
+      "application_method": ["paper_form"],
+      "application_url": "https://www.gov.uk/disability-living-allowance-children",
+      "estimated_annual_value_range": [1500, 9600],
+      "claiming_difficulty": "complex",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "field": "children", "operator": "has_any_with", "value": { "has_additional_needs": true } },
+          { "note": "Child must need substantially more care or supervision than a child of the same age without a disability, or have difficulty walking." }
+        ],
+        "means_tested": false
+      },
+      "unlocks": [
+        "carers_allowance_for_parent",
+        "blue_badge_child",
+        "council_tax_disability_reduction",
+        "uc_disabled_child_addition"
+      ],
+      "conflicts_with": []
+    },
+    {
+      "id": "ehcp_assessment",
+      "name": "EHCP Needs Assessment",
+      "short_description": "Legal right to request assessment for Education, Health and Care Plan. >90% tribunal success rate.",
+      "admin_body": "local_council",
+      "application_method": ["letter"],
+      "estimated_annual_value_range": null,
+      "value_note": "Not financial — but EHCP provision can be worth £10,000-50,000+/year in specialist education, therapies, and support. Priceless in outcomes.",
+      "claiming_difficulty": "adversarial",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "children", "operator": "has_any_with", "value": { "has_additional_needs": true } },
+          { "note": "Child has or may have SEN, and may need provision beyond what school can provide from its own resources. Parent can request directly — does not need school's agreement." }
+        ],
+        "statutory_timeline": {
+          "la_must_decide_to_assess": "6 weeks",
+          "assessment_to_final_ehcp": "20 weeks total",
+          "appeal_deadline_after_refusal": "2 months (with additional 1 month for mediation)"
+        },
+        "tribunal_success_rate": ">90%"
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "warm_home_discount",
+      "name": "Warm Home Discount",
+      "short_description": "£150 off electricity bill. Automatic if on Pension Credit Guarantee.",
+      "admin_body": "energy_supplier",
+      "application_method": ["automatic_if_pension_credit", "apply_to_supplier"],
+      "estimated_annual_value_range": [150, 150],
+      "claiming_difficulty": "automatic",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Automatic for Pension Credit Guarantee recipients (Core Group 1). Others may qualify via Core Group 2 (DWP data matching) — no application needed if matched. Some suppliers have their own broader eligibility." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "blue_badge",
+      "name": "Blue Badge",
+      "short_description": "Parking concessions for people with mobility difficulties.",
+      "admin_body": "local_council",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/apply-blue-badge",
+      "estimated_annual_value_range": [200, 2000],
+      "value_note": "Hard to quantify financially — value is in independence and access.",
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "disability_benefit_received", "operator": "in", "value": ["dla_higher_mobility", "pip_mobility_enhanced"], "note": "Automatic eligibility" },
+          { "note": "Also eligible via further assessment if: can't walk >50m, have severe upper limb disability, or PIP mobility standard with 'planning and following journeys' descriptor E (overwhelming distress)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "delay_repay",
+      "name": "Delay Repay (Train Compensation)",
+      "short_description": "25-100% ticket price compensation for train delays of 15-60+ minutes.",
+      "admin_body": "train_operator",
+      "application_method": ["online_operator_website"],
+      "estimated_annual_value_range": [10, 500],
+      "value_note": "Per-journey. Regular commuters can accumulate hundreds per year.",
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Train delayed 15+ minutes (some operators) or 30+ minutes. Compensation: 25% for 15-29min, 50% for 30-59min, 100% for 60+ minutes. Must claim within 28 days." }
+        ],
+        "data_sources": ["Network Rail real-time data", "National Rail API"],
+        "deadline_days": 28
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "flight_compensation_uk261",
+      "name": "Flight Compensation (UK261)",
+      "short_description": "£220-£520 per passenger for 3+ hour delays, cancellations, denied boarding.",
+      "admin_body": "airline",
+      "application_method": ["letter_or_online"],
+      "estimated_annual_value_range": [220, 520],
+      "value_note": "Per flight per passenger. Family of 4 on a cancelled long-haul = £2,080.",
+      "claiming_difficulty": "adversarial",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "UK departing flight or UK airline arriving into UK. Delay 3+ hours at destination, cancellation <14 days notice, or denied boarding. NOT if 'extraordinary circumstances' (genuine — not airline operational issues)." }
+        ],
+        "compensation_amounts": {
+          "short_haul_under_1500km": 220,
+          "medium_haul_1500_3500km": 350,
+          "long_haul_over_3500km": 520
+        },
+        "escalation": "Airline refuses → CEDR/AviationADR (free ADR) → County Court small claims"
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "bereavement_support_payment",
+      "name": "Bereavement Support Payment",
+      "short_description": "£3,500 lump sum + up to £350/month for 18 months. For under-SPA partners of deceased.",
+      "admin_body": "dwp",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.gov.uk/bereavement-support-payment",
+      "estimated_annual_value_range": [3500, 9800],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "is_bereaved", "operator": "==", "value": true },
+          { "field": "deceased_relationship", "operator": "in", "value": ["spouse", "civil_partner"] },
+          { "field": "age", "operator": "<", "value": "state_pension_age" },
+          { "note": "Deceased must have paid NI contributions. Higher rate if claimant is pregnant or has dependent children." }
+        ],
+        "rates": {
+          "higher_rate": { "lump_sum": 3500, "monthly": 350 },
+          "standard_rate": { "lump_sum": 2500, "monthly": 100 }
+        },
+        "deadline": "Must claim within 21 months of death for full payment"
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "maternity_allowance",
+      "name": "Maternity Allowance",
+      "short_description": "£187.18/week for 39 weeks if not eligible for Statutory Maternity Pay.",
+      "admin_body": "dwp",
+      "application_method": ["paper_form"],
+      "application_url": "https://www.gov.uk/maternity-allowance",
+      "estimated_annual_value_range": [5400, 7100],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "is_pregnant", "operator": "==", "value": true },
+          { "note": "Employed or self-employed for at least 26 weeks in the 66 weeks before due date. Not getting SMP." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["statutory_maternity_pay"]
+    },
+    {
+      "id": "healthy_start",
+      "name": "Healthy Start Vouchers",
+      "short_description": "£4.25/week for fruit, veg, milk and vitamins for pregnant women and children under 4 on low income. £8.50/week for babies under 1.",
+      "admin_body": "nhs",
+      "application_method": ["online"],
+      "application_url": "https://www.healthystart.nhs.uk",
+      "estimated_annual_value_range": [220, 220],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "is_pregnant", "operator": "==", "value": true, "OR": true },
+          { "field": "children", "operator": "has_any_under", "value": 4 },
+          { "note": "Must be on UC, Child Tax Credit, Pension Credit, or under 18 and pregnant" }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "council_tax_single_person_discount",
+      "name": "Council Tax Single Person Discount",
+      "short_description": "25% off council tax for people living alone.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "phone"],
+      "estimated_annual_value_range": [300, 750],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Live alone, or all other residents are 'disregarded' (full-time students, people with severe mental impairment, etc.)" }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "council_tax_disability_reduction",
+      "name": "Council Tax Disability Band Reduction",
+      "short_description": "Band reduced by one level if home has features for disabled person.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "letter"],
+      "estimated_annual_value_range": [100, 500],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Home has been adapted for a disabled person (extra bathroom, wheelchair room, extra space essential for wellbeing). Applies even to Band A properties (reduced to notional Band minus-A)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "social_tariff_broadband",
+      "name": "Broadband Social Tariff",
+      "short_description": "Discounted broadband (typically £10-20/month) for people on qualifying benefits. 97% unclaimed.",
+      "admin_body": "broadband_provider",
+      "application_method": ["online_provider", "phone_provider"],
+      "estimated_annual_value_range": [100, 300],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Varies by provider. Generally: UC, Pension Credit, ESA, JSA. Each provider has own tariff and own application. 97% of eligible households are not claiming." }
+        ],
+        "providers_with_tariffs": [
+          { "name": "BT / EE", "tariff": "BT Home Essentials", "price_from": 10 },
+          { "name": "Virgin Media O2", "tariff": "Essential Broadband", "price_from": 12.50 },
+          { "name": "Sky", "tariff": "Sky Broadband Basics", "price_from": 20 },
+          { "name": "Vodafone", "tariff": "Vodafone Together Essentials", "price_from": 12 },
+          { "name": "NOW", "tariff": "NOW Broadband Basics", "price_from": 20 }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "ni_voluntary_contributions",
+      "name": "Voluntary NI Contributions",
+      "short_description": "Fill gaps in NI record to increase state pension. Extraordinary ROI — a few hundred pounds can add thousands to pension.",
+      "admin_body": "hmrc",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.gov.uk/voluntary-national-insurance-contributions",
+      "estimated_annual_value_range": null,
+      "value_note": "Not a benefit — an investment. One year of voluntary Class 3 NI costs ~£825 but adds ~£302/year to state pension for life. At 20 years of retirement, ROI is ~7:1.",
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Check NI record for gaps. Deadline to fill gaps is usually 6 years, but temporary extension allows filling gaps back to April 2006 until April 2025 (check if extended)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "section_75_claim",
+      "name": "Section 75 Credit Card Claim",
+      "short_description": "Joint liability with retailer for purchases £100-£30,000 on credit card. Card issuer must refund if retailer fails.",
+      "admin_body": "card_issuer",
+      "application_method": ["letter"],
+      "estimated_annual_value_range": null,
+      "value_note": "Depends on purchase. Can recover thousands for failed goods/services.",
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Single item/service cost between £100 and £30,000. Purchased (even partially) on credit card. Retailer has breached contract, misrepresented goods, or gone bust. Consumer Credit Act 1974 s.75." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    }
+  ],
+
+  "dependency_edges": [
+    { "from": "pension_credit", "to": "council_tax_reduction_full", "type": "gateway", "note": "PC Guarantee = likely 100% CT reduction" },
+    { "from": "pension_credit", "to": "warm_home_discount", "type": "gateway", "auto": true },
+    { "from": "pension_credit", "to": "free_nhs_dental", "type": "gateway" },
+    { "from": "pension_credit", "to": "free_nhs_prescriptions", "type": "gateway" },
+    { "from": "pension_credit", "to": "social_tariff_broadband", "type": "qualifies" },
+    { "from": "pension_credit", "to": "social_tariff_water", "type": "qualifies" },
+    { "from": "attendance_allowance", "to": "pension_credit", "type": "strengthens", "note": "AA disregarded as income so makes PC more likely/higher" },
+    { "from": "attendance_allowance", "to": "carers_allowance", "type": "enables_for_carer", "note": "Cared-for must receive qualifying disability benefit" },
+    { "from": "universal_credit", "to": "council_tax_support_working_age", "type": "qualifies" },
+    { "from": "universal_credit", "to": "free_school_meals", "type": "gateway", "condition": "income < £7,400" },
+    { "from": "universal_credit", "to": "healthy_start", "type": "gateway" },
+    { "from": "universal_credit", "to": "social_tariff_broadband", "type": "qualifies" },
+    { "from": "pip", "to": "blue_badge", "type": "gateway", "condition": "enhanced mobility or specific daily living descriptors" },
+    { "from": "pip", "to": "carers_allowance", "type": "enables_for_carer" },
+    { "from": "pip", "to": "council_tax_disability_reduction", "type": "qualifies" },
+    { "from": "dla_child", "to": "carers_allowance", "type": "enables_for_carer", "condition": "middle or higher rate care" },
+    { "from": "dla_child", "to": "blue_badge", "type": "gateway", "condition": "higher rate mobility" },
+    { "from": "carers_allowance", "to": "carers_credit", "type": "gateway" },
+    { "from": "carers_allowance", "to": "uc_carer_element", "type": "gateway", "condition": "also on UC" },
+    { "from": "child_benefit", "to": "ni_credits_non_working_parent", "type": "gateway", "critical": true },
+    { "from": "free_school_meals", "to": "pupil_premium_for_school", "type": "triggers" }
+  ],
+
+  "conflict_edges": [
+    { "between": ["tax_free_childcare", "universal_credit"], "type": "mutual_exclusion", "resolution": "Calculate both, recommend higher value. UC childcare element (85% of costs) usually better for lower income." },
+    { "between": ["pension_credit", "universal_credit"], "type": "mutual_exclusion", "resolution": "Age-dependent. Under SPA = UC. Over SPA = PC. Mixed-age couples = UC (since May 2019)." },
+    { "between": ["pip", "attendance_allowance"], "type": "mutual_exclusion", "resolution": "Age-dependent. Under SPA = PIP. Over SPA = AA." },
+    { "between": ["carers_allowance", "state_pension"], "type": "overlapping_benefit", "resolution": "Cannot receive both. If SP > CA, get SP. But underlying CA entitlement is preserved — still triggers carer premiums and passported benefits. Always worth claiming CA even if SP higher." }
+  ],
+
+  "situations": [
+    {
+      "id": "ageing_parent",
+      "trigger_phrases": [
+        "mum can't cope", "dad is struggling", "parent falling", "elderly parent",
+        "parent needs care", "worried about mum", "parent living alone",
+        "parent can't manage", "getting old", "parent dementia"
+      ],
+      "primary_entitlements": ["attendance_allowance", "pension_credit", "council_tax_reduction_full", "carers_allowance", "carers_credit"],
+      "secondary_entitlements": ["warm_home_discount", "blue_badge", "council_tax_disability_reduction", "social_tariff_broadband", "social_tariff_water", "child_benefit", "marriage_allowance"],
+      "optimal_claiming_order": [
+        "attendance_allowance",
+        "pension_credit",
+        "council_tax_reduction_full",
+        "carers_allowance",
+        "carers_credit",
+        "warm_home_discount",
+        "social_tariff_broadband",
+        "blue_badge"
+      ]
+    },
+    {
+      "id": "new_baby",
+      "trigger_phrases": [
+        "having a baby", "pregnant", "expecting", "new baby",
+        "maternity leave", "paternity leave", "childcare costs", "nursery"
+      ],
+      "primary_entitlements": ["child_benefit", "tax_free_childcare", "universal_credit", "maternity_allowance", "healthy_start"],
+      "secondary_entitlements": ["free_school_meals", "council_tax_support_working_age", "sure_start_maternity_grant", "marriage_allowance"],
+      "decision_points": [
+        {
+          "id": "childcare_choice",
+          "description": "Tax-Free Childcare vs UC Childcare Element — mutually exclusive, must calculate both",
+          "factors": ["household_income", "childcare_costs", "number_of_children"]
+        },
+        {
+          "id": "100k_cliff_edge",
+          "description": "If either parent earns near £100k, salary sacrifice to pension may save £15,000+/year in retained childcare entitlements",
+          "factors": ["gross_annual_income", "employer_pension_scheme_type"]
+        }
+      ]
+    },
+    {
+      "id": "child_struggling_school",
+      "trigger_phrases": [
+        "child struggling", "school problems", "SEN", "SEND", "autism",
+        "ADHD", "learning difficulties", "EHCP", "special needs",
+        "school can't cope", "child excluded", "school refusing"
+      ],
+      "primary_entitlements": ["ehcp_assessment", "dla_child", "carers_allowance"],
+      "secondary_entitlements": ["free_school_meals", "carers_credit", "council_tax_disability_reduction", "child_benefit", "marriage_allowance"],
+      "optimal_claiming_order": [
+        "ehcp_assessment",
+        "dla_child",
+        "carers_allowance",
+        "carers_credit",
+        "free_school_meals"
+      ]
+    },
+    {
+      "id": "lost_job",
+      "trigger_phrases": [
+        "made redundant", "lost my job", "been sacked", "contract ended",
+        "unemployed", "no work", "job loss", "redundancy"
+      ],
+      "primary_entitlements": ["universal_credit", "council_tax_support_working_age"],
+      "secondary_entitlements": ["free_school_meals", "healthy_start", "social_tariff_broadband", "discretionary_housing_payment", "child_benefit", "marriage_allowance"],
+      "time_critical": true,
+      "optimal_claiming_order": [
+        "universal_credit",
+        "council_tax_support_working_age",
+        "free_school_meals",
+        "social_tariff_broadband"
+      ]
+    },
+    {
+      "id": "separation",
+      "trigger_phrases": [
+        "separating", "getting divorced", "partner left", "split up",
+        "domestic abuse", "leaving partner", "relationship breakdown"
+      ],
+      "primary_entitlements": ["universal_credit", "council_tax_single_person_discount"],
+      "secondary_entitlements": ["free_school_meals", "council_tax_support_working_age", "legal_aid_dv"],
+      "sensitive": true
+    },
+    {
+      "id": "bereavement",
+      "trigger_phrases": [
+        "someone died", "lost my husband", "lost my wife", "partner died",
+        "bereavement", "widowed", "funeral"
+      ],
+      "primary_entitlements": ["bereavement_support_payment", "council_tax_single_person_discount", "pension_credit"],
+      "secondary_entitlements": ["funeral_expenses_payment", "universal_credit"],
+      "sensitive": true
+    },
+    {
+      "id": "retirement_low_income",
+      "trigger_phrases": [
+        "retiring", "retired", "pension not enough", "low pension",
+        "pensioner", "state pension", "can't afford heating"
+      ],
+      "primary_entitlements": ["pension_credit", "council_tax_reduction_full", "attendance_allowance", "ni_voluntary_contributions"],
+      "secondary_entitlements": ["warm_home_discount", "social_tariff_broadband", "social_tariff_water", "blue_badge"]
+    },
+    {
+      "id": "health_condition",
+      "trigger_phrases": [
+        "disability", "chronic illness", "can't work", "health condition",
+        "long-term sick", "mental health", "mobility problems"
+      ],
+      "primary_entitlements": ["pip", "universal_credit", "council_tax_disability_reduction"],
+      "secondary_entitlements": ["blue_badge", "carers_allowance", "access_to_work", "council_tax_support_working_age"]
+    },
+    {
+      "id": "consumer_dispute",
+      "trigger_phrases": [
+        "flight delayed", "train late", "ripped off", "company won't refund",
+        "faulty product", "cancelled flight", "bad service"
+      ],
+      "primary_entitlements": ["delay_repay", "flight_compensation_uk261", "section_75_claim"],
+      "secondary_entitlements": []
+    }
+  ]
+}

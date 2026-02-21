@@ -1,0 +1,96 @@
+{
+  "tax_year": "2025-26",
+  "last_updated": "2025-04-06",
+  "source": "https://www.gov.uk/government/publications/benefit-and-pension-rates-2025-to-2026/benefit-and-pension-rates-2025-to-2026",
+  "rates": {
+    "attendance_allowance": {
+      "lower_weekly": 73.90,
+      "higher_weekly": 110.40,
+      "source": "https://www.gov.uk/attendance-allowance/what-youll-get"
+    },
+    "pension_credit": {
+      "single_weekly": 227.10,
+      "couple_weekly": 346.60,
+      "savings_credit_single_max_weekly": 17.30,
+      "savings_credit_couple_max_weekly": 19.36,
+      "capital_disregard": 10000,
+      "source": "https://www.gov.uk/pension-credit/what-youll-get"
+    },
+    "carers_allowance": {
+      "weekly": 83.30,
+      "earnings_limit_weekly": 196.00,
+      "source": "https://www.gov.uk/carers-allowance/how-much-youll-get"
+    },
+    "child_benefit": {
+      "first_child_weekly": 26.05,
+      "additional_child_weekly": 17.25,
+      "hicbc_threshold": 60000,
+      "hicbc_full_clawback": 80000,
+      "source": "https://www.gov.uk/child-benefit/what-youll-get"
+    },
+    "universal_credit": {
+      "standard_allowance_single_under_25_monthly": 316.98,
+      "standard_allowance_single_25_plus_monthly": 400.14,
+      "standard_allowance_couple_under_25_monthly": 497.55,
+      "standard_allowance_couple_25_plus_monthly": 628.10,
+      "child_element_first_monthly": 339.00,
+      "child_element_subsequent_monthly": 292.81,
+      "disabled_child_lower_monthly": 158.76,
+      "disabled_child_higher_monthly": 495.87,
+      "carer_element_monthly": 201.68,
+      "lcwra_element_monthly": 423.27,
+      "childcare_one_child_max_monthly": 1031.88,
+      "childcare_two_children_max_monthly": 1768.94,
+      "capital_lower_threshold": 6000,
+      "capital_upper_threshold": 16000,
+      "free_school_meals_income_threshold": 7400,
+      "source": "https://www.entitledto.co.uk/help/universal-credit-rates"
+    },
+    "pip": {
+      "daily_living_standard_weekly": 73.90,
+      "daily_living_enhanced_weekly": 110.40,
+      "mobility_standard_weekly": 29.20,
+      "mobility_enhanced_weekly": 77.05,
+      "source": "https://www.gov.uk/pip/how-much-youll-get"
+    },
+    "marriage_allowance": {
+      "transferable_amount": 1260,
+      "annual_value": 252,
+      "backdate_years": 4,
+      "max_backdate_value": 1259,
+      "source": "https://www.gov.uk/marriage-allowance"
+    },
+    "maternity_allowance": {
+      "weekly": 187.18,
+      "duration_weeks": 39,
+      "source": "https://www.gov.uk/maternity-allowance/what-youll-get"
+    },
+    "bereavement_support_payment": {
+      "higher_lump_sum": 3500,
+      "higher_monthly": 350,
+      "standard_lump_sum": 2500,
+      "standard_monthly": 100,
+      "duration_months": 18,
+      "source": "https://www.gov.uk/bereavement-support-payment/what-youll-get"
+    },
+    "warm_home_discount": {
+      "amount": 150,
+      "source": "https://www.gov.uk/the-warm-home-discount-scheme"
+    },
+    "healthy_start": {
+      "weekly": 4.25,
+      "weekly_under_1": 8.50,
+      "source": "https://www.healthystart.nhs.uk"
+    },
+    "free_school_meals": {
+      "estimated_annual_value": 450,
+      "pupil_premium_per_pupil": 1480,
+      "source": "https://www.gov.uk/apply-free-school-meals"
+    },
+    "state_pension_full_new_weekly": 230.25,
+    "state_pension_age": 66,
+    "personal_allowance": 12570,
+    "basic_rate_limit": 50270,
+    "higher_rate_limit": 125140
+  }
+}
