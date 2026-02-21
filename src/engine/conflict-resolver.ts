@@ -1,5 +1,6 @@
 import type { ConflictEdge, ConflictResolution } from '../types/entitlements.ts'
 import type { PersonData } from '../types/person.ts'
+import type { PolicyEngineCalculatedBenefits } from '../types/policyengine.ts'
 
 /**
  * Walks conflict edges and produces ConflictResolution objects
@@ -9,6 +10,7 @@ export function resolveConflicts(
   eligibleIds: Set<string>,
   conflictEdges: ConflictEdge[],
   personData: PersonData,
+  peResults?: PolicyEngineCalculatedBenefits | null,
 ): ConflictResolution[] {
   const resolutions: ConflictResolution[] = []
 
@@ -16,7 +18,7 @@ export function resolveConflicts(
     const [idA, idB] = edge.between
     if (!eligibleIds.has(idA) || !eligibleIds.has(idB)) continue
 
-    const resolution = resolveSpecificConflict(idA, idB, edge, personData)
+    const resolution = resolveSpecificConflict(idA, idB, edge, personData, peResults)
     if (resolution) {
       resolutions.push(resolution)
     }
@@ -30,13 +32,14 @@ function resolveSpecificConflict(
   idB: string,
   edge: ConflictEdge,
   personData: PersonData,
+  peResults?: PolicyEngineCalculatedBenefits | null,
 ): ConflictResolution | null {
   switch (true) {
     case hasIds(idA, idB, 'tax_free_childcare', 'universal_credit'):
-      return resolveTfcVsUc(personData)
+      return resolveTfcVsUc(personData, peResults)
 
     case hasIds(idA, idB, 'pension_credit', 'universal_credit'):
-      return resolvePcVsUc(personData)
+      return resolvePcVsUc(personData, peResults)
 
     case hasIds(idA, idB, 'pip', 'attendance_allowance'):
       return resolvePipVsAa(personData)
@@ -60,8 +63,28 @@ function hasIds(a: string, b: string, id1: string, id2: string): boolean {
   return (a === id1 && b === id2) || (a === id2 && b === id1)
 }
 
-function resolveTfcVsUc(personData: PersonData): ConflictResolution {
-  // UC childcare (85% of costs) is usually better for lower income families
+function resolveTfcVsUc(personData: PersonData, peResults?: PolicyEngineCalculatedBenefits | null): ConflictResolution {
+  // If PE gives us UC childcare element, compare directly with TFC cap
+  const ucChildcare = peResults?.universal_credit_components?.childcare_element
+  if (ucChildcare !== undefined) {
+    const numChildren = personData.children.length
+    const tfcCap = numChildren * 2000 // £2,000/child/year max top-up
+    const recommendation = ucChildcare > tfcCap
+      ? `UC Childcare Element (£${ucChildcare.toLocaleString()}/yr) is worth more than Tax-Free Childcare (up to £${tfcCap.toLocaleString()}/yr top-up).`
+      : `Tax-Free Childcare (up to £${tfcCap.toLocaleString()}/yr top-up) may be worth more than UC Childcare Element (£${ucChildcare.toLocaleString()}/yr).`
+
+    return {
+      option_a: 'Tax-Free Childcare',
+      option_a_id: 'tax_free_childcare',
+      option_b: 'UC Childcare Element',
+      option_b_id: 'universal_credit',
+      recommendation,
+      reasoning:
+        'These are mutually exclusive — you can only use one. UC childcare element covers 85% of costs (usually better for lower incomes). Tax-Free Childcare adds 20% to your payments (up to £2,000/child/year).',
+    }
+  }
+
+  // Fallback: heuristic based on income band
   const isLowerIncome =
     personData.income_band === 'under_12570' ||
     personData.income_band === 'under_16000' ||
@@ -82,12 +105,22 @@ function resolveTfcVsUc(personData: PersonData): ConflictResolution {
   }
 }
 
-function resolvePcVsUc(personData: PersonData): ConflictResolution {
+function resolvePcVsUc(personData: PersonData, peResults?: PolicyEngineCalculatedBenefits | null): ConflictResolution {
   const age = personData.age ?? 0
-  const recommendation =
-    age >= 66
+
+  // If PE gives us both amounts, include them in the recommendation
+  const peUc = peResults?.universal_credit
+  const pePc = peResults?.pension_credit
+  let recommendation: string
+  if (age >= 66 && pePc !== undefined) {
+    recommendation = `At your age, Pension Credit is the right route (estimated £${pePc.toLocaleString()}/yr).`
+  } else if (age < 66 && peUc !== undefined) {
+    recommendation = `At your age, Universal Credit is the right route (estimated £${peUc.toLocaleString()}/yr).`
+  } else {
+    recommendation = age >= 66
       ? 'At your age, Pension Credit is the right route — not Universal Credit.'
       : 'At your age, Universal Credit is the right route — not Pension Credit.'
+  }
 
   return {
     option_a: 'Pension Credit',

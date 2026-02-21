@@ -10,10 +10,12 @@ import type {
   ActionPriority,
 } from '../types/entitlements.ts'
 import type { SituationId } from '../types/conversation.ts'
+import type { PolicyEngineCalculatedBenefits } from '../types/policyengine.ts'
 import { checkEligibility } from './eligibility-rules.ts'
 import { resolveCascade } from './cascade-resolver.ts'
 import { resolveConflicts } from './conflict-resolver.ts'
 import { estimateValue } from './value-estimator.ts'
+import { calculateBenefits } from '../services/policyengine.ts'
 import entitlementData from '../data/entitlements.json'
 
 const allEntitlements = entitlementData.entitlements as EntitlementDefinition[]
@@ -21,20 +23,28 @@ const dependencyEdges = entitlementData.dependency_edges as DependencyEdge[]
 const conflictEdges = entitlementData.conflict_edges as ConflictEdge[]
 
 /**
- * Master orchestrator: eligibility + values + cascade + conflicts → EntitlementBundle
+ * Master orchestrator: eligibility + PE calculation + values + cascade + conflicts → EntitlementBundle
  */
-export function buildBundle(
+export async function buildBundle(
   personData: PersonData,
   situationIds: SituationId[],
-): EntitlementBundle {
+): Promise<EntitlementBundle> {
   // 1. Check eligibility of ALL entitlements against PersonData
   const eligibilityResults = checkEligibility(allEntitlements, personData, situationIds)
   const eligibleIds = new Set(eligibilityResults.map((r) => r.id))
 
+  // 2. Call PolicyEngine for precise means-tested calculations (with fallback)
+  let peResults: PolicyEngineCalculatedBenefits | null = null
+  try {
+    peResults = await calculateBenefits(personData)
+  } catch {
+    // Silent fallback — PE unavailable, use heuristics
+  }
+
   // 3. Build EntitlementResult objects with values
   const entitlementResults: EntitlementResult[] = eligibilityResults.map((er) => {
     const def = allEntitlements.find((e) => e.id === er.id)!
-    const value = estimateValue(def, personData)
+    const value = estimateValue(def, personData, peResults)
     return {
       id: er.id,
       name: def.name,
@@ -53,8 +63,8 @@ export function buildBundle(
   // 4. Resolve cascade groupings
   const cascade = resolveCascade(entitlementResults, allEntitlements, dependencyEdges)
 
-  // 5. Resolve conflicts
-  const conflicts = resolveConflicts(eligibleIds, conflictEdges, personData)
+  // 5. Resolve conflicts (with PE data for precise comparisons)
+  const conflicts = resolveConflicts(eligibleIds, conflictEdges, personData, peResults)
 
   // 6. Calculate totals
   const allResults = [

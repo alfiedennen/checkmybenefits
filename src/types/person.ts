@@ -96,6 +96,9 @@ export interface PersonData {
   has_medical_exemption?: boolean
   on_water_meter?: boolean
   months_on_uc?: number
+  council_tax_band?: string
+  weekly_childcare_costs?: number
+  partner_age?: number
 }
 
 export function createEmptyPerson(): PersonData {

@@ -162,7 +162,7 @@ export function useConversation() {
             const uniqueSituations = [...new Set(allSituations)]
 
             try {
-              const bundle = buildBundle(updatedPerson, uniqueSituations)
+              const bundle = await buildBundle(updatedPerson, uniqueSituations)
               dispatch({ type: 'SET_BUNDLE', bundle })
             } catch (err) {
               console.error('Bundle build error:', err)

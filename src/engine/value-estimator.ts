@@ -1,5 +1,6 @@
 import type { PersonData } from '../types/person.ts'
 import type { EntitlementDefinition } from '../types/entitlements.ts'
+import type { PolicyEngineCalculatedBenefits } from '../types/policyengine.ts'
 import benefitRates from '../data/benefit-rates.json'
 
 const rates = benefitRates.rates
@@ -9,15 +10,36 @@ interface ValueRange {
   high: number
 }
 
+const PE_BENEFIT_MAP: Record<string, keyof PolicyEngineCalculatedBenefits> = {
+  universal_credit: 'universal_credit',
+  pension_credit: 'pension_credit',
+  child_benefit: 'child_benefit',
+  housing_benefit_legacy: 'housing_benefit',
+  council_tax_reduction_full: 'council_tax_support',
+  council_tax_support_working_age: 'council_tax_support',
+}
+
 /**
  * Calculate estimated annual value ranges for an entitlement
- * based on person data and benefit rates.
+ * based on person data and benefit rates. Uses PolicyEngine values when available.
  */
 export function estimateValue(
   entitlement: EntitlementDefinition,
   personData: PersonData,
+  peResults?: PolicyEngineCalculatedBenefits | null,
 ): ValueRange {
-  // Try specific calculation first
+  // Try PolicyEngine precise value first
+  if (peResults) {
+    const peKey = PE_BENEFIT_MAP[entitlement.id]
+    if (peKey) {
+      const peValue = peResults[peKey]
+      if (typeof peValue === 'number' && peValue > 0) {
+        return { low: peValue, high: peValue }
+      }
+    }
+  }
+
+  // Try specific heuristic calculation
   const specific = specificEstimate(entitlement.id, personData)
   if (specific) return specific
 

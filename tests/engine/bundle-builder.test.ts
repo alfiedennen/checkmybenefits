@@ -3,7 +3,7 @@ import { buildBundle } from '../../src/engine/bundle-builder.ts'
 import type { PersonData } from '../../src/types/person.ts'
 
 describe('bundle-builder', () => {
-  it('builds ageing parent bundle with correct cascade', () => {
+  it('builds ageing parent bundle with correct cascade', async () => {
     const person: PersonData = {
       age: 45,
       nation: 'england',
@@ -26,7 +26,7 @@ describe('bundle-builder', () => {
       },
     }
 
-    const bundle = buildBundle(person, ['ageing_parent'])
+    const bundle = await buildBundle(person, ['ageing_parent'])
 
     // Should have some results
     expect(bundle.gateway_entitlements.length + bundle.independent_entitlements.length).toBeGreaterThan(0)
@@ -38,7 +38,7 @@ describe('bundle-builder', () => {
     expect(bundle.total_estimated_annual_value.high).toBeGreaterThan(0)
   })
 
-  it('builds lost job bundle with UC as gateway', () => {
+  it('builds lost job bundle with UC as gateway', async () => {
     const person: PersonData = {
       age: 35,
       nation: 'england',
@@ -55,7 +55,7 @@ describe('bundle-builder', () => {
       recently_redundant: true,
     }
 
-    const bundle = buildBundle(person, ['lost_job'])
+    const bundle = await buildBundle(person, ['lost_job'])
 
     // UC should be eligible
     const allIds = [
@@ -70,7 +70,7 @@ describe('bundle-builder', () => {
     expect(firstStep.week).toContain('week')
   })
 
-  it('builds new baby bundle with child benefit', () => {
+  it('builds new baby bundle with child benefit', async () => {
     const person: PersonData = {
       age: 30,
       nation: 'england',
@@ -87,7 +87,7 @@ describe('bundle-builder', () => {
       is_pregnant: false,
     }
 
-    const bundle = buildBundle(person, ['new_baby'])
+    const bundle = await buildBundle(person, ['new_baby'])
 
     const allIds = [
       ...bundle.gateway_entitlements.map((e) => e.id),
@@ -97,7 +97,7 @@ describe('bundle-builder', () => {
     expect(allIds).toContain('child_benefit')
   })
 
-  it('builds child struggling bundle with EHCP', () => {
+  it('builds child struggling bundle with EHCP', async () => {
     const person: PersonData = {
       age: 40,
       nation: 'england',
@@ -114,7 +114,7 @@ describe('bundle-builder', () => {
       carer_hours_per_week: 25,
     }
 
-    const bundle = buildBundle(person, ['child_struggling_school'])
+    const bundle = await buildBundle(person, ['child_struggling_school'])
 
     const allIds = [
       ...bundle.gateway_entitlements.map((e) => e.id),

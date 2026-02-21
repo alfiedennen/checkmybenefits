@@ -27,6 +27,15 @@ export interface PolicyEngineResponse {
   }
 }
 
+export interface UCComponents {
+  standard_allowance?: number
+  child_element?: number
+  housing_element?: number
+  carer_element?: number
+  disability_element?: number
+  childcare_element?: number
+}
+
 export interface PolicyEngineCalculatedBenefits {
   universal_credit?: number
   pension_credit?: number
@@ -35,5 +44,8 @@ export interface PolicyEngineCalculatedBenefits {
   council_tax_support?: number
   income_tax?: number
   national_insurance?: number
-  [key: string]: number | undefined
+  universal_credit_components?: UCComponents
+  pension_credit_guarantee?: number
+  pension_credit_savings?: number
+  [key: string]: number | UCComponents | undefined
 }
