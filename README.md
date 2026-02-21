@@ -2,7 +2,7 @@
 
 A conversational web app that helps UK citizens discover what benefits and support they're entitled to. Describe your situation in plain English, answer a few questions, and get a prioritised bundle of entitlements — including what to claim first and what it unlocks.
 
-**Status:** V0.1 (Situation Screener) — covers four life situations.
+**Status:** V0.1 (Situation Screener) — supports any life situation.
 
 ## What It Does
 
@@ -23,14 +23,20 @@ Most people don't know what they're entitled to. Government websites list hundre
 
 The gateway cascade — "claim X first because it unlocks Y and Z" — is the core differentiator. No other tool does this for citizens directly.
 
-## Situations Covered (V0.1)
+## Situations Covered
+
+Any life situation is supported. The engine evaluates all 50+ entitlements based on the user's data, regardless of situation classification. Common situations include:
 
 | Situation | Example trigger | Key entitlements |
 |-----------|----------------|-----------------|
 | Ageing parent | "My mum can't cope" | Attendance Allowance, Pension Credit, Carer's Allowance, Council Tax Reduction |
 | New baby | "We're expecting a baby" | Child Benefit, Maternity Allowance, Healthy Start, Tax-Free Childcare |
-| Child struggling at school | "My child has ADHD" | DLA (Child), EHCP Assessment, Free School Meals, Disability Living Allowance |
+| Child struggling at school | "My child has ADHD" | DLA (Child), EHCP Assessment, Free School Meals |
 | Lost job | "I've been made redundant" | Universal Credit, Council Tax Support, Social Tariff Broadband, Warm Home Discount |
+| Health condition / disability | "I have MS and can't work" | PIP, Blue Badge, Council Tax Disability Reduction, UC |
+| Bereavement | "My husband died" | Bereavement Support Payment, UC, Council Tax Single Person Discount |
+| Separation | "Going through a divorce" | UC, Council Tax Support, Free School Meals |
+| Mixed / novel | "I'm homeless with no income" | UC, Council Tax Support, Warm Home Discount |
 
 Multiple situations can overlap. "My mum needs care AND I've lost my job AND my child has autism" produces a combined bundle across all three.
 
@@ -150,7 +156,7 @@ src/
 │
 ├── engine/                          # Entitlement engine (deterministic)
 │   ├── bundle-builder.ts            # Orchestrator: eligibility → values → cascade → conflicts → plan
-│   ├── eligibility-rules.ts         # Rule map: 20+ entitlements with field-level checks
+│   ├── eligibility-rules.ts         # Rule map: 30+ entitlements with field-level checks
 │   ├── cascade-resolver.ts          # Groups entitlements by gateway dependency
 │   ├── conflict-resolver.ts         # Resolves mutually exclusive entitlements
 │   ├── value-estimator.ts           # Calculates estimated annual values from benefit rates
@@ -186,7 +192,7 @@ tests/
 │
 └── nova-eval/                       # LLM evaluation framework
     ├── run-eval.ts                  # Entry point: runs all scenarios, scores, reports
-    ├── test-scenarios.ts            # 26 scenarios across 6 categories
+    ├── test-scenarios.ts            # 42 scenarios across 10 categories
     ├── bedrock-client.ts            # AWS Bedrock Converse API wrapper
     ├── scoring.ts                   # Field-by-field comparison + weighted scoring
     └── report.ts                    # Console table + JSON report generation
@@ -224,12 +230,11 @@ The parser (`claude.ts`) extracts these tags via regex. A code-based fallback (`
 
 When the conversation reaches `complete`, `buildBundle()` runs:
 
-1. **Situation filtering** — Get relevant entitlements for the classified situation(s)
-2. **Eligibility check** — Run deterministic rules against PersonData for each entitlement
-3. **Value estimation** — Calculate estimated annual value using GOV.UK benefit rates
-4. **Cascade resolution** — Group entitlements by their gateway (what unlocks what)
-5. **Conflict resolution** — Identify mutually exclusive pairs, recommend the better option
-6. **Action plan** — Generate week-by-week steps ordered by priority and dependencies
+1. **Eligibility check** — Run deterministic rules against PersonData for all 50+ entitlements
+2. **Value estimation** — Calculate estimated annual value using GOV.UK benefit rates
+3. **Cascade resolution** — Group entitlements by their gateway (what unlocks what)
+4. **Conflict resolution** — Identify mutually exclusive pairs, recommend the better option
+5. **Action plan** — Generate week-by-week steps ordered by priority and dependencies
 
 ### Eligibility Rules
 
@@ -274,7 +279,7 @@ The master data file (41KB) defines:
 - **50+ entitlements** with eligibility rules, application methods, GOV.UK URLs, difficulty ratings
 - **Dependency edges** — which entitlements unlock which (gateway, strengthens, qualifies)
 - **Conflict edges** — mutually exclusive pairs with resolution logic
-- **4 situations** with trigger phrases and primary/secondary entitlements
+- **10+ situations** with trigger phrases and primary/secondary entitlements
 - **Claiming difficulty** ratings: automatic, easy, moderate, complex, adversarial
 
 ### benefit-rates.json
@@ -299,7 +304,7 @@ A comprehensive test suite evaluates LLM accuracy for structured extraction.
 npx tsx tests/nova-eval/run-eval.ts
 ```
 
-### Test Categories (26 scenarios)
+### Test Categories (42 scenarios)
 
 | Category | Count | Tests |
 |----------|-------|-------|
@@ -308,7 +313,11 @@ npx tsx tests/nova-eval/run-eval.ts
 | C: Implicit inference | 6 | "my wife" → married, "mortgage" → housing tenure, "redundant" → unemployed |
 | D: Multi-turn conversation | 5 | Full 3-turn flows with accumulated state |
 | E: XML format compliance | All | Every scenario validates parseability |
-| F: Edge cases | 4 | Out-of-scope, vague input, contradictions, very long messages |
+| F: Edge cases | 4 | Separation, vague input, contradictions, very long messages |
+| G: Health / disability | 6 | MS, wheelchair+PIP, depression, dementia carer, chronic pain, child cerebral palsy |
+| H: Bereavement | 3 | Young widow with children, elderly widower, carer bereavement |
+| I: Separation | 3 | Divorce with kids, DV + no income, joint mortgage |
+| J: Mixed / novel | 4 | Homeless + addiction, early retirement, student + baby, business failure |
 
 ### Scoring
 
@@ -325,13 +334,13 @@ Pass threshold: 80% overall, no scenario below 60%.
 
 | Metric | Model-only | Model + code fallback |
 |--------|-----------|----------------------|
-| Overall score | 83.3% | **94.1%** |
-| Scenarios passed | 26/26 | 26/26 |
-| Avg latency | 707ms | 707ms |
-| Est. cost/conversation | $0.0009 | $0.0009 |
-| Conversations per dollar | ~1,083 | ~1,083 |
+| Overall score | 85.9% | **95.0%** |
+| Scenarios passed | 42/42 | 42/42 |
+| Avg latency | 810ms | 810ms |
+| Est. cost/conversation | $0.001 | $0.001 |
+| Conversations per dollar | ~1,013 | ~1,013 |
 
-The code-based extraction fallback adds +10.7 percentage points at zero additional cost or latency.
+The code-based extraction fallback adds +9.1 percentage points at zero additional cost or latency. Code extractors cover health/disability detection, mobility assessment, bereavement/widowed status, and disability benefit level (PIP/DLA/AA).
 
 ## Deployment
 
@@ -377,7 +386,6 @@ npm run build
 
 ## Limitations
 
-- **4 situations only** — ageing parent, new baby, child struggling, lost job (more planned)
 - **Guidance, not advice** — results are estimates, not formal benefits advice
 - **England-focused** — Scotland, Wales, Northern Ireland have different schemes (partially supported)
 - **No real-time data** — benefit rates must be manually updated each tax year
