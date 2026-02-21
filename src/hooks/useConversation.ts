@@ -3,6 +3,7 @@ import type { QuickReply } from '../types/conversation.ts'
 import { conversationReducer, createInitialState } from '../engine/state-machine.ts'
 import { buildBundle } from '../engine/bundle-builder.ts'
 import { sendMessage } from '../services/claude.ts'
+import { extractFromMessage, mergeExtraction } from '../services/message-extractor.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
 
 const OPENING_MESSAGE = `Hi! I'm here to help you find out what benefits and support you might be entitled to.
@@ -104,14 +105,18 @@ export function useConversation() {
           )
         }
 
-        // Apply person data updates
-        if (response.personData) {
-          dispatch({ type: 'UPDATE_PERSON_DATA', data: response.personData })
+        // Apply person data updates — merge model extraction with code-based fallback
+        const codeExtracted = extractFromMessage(text)
+        const mergedPersonData = mergeExtraction(response.personData, codeExtracted)
+        const hasPersonData = mergedPersonData && Object.keys(mergedPersonData).length > 0
+
+        if (hasPersonData) {
+          dispatch({ type: 'UPDATE_PERSON_DATA', data: mergedPersonData })
 
           // If postcode was provided, do a lookup for nation/local authority
-          if (response.personData.postcode) {
+          if (mergedPersonData.postcode) {
             try {
-              const postcodeResult = await lookupPostcode(response.personData.postcode)
+              const postcodeResult = await lookupPostcode(mergedPersonData.postcode!)
               if (postcodeResult) {
                 dispatch({
                   type: 'UPDATE_PERSON_DATA',
@@ -146,7 +151,7 @@ export function useConversation() {
           if (response.stageTransition === 'complete') {
             const updatedPerson = {
               ...stateRef.current.personData,
-              ...(response.personData ?? {}),
+              ...(mergedPersonData ?? {}),
             }
             const allSituations = [
               ...stateRef.current.situations,
