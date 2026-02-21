@@ -1026,6 +1026,101 @@
       "conflicts_with": []
     },
     {
+      "id": "concessionary_bus_travel",
+      "name": "Free Bus Pass (60+)",
+      "short_description": "Free off-peak bus travel in England for people at State Pension age. Apply through local council.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "application_url": "https://www.gov.uk/apply-for-elderly-person-bus-pass",
+      "estimated_annual_value_range": [200, 500],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "age", "operator": ">=", "value": "state_pension_age" },
+          { "note": "Free off-peak local bus travel anywhere in England. Some areas offer additional concessionary travel. Also available to eligible disabled people." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "vehicle_excise_duty_exemption",
+      "name": "Vehicle Tax Exemption",
+      "short_description": "Free vehicle tax (road tax) if you get enhanced PIP mobility or higher rate DLA mobility.",
+      "admin_body": "dvla",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/financial-help-disabled/vehicles-and-transport",
+      "estimated_annual_value_range": [165, 190],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "disability_benefit_received", "operator": "in", "value": ["pip_mobility_enhanced", "dla_higher_mobility"] },
+          { "note": "Also eligible with War Pensioners' Mobility Supplement or Armed Forces Independence Payment." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "motability_scheme",
+      "name": "Motability Scheme",
+      "short_description": "Lease a car, scooter, or powered wheelchair by exchanging your enhanced PIP mobility component.",
+      "admin_body": "motability",
+      "application_method": ["phone", "online"],
+      "application_url": "https://www.motability.co.uk",
+      "estimated_annual_value_range": [3000, 5000],
+      "value_note": "You surrender your enhanced mobility component (£77.05/week) and get a car with insurance, servicing, breakdown cover, and tyres included.",
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "disability_benefit_received", "operator": "in", "value": ["pip_mobility_enhanced", "dla_higher_mobility"] },
+          { "note": "Must have at least 12 months remaining on your award. You exchange your mobility component for the lease." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "court_fee_remission",
+      "name": "Help with Court Fees",
+      "short_description": "Reduction or waiver of court and tribunal fees if on qualifying benefits or low income.",
+      "admin_body": "hmcts",
+      "application_method": ["paper_form"],
+      "application_url": "https://www.gov.uk/get-help-with-court-fees",
+      "estimated_annual_value_range": [50, 2000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "3 levels: (1) On qualifying benefit (UC/PC/IS/JSA-IR/ESA-IR) = full remission. (2) Income below threshold + capital under £3,000 (single) or £4,000 (couple) = full remission. (3) Income above threshold but below cap = partial remission." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "funeral_expenses_payment",
+      "name": "Funeral Expenses Payment",
+      "short_description": "Help with funeral costs if you're on qualifying benefits and responsible for the funeral. Up to £1,000+ for extras.",
+      "admin_body": "dwp",
+      "application_method": ["phone", "paper_form"],
+      "application_url": "https://www.gov.uk/funeral-payments",
+      "estimated_annual_value_range": [1000, 5000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "is_bereaved", "operator": "==", "value": true },
+          { "note": "Must be on qualifying benefit (UC/PC/IS/JSA-IR/ESA-IR/Housing Benefit/CTR) AND responsible for the funeral. Covers burial/cremation fees in full + up to £1,000 for other expenses. Must claim within 6 months of funeral." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
       "id": "eco_home_insulation",
       "name": "ECO4 Home Insulation",
       "short_description": "Free or heavily subsidised home insulation and heating improvements. Worth £1,000-£10,000+.",
@@ -1102,7 +1197,13 @@
     { "from": "universal_credit", "to": "cold_weather_payment", "type": "gateway", "condition": "LCWRA, disabled child, or carer element" },
     { "from": "universal_credit", "to": "support_mortgage_interest", "type": "gateway", "condition": "9+ months on UC + mortgage" },
     { "from": "universal_credit", "to": "eco_home_insulation", "type": "qualifies" },
-    { "from": "pension_credit", "to": "eco_home_insulation", "type": "qualifies" }
+    { "from": "pension_credit", "to": "eco_home_insulation", "type": "qualifies" },
+    { "from": "pip", "to": "vehicle_excise_duty_exemption", "type": "gateway", "condition": "enhanced mobility" },
+    { "from": "pip", "to": "motability_scheme", "type": "gateway", "condition": "enhanced mobility" },
+    { "from": "universal_credit", "to": "court_fee_remission", "type": "gateway" },
+    { "from": "pension_credit", "to": "court_fee_remission", "type": "gateway" },
+    { "from": "universal_credit", "to": "funeral_expenses_payment", "type": "gateway" },
+    { "from": "pension_credit", "to": "funeral_expenses_payment", "type": "gateway" }
   ],
 
   "conflict_edges": [

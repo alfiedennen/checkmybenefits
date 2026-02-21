@@ -562,6 +562,60 @@ const RULE_MAP: Record<string, RuleChecker> = {
     return { id: 'watersure', eligible: false, confidence: 'likely' }
   },
 
+  concessionary_bus_travel: (person) => {
+    const age = person.age ?? 30
+    if (age >= SPA)
+      return { id: 'concessionary_bus_travel', eligible: true, confidence: 'likely' }
+    // Also available to some disabled people
+    if (person.has_disability_or_health_condition && person.mobility_difficulty)
+      return { id: 'concessionary_bus_travel', eligible: true, confidence: 'possible' }
+    return { id: 'concessionary_bus_travel', eligible: false, confidence: 'likely' }
+  },
+
+  vehicle_excise_duty_exemption: (person) => {
+    if (
+      person.disability_benefit_received === 'pip_mobility_enhanced' ||
+      person.disability_benefit_received === 'dla_higher_mobility'
+    )
+      return { id: 'vehicle_excise_duty_exemption', eligible: true, confidence: 'likely' }
+    return { id: 'vehicle_excise_duty_exemption', eligible: false, confidence: 'likely' }
+  },
+
+  motability_scheme: (person) => {
+    if (
+      person.disability_benefit_received === 'pip_mobility_enhanced' ||
+      person.disability_benefit_received === 'dla_higher_mobility'
+    )
+      return { id: 'motability_scheme', eligible: true, confidence: 'likely' }
+    return { id: 'motability_scheme', eligible: false, confidence: 'likely' }
+  },
+
+  court_fee_remission: (person) => {
+    // On qualifying benefit = full remission
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570'
+    )
+      return { id: 'court_fee_remission', eligible: true, confidence: 'possible' }
+    // Low income + low capital
+    if (person.income_band === 'under_16000' && (person.household_capital ?? 0) < 4000)
+      return { id: 'court_fee_remission', eligible: true, confidence: 'possible' }
+    return { id: 'court_fee_remission', eligible: false, confidence: 'likely' }
+  },
+
+  funeral_expenses_payment: (person) => {
+    if (!person.is_bereaved)
+      return { id: 'funeral_expenses_payment', eligible: false, confidence: 'likely' }
+    // On qualifying benefit
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'funeral_expenses_payment', eligible: true, confidence: 'possible' }
+    return { id: 'funeral_expenses_payment', eligible: false, confidence: 'likely' }
+  },
+
   eco_home_insulation: (person) => {
     // On qualifying benefit or LA-flex (low income + poor energy efficiency)
     if (

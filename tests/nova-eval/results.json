@@ -1,17 +1,17 @@
 {
   "modelOnly": {
-    "timestamp": "2026-02-21T17:25:01.803Z",
+    "timestamp": "2026-02-21T17:28:52.257Z",
     "model": "amazon.nova-micro-v1:0",
-    "totalScenarios": 57,
-    "passed": 57,
+    "totalScenarios": 60,
+    "passed": 60,
     "failed": 0,
-    "overallScore": 0.8781942052099942,
+    "overallScore": 0.8779138888888884,
     "overallPass": true,
-    "totalInputTokens": 292385,
-    "totalOutputTokens": 11468,
-    "totalLatencyMs": 46353,
-    "avgLatencyMs": 813,
-    "estimatedCostPerConversation": 0.0010385083333333334,
+    "totalInputTokens": 307746,
+    "totalOutputTokens": 12196,
+    "totalLatencyMs": 46947,
+    "avgLatencyMs": 782,
+    "estimatedCostPerConversation": 0.0010398791666666669,
     "scenarios": [
       {
         "scenarioId": "A1",
@@ -50,8 +50,9 @@
           {
             "field": "income_band",
             "expected": "under_12570",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "under_12570",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "housing_tenure",
@@ -84,20 +85,23 @@
           {
             "field": "children[0].has_additional_needs",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[0].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[0].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].age",
@@ -109,20 +113,23 @@
           {
             "field": "children[1].has_additional_needs",
             "expected": false,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": false,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[2].age",
@@ -134,20 +141,23 @@
           {
             "field": "children[2].has_additional_needs",
             "expected": false,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": false,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[2].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[2].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "cared_for_person.relationship",
@@ -173,8 +183,9 @@
           {
             "field": "cared_for_person.disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "postcode",
@@ -184,16 +195,16 @@
             "note": "Exact"
           }
         ],
-        "fieldAverage": 0.6920000000000003,
-        "stageCorrect": false,
+        "fieldAverage": 1,
+        "stageCorrect": true,
         "hasConversationalText": true,
         "textContainsPass": true,
-        "overallScore": 0.8076000000000001,
+        "overallScore": 0.9999999999999999,
         "pass": true,
         "inputTokens": 5187,
-        "outputTokens": 350,
-        "latencyMs": 1312,
-        "rawResponse": "I'm really sorry to hear about your mum's situation and your job loss. It sounds like a lot to manage. I'm here to help you find out what support might be available for you and your family.\n\nLet me ask a few questions to gather more details:\n\n<situation>ageing_parent, lost_job, child_struggling_school</situation>\n<person_data>{\"relationship_status\": \"couple_married\", \"employment_status\": \"unemployed\", \"recently_redundant\": true, \"gross_annual_income\": 12000, \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 2000, \"children\": [{\"age\": 14}, {\"age\": 9}, {\"age\": 5}], \"cared_for_person\": {\"relationship\": \"parent\", \"age\": 79, \"needs_help_daily_living\": true}, \"postcode\": \"S11 8YA\", \"nation\": \"england\"}</person_data>\n\nFirst, can you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
+        "outputTokens": 478,
+        "latencyMs": 1398,
+        "rawResponse": "I'm really sorry to hear about your mum's situation and your job loss. It sounds like a lot to manage. Let's see what support might be available for you and your family.\n\nFrom what you've shared, here's what we've gathered so far:\n\n<situation>ageing_parent, lost_job, child_struggling_school</situation>\n<person_data>{\"relationship_status\": \"couple_married\", \"employment_status\": \"unemployed\", \"recently_redundant\": true, \"gross_annual_income\": 12000, \"income_band\": \"under_12570\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 2000, \"children\": [{\"age\": 14, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 9, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 5, \"has_additional_needs\": true, \"disability_benefit\": \"none\", \"in_education\": true}], \"cared_for_person\": {\"relationship\": \"parent\", \"age\": 79, \"disability_benefit\": \"none\", \"needs_help_daily_living\": true}, \"postcode\": \"S11 8YA\", \"nation\": \"england\", \"household_capital\": 0}</person_data>\n\nTo help us find out what you might be entitled to, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<stage_transition>questions</stage_transition>"
       },
       {
         "scenarioId": "A2",
@@ -231,7 +242,7 @@
         "pass": true,
         "inputTokens": 5106,
         "outputTokens": 241,
-        "latencyMs": 1001,
+        "latencyMs": 812,
         "rawResponse": "Hello! Congratulations on your new arrival! It's a big step, and I'm here to help you find out what support might be available for you and your growing family.\n\nTo get started, could you tell me roughly how much you earn from your part-time job at Tesco? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"employment_status\": \"employed\"}</person_data>"
       },
       {
@@ -248,7 +259,7 @@
         "pass": true,
         "inputTokens": 5099,
         "outputTokens": 136,
-        "latencyMs": 538,
+        "latencyMs": 536,
         "rawResponse": "I'm sorry to hear that — it's understandable to be worried about your mum. I can help you find out what support might be available for both of you.\n\nLet me ask a few questions. First, who lives in your household?\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and my partner\", \"value\": \"Me and my partner\"}, {\"label\": \"Me, partner and children\", \"value\": \"Me, partner and children\"}]</quick_replies>"
       },
       {
@@ -320,7 +331,7 @@
         "pass": true,
         "inputTokens": 5138,
         "outputTokens": 287,
-        "latencyMs": 909,
+        "latencyMs": 942,
         "rawResponse": "Hello, I'm really sorry to hear about your job loss. Losing a job can be incredibly stressful, but we'll take it one step at a time to see what support you might be entitled to.\n\nLet's start by gathering some more details to help us understand your situation better. First, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<person_data>{\"age\": 34, \"relationship_status\": \"single\", \"housing_tenure\": \"rent_social\", \"monthly_housing_cost\": 600, \"household_capital\": 3000, \"postcode\": \"B15 1AA\", \"nation\": \"england\"}</person_data>"
       },
       {
@@ -352,7 +363,7 @@
         "pass": true,
         "inputTokens": 5117,
         "outputTokens": 153,
-        "latencyMs": 708,
+        "latencyMs": 737,
         "rawResponse": "I'm really sorry to hear about your situation — it sounds incredibly challenging. It's great that you're reaching out for support. Let's see what we can find to help.\n\nTo start, could you tell me a bit more about your household? Specifically, how many people live there and their ages?\n\n<situation>child_struggling_school</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}]</quick_replies>"
       },
       {
@@ -389,7 +400,7 @@
         "pass": true,
         "inputTokens": 5117,
         "outputTokens": 194,
-        "latencyMs": 905,
+        "latencyMs": 840,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with your dad's care and your partner's job loss. It sounds incredibly tough, but you're doing an amazing job caring for your dad.\n\nLet's start by gathering some information to see what support might be available for you both. First, could you tell me about the household composition? Specifically, who lives with you and any other details about your family?\n\n<situation>ageing_parent, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me and my partner\", \"value\": \"Just me and my partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}, {\"label\": \"Me, partner, and elderly parent\", \"value\": \"Me, partner, and elderly parent\"}]</quick_replies>"
       },
       {
@@ -418,9 +429,9 @@
         "overallScore": 0.7899999999999999,
         "pass": true,
         "inputTokens": 5163,
-        "outputTokens": 29,
-        "latencyMs": 467,
-        "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you also tell me what your monthly housing cost is?"
+        "outputTokens": 30,
+        "latencyMs": 396,
+        "rawResponse": "Thank you for sharing that. Just to help me check what you might qualify for, could you also tell me what your monthly housing cost is?"
       },
       {
         "scenarioId": "B2",
@@ -450,7 +461,7 @@
         "pass": true,
         "inputTokens": 5170,
         "outputTokens": 75,
-        "latencyMs": 536,
+        "latencyMs": 529,
         "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you also tell me how much you both earn together? This will give me a better idea of your total household income. \n\n<person_data>{\"relationship_status\": \"couple_married\", \"gross_annual_income\": 25000}</person_data>"
       },
       {
@@ -482,7 +493,7 @@
         "pass": true,
         "inputTokens": 5171,
         "outputTokens": 79,
-        "latencyMs": 544,
+        "latencyMs": 496,
         "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you also tell me how long you've been on a mortgage? This helps in understanding your housing situation better. \n\n<person_data>{\"gross_annual_income\": 45000, \"income_band\": \"under_50270\"}</person_data>"
       },
       {
@@ -506,7 +517,7 @@
         "pass": true,
         "inputTokens": 5173,
         "outputTokens": 38,
-        "latencyMs": 449,
+        "latencyMs": 386,
         "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you tell me how long you've been unemployed? This will help us understand your situation better."
       },
       {
@@ -530,7 +541,7 @@
         "pass": true,
         "inputTokens": 5169,
         "outputTokens": 38,
-        "latencyMs": 443,
+        "latencyMs": 461,
         "rawResponse": "Thank you for sharing that. Just to clarify, are you receiving any other benefits or support apart from the Jobseeker's Allowance? This will help me understand your financial situation better."
       },
       {
@@ -554,7 +565,7 @@
         "pass": true,
         "inputTokens": 5101,
         "outputTokens": 183,
-        "latencyMs": 786,
+        "latencyMs": 752,
         "rawResponse": "I'm really sorry to hear about the difficulties you're facing since you lost your job. It's a tough time for many people, and I'm here to help you find out what support might be available.\n\nTo get started, could you tell me a bit more about your household? Specifically, how many people live in your home and if there are any children, their ages would be helpful too.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me and my partner\", \"value\": \"Just me and my partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}, {\"label\": \"Me, partner, and adult children\", \"value\": \"Me, partner, and adult children\"}]</quick_replies>"
       },
       {
@@ -578,7 +589,7 @@
         "pass": true,
         "inputTokens": 5107,
         "outputTokens": 226,
-        "latencyMs": 826,
+        "latencyMs": 769,
         "rawResponse": "I'm really sorry to hear about your job loss — it's a tough time for sure. Losing a job can definitely add a lot of stress, especially when it comes to financial responsibilities like a mortgage. Let's try to figure out what support might be available to you.\n\nTo get started, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -608,7 +619,7 @@
         "pass": true,
         "inputTokens": 5096,
         "outputTokens": 233,
-        "latencyMs": 893,
+        "latencyMs": 919,
         "rawResponse": "I'm really sorry to hear about your job loss. It's a tough time, but we'll get through it together. Losing a job can be really stressful, but there are benefits and support available that might help you during this period.\n\nLet's start by gathering some information to see what you might be entitled to. First, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -632,7 +643,7 @@
         "pass": true,
         "inputTokens": 5099,
         "outputTokens": 209,
-        "latencyMs": 1673,
+        "latencyMs": 742,
         "rawResponse": "I'm really sorry to hear that you and your partner both lost your jobs. It's a tough time, but there are some benefits and support that might be available to you. \n\nTo start, can you tell me roughly what your household income was before you lost your jobs? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -656,7 +667,7 @@
         "pass": true,
         "inputTokens": 5101,
         "outputTokens": 192,
-        "latencyMs": 767,
+        "latencyMs": 768,
         "rawResponse": "I'm really sorry to hear about your job loss — it's a tough time for sure. Losing a job can be really stressful, but there are some benefits and support that might be available to you. \n\nTo get started, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -680,7 +691,7 @@
         "pass": true,
         "inputTokens": 5104,
         "outputTokens": 211,
-        "latencyMs": 803,
+        "latencyMs": 819,
         "rawResponse": "I'm really sorry to hear about your job loss — it can be a very stressful time. Losing a job can definitely make things more challenging, but there are some benefits and support that might be available to you. \n\nTo start, can you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -697,7 +708,7 @@
         "pass": true,
         "inputTokens": 5099,
         "outputTokens": 136,
-        "latencyMs": 515,
+        "latencyMs": 495,
         "rawResponse": "I'm sorry to hear that — it's understandable to be worried about your mum. I can help you find out what support might be available for both of you.\n\nLet me ask a few questions. First, who lives in your household?\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and my partner\", \"value\": \"Me and my partner\"}, {\"label\": \"Me, partner and children\", \"value\": \"Me, partner and children\"}]</quick_replies>"
       },
       {
@@ -721,7 +732,7 @@
         "pass": true,
         "inputTokens": 5122,
         "outputTokens": 120,
-        "latencyMs": 627,
+        "latencyMs": 519,
         "rawResponse": "Thank you for sharing that. It's important to know who's there to support you both. And how old is your mum?\n\n<quick_replies>[{\"label\": \"66-75\", \"value\": \"66-75\"}, {\"label\": \"75-85\", \"value\": \"75-85\"}, {\"label\": \"Over 85\", \"value\": \"Over 85\"}]</quick_replies>\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>"
       },
       {
@@ -746,7 +757,7 @@
         "pass": true,
         "inputTokens": 5185,
         "outputTokens": 26,
-        "latencyMs": 421,
+        "latencyMs": 400,
         "rawResponse": "Thank you for sharing that. Is anyone helping look after her regularly — and if so, roughly how many hours a week?"
       },
       {
@@ -776,7 +787,7 @@
         "pass": true,
         "inputTokens": 5101,
         "outputTokens": 193,
-        "latencyMs": 746,
+        "latencyMs": 667,
         "rawResponse": "That's wonderful news! Expecting a first baby can be both exciting and a bit overwhelming. I'm here to help you find out what support and benefits you might be entitled to during this special time.\n\nTo get started, could you please tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>"
       },
       {
@@ -822,7 +833,7 @@
         "pass": true,
         "inputTokens": 5169,
         "outputTokens": 143,
-        "latencyMs": 683,
+        "latencyMs": 579,
         "rawResponse": "Thank you for sharing that information. Here’s what I’ve gathered so far:\n\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"employment_status\": \"employed\", \"gross_annual_income\": 18000, \"income_band\": \"under_25000\", \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 950}</person_data>\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n\nWhat’s your postcode? This helps me check what’s available in your local area."
       },
       {
@@ -846,7 +857,7 @@
         "pass": true,
         "inputTokens": 5107,
         "outputTokens": 153,
-        "latencyMs": 639,
+        "latencyMs": 675,
         "rawResponse": "I'm really sorry to hear about your situation; going through a divorce can be incredibly challenging. I'm here to help you find out what support might be available to you. \n\nLet's start by gathering some basic information. First, could you tell me if you have any children and, if so, their ages? This will help me understand your situation better.\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"No children\", \"value\": \"No children\"}, {\"label\": \"One child\", \"value\": \"One child\"}, {\"label\": \"More than one child\", \"value\": \"More than one child\"}]</quick_replies>"
       },
       {
@@ -863,7 +874,7 @@
         "pass": true,
         "inputTokens": 5092,
         "outputTokens": 96,
-        "latencyMs": 529,
+        "latencyMs": 541,
         "rawResponse": "I'm really sorry to hear that you're going through a tough time. It's completely okay to seek help when you need it. To get started, could you tell me a bit more about your situation? For example, are you caring for an elderly parent, expecting a new baby, or perhaps dealing with a job loss? Any details you can share will help me understand how best to assist you.\n\n<stage_transition>questions</stage_transition>"
       },
       {
@@ -875,21 +886,20 @@
           {
             "field": "housing_tenure",
             "expected": "own_outright",
-            "actual": "own_outright",
-            "score": 1,
-            "note": "Exact"
+            "score": 0.3,
+            "note": "Missing"
           }
         ],
-        "fieldAverage": 1,
+        "fieldAverage": 0.3,
         "stageCorrect": true,
         "hasConversationalText": true,
         "textContainsPass": true,
-        "overallScore": 0.9999999999999999,
+        "overallScore": 0.7899999999999999,
         "pass": true,
         "inputTokens": 5142,
-        "outputTokens": 180,
-        "latencyMs": 818,
-        "rawResponse": "Thank you for clarifying. Owning your home outright is great to know. Let's move forward with that information. \n\nCould you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<person_data>{\"housing_tenure\": \"own_outright\"}</person_data>\n<stage_transition>questions</stage_transition>"
+        "outputTokens": 51,
+        "latencyMs": 476,
+        "rawResponse": "Thank you for clarifying. Owning your home outright is great to know. Now, could you tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help me check what you might qualify for."
       },
       {
         "scenarioId": "F4",
@@ -914,8 +924,9 @@
           {
             "field": "employment_status",
             "expected": "employed",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "employed",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "gross_annual_income",
@@ -927,9 +938,9 @@
           {
             "field": "income_band",
             "expected": "under_16000",
-            "actual": "under_16000",
-            "score": 1,
-            "note": "Exact"
+            "actual": "under_25000",
+            "score": 0.5,
+            "note": "Off by one band"
           },
           {
             "field": "housing_tenure",
@@ -1004,14 +1015,16 @@
           {
             "field": "children[0].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[0].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].age",
@@ -1030,33 +1043,56 @@
           {
             "field": "children[1].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
-            "field": "cared_for_person",
-            "expected": "{\"relationship\":\"parent\",\"age\":78,\"disability_benefit\":\"none\",\"needs_help_daily_living\":true}",
-            "actual": "missing",
-            "score": 0,
-            "note": "Entire cared_for_person missing"
+            "field": "cared_for_person.relationship",
+            "expected": "parent",
+            "actual": "parent",
+            "score": 1,
+            "note": "Parent term match"
+          },
+          {
+            "field": "cared_for_person.age",
+            "expected": 78,
+            "actual": 78,
+            "score": 1,
+            "note": "Exact"
+          },
+          {
+            "field": "cared_for_person.needs_help_daily_living",
+            "expected": true,
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
+          },
+          {
+            "field": "cared_for_person.disability_benefit",
+            "expected": "none",
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           }
         ],
-        "fieldAverage": 0.7954545454545456,
+        "fieldAverage": 0.98,
         "stageCorrect": true,
         "hasConversationalText": true,
         "textContainsPass": true,
-        "overallScore": 0.9386363636363636,
+        "overallScore": 0.9939999999999999,
         "pass": true,
         "inputTokens": 5318,
-        "outputTokens": 352,
-        "latencyMs": 1098,
-        "rawResponse": "Hello Sarah, it sounds like you're going through a very challenging time with a lot on your plate. I'm here to help you find out what support might be available to you and your family.\n\nLet me ask a few questions to gather more details:\n\n1. **Household Composition**: Can you tell me if anyone else lives with you in the household apart from your husband Dave and your two children?\n\n<situation>ageing_parent, child_struggling_school, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"No one else\", \"value\": \"No one else\"}, {\"label\": \"Yes, other family members\", \"value\": \"Yes, other family members\"}]</quick_replies>\n\n---\n\n<person_data>{\"name\": \"Sarah\", \"age\": 42, \"nation\": \"england\", \"postcode\": \"LS1 4AP\", \"relationship_status\": \"couple_married\", \"children\": [{\"name\": \"Emily\", \"age\": 11, \"has_additional_needs\": false}, {\"name\": \"Jake\", \"age\": 6, \"has_additional_needs\": true}], \"is_carer\": true, \"carer_hours_per_week\": 30, \"recently_redundant\": true, \"gross_annual_income\": 14000, \"income_band\": \"under_16000\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 1200, \"household_capital\": 5000}</person_data>"
+        "outputTokens": 479,
+        "latencyMs": 1350,
+        "rawResponse": "Hello Sarah, it sounds like you're going through a very challenging time. I'm here to help you explore what support might be available to you and your family. \n\nLet's start by extracting the information you've shared:\n\n<situation>ageing_parent, lost_job, child_struggling_school</situation>\n<person_data>{\"name\": \"Sarah\", \"age\": 42, \"nation\": \"england\", \"postcode\": \"LS1 4AP\", \"relationship_status\": \"couple_married\", \"employment_status\": \"employed\", \"gross_annual_income\": 14000, \"income_band\": \"under_25000\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 1200, \"children\": [{\"age\": 11, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 6, \"has_additional_needs\": true, \"disability_benefit\": \"none\", \"in_education\": true}], \"is_carer\": true, \"carer_hours_per_week\": 30, \"cared_for_person\": {\"relationship\": \"parent\", \"age\": 78, \"disability_benefit\": \"none\", \"needs_help_daily_living\": true}, \"household_capital\": 5000, \"recently_redundant\": true, \"partner_redundancy_date\": \"three weeks ago\"}</person_data>\n\nNext, I'd like to ask a few questions to gather more details:\n\nWhat's your husband's previous job title and how long did he work there?\n\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Less than 1 year\", \"value\": \"Less than 1 year\"}, {\"label\": \"1-5 years\", \"value\": \"1-5 years\"}, {\"label\": \"5-10 years\", \"value\": \"5-10 years\"}, {\"label\": \"More than 10 years\", \"value\": \"More than 10 years\"}]</quick_replies>"
       },
       {
         "scenarioId": "G1",
@@ -1097,7 +1133,7 @@
         "pass": true,
         "inputTokens": 5116,
         "outputTokens": 220,
-        "latencyMs": 784,
+        "latencyMs": 841,
         "rawResponse": "I'm really sorry to hear about your diagnosis. Multiple Sclerosis can be incredibly challenging, and it's understandable to feel overwhelmed. I'm here to help you explore what support might be available.\n\nLet's start by gathering some more details to see what benefits you might be entitled to. First, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n"
       },
       {
@@ -1135,7 +1171,7 @@
         "pass": true,
         "inputTokens": 5117,
         "outputTokens": 252,
-        "latencyMs": 877,
+        "latencyMs": 817,
         "rawResponse": "I'm really sorry to hear that you're facing these challenges. It's great that you're getting PIP enhanced rate mobility, which means you likely have significant mobility difficulties. Let's explore what other support you might be entitled to.\n\nTo help me check, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n<person_data>{\"has_disability_or_health_condition\": true, \"disability_benefit_received\": \"pip_mobility_enhanced\"}</person_data>"
       },
       {
@@ -1167,7 +1203,7 @@
         "pass": true,
         "inputTokens": 5118,
         "outputTokens": 227,
-        "latencyMs": 899,
+        "latencyMs": 798,
         "rawResponse": "I'm really sorry to hear that you're going through such a tough time. It's important to get the support you need. Let's start by gathering some information to see what might be available to you.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"has_disability_or_health_condition\": true, \"needs_help_with_daily_living\": true}</person_data>"
       },
       {
@@ -1213,7 +1249,7 @@
         "pass": true,
         "inputTokens": 5127,
         "outputTokens": 276,
-        "latencyMs": 981,
+        "latencyMs": 967,
         "rawResponse": "I'm really sorry to hear about your husband's situation — it must be incredibly challenging for both of you. Caring for someone with dementia is a lot of work, and it's great that you're doing so much to support him. Let's see what support you might be entitled to.\n\nFirst, let's gather some more details to help us find the right benefits. Could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>ageing_parent, lost_job</situation>\n<person_data>{\"is_carer\": true, \"carer_hours_per_week\": 40, \"relationship_status\": \"couple_married\", \"age\": 56}</person_data>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -1265,7 +1301,7 @@
         "pass": true,
         "inputTokens": 5126,
         "outputTokens": 209,
-        "latencyMs": 794,
+        "latencyMs": 780,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with chronic pain and fibromyalgia. It's understandable that daily tasks can be tough. Let's see what support might be available to you.\n\nFirst, could you tell me a bit more about your living situation? For example, are you living alone, with a partner, or with children?\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Living alone\", \"value\": \"Living alone\"}, {\"label\": \"With partner\", \"value\": \"With partner\"}, {\"label\": \"With children\", \"value\": \"With children\"}]</quick_replies>\n\n<person_data>{\"has_disability_or_health_condition\": true, \"gross_annual_income\": 10000, \"income_band\": \"under_12570\", \"employment_status\": \"part_time\"}</person_data>"
       },
       {
@@ -1344,7 +1380,7 @@
         "pass": true,
         "inputTokens": 5129,
         "outputTokens": 318,
-        "latencyMs": 1051,
+        "latencyMs": 1066,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with your child's condition. It's clear that you're doing an incredible job managing everything. Let's see what support might be available to help you both.\n\nFirst, I'll need to gather a bit more information to understand your situation better. Could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>health_condition, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n<person_data>{\"children\": [{\"age\": 4, \"has_additional_needs\": true, \"disability_benefit\": \"none\", \"in_education\": true}], \"employment_status\": \"sick_disabled\", \"relationship_status\": \"couple_married\", \"gross_annual_income\": 18000, \"housing_tenure\": \"rent_social\"}</person_data>"
       },
       {
@@ -1463,7 +1499,7 @@
         "pass": true,
         "inputTokens": 5134,
         "outputTokens": 287,
-        "latencyMs": 933,
+        "latencyMs": 966,
         "rawResponse": "I'm really sorry to hear about your loss — it must be incredibly challenging. Losing a partner is tough, and managing on your own with young children can be overwhelming. I'm here to help you find out what support might be available to you during this difficult time.\n\nLet's start by gathering some basic information. First, could you tell me about your housing situation? Are you renting, buying, or living with family?\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Mortgage\", \"value\": \"Mortgage\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"is_bereaved\": true, \"relationship_status\": \"single\", \"gross_annual_income\": 15000, \"income_band\": \"under_25000\", \"children\": [{\"age\": 5, \"has_additional_needs\": false, \"in_education\": true}, {\"age\": 3, \"has_additional_needs\": false, \"in_education\": false}]}</person_data>"
       },
       {
@@ -1511,7 +1547,7 @@
         "pass": true,
         "inputTokens": 5119,
         "outputTokens": 205,
-        "latencyMs": 821,
+        "latencyMs": 771,
         "rawResponse": "I'm really sorry to hear about your loss. It's understandable that this time might be challenging for you. Given your situation, it sounds like you might be eligible for some support. Let's start by gathering a bit more information to see what might be available to you.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -1553,7 +1589,7 @@
         "pass": true,
         "inputTokens": 5126,
         "outputTokens": 197,
-        "latencyMs": 778,
+        "latencyMs": 791,
         "rawResponse": "I'm really sorry to hear about your loss and the challenges you're facing. Losing a loved one is incredibly tough, and caring for someone full-time can be very demanding. Let's take this one step at a time.\n\nTo help you find out what support might be available, I'll need to ask a few questions. First, could you tell me about your current living situation? Are you renting, owning a home, or living with family?\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>"
       },
       {
@@ -1613,7 +1649,7 @@
         "pass": true,
         "inputTokens": 5132,
         "outputTokens": 212,
-        "latencyMs": 864,
+        "latencyMs": 912,
         "rawResponse": "I'm really sorry to hear about your situation — going through a divorce can be incredibly challenging. It's great that you're taking steps to find a place to live. Let's see what support might be available to you and your children.\n\nFirst, could you tell me a bit more about your current living situation? Specifically, who else lives with you or will be moving out with you?\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and my kids\", \"value\": \"Me and my kids\"}, {\"label\": \"Me, kids, and partner\", \"value\": \"Me, kids, and partner\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"separated\", \"gross_annual_income\": 22000, \"income_band\": \"under_25000\"}</person_data>"
       },
       {
@@ -1657,7 +1693,7 @@
         "pass": true,
         "inputTokens": 5120,
         "outputTokens": 169,
-        "latencyMs": 755,
+        "latencyMs": 675,
         "rawResponse": "I'm really sorry to hear that you're going through such a difficult time. Leaving an abusive relationship is incredibly brave, and it's important to focus on your safety and well-being first.\n\nLet me ask a few questions to help determine what support might be available to you:\n\n1. Can you tell me a bit more about your housing situation? Are you staying with family temporarily, or do you have any plans for long-term accommodation?\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Temporary stay with family\", \"value\": \"Temporary stay with family\"}, {\"label\": \"Looking for housing\", \"value\": \"Looking for housing\"}, {\"label\": \"Other\", \"value\": \"Other\"}]</quick_replies>"
       },
       {
@@ -1710,7 +1746,7 @@
         "pass": true,
         "inputTokens": 5131,
         "outputTokens": 212,
-        "latencyMs": 818,
+        "latencyMs": 801,
         "rawResponse": "I'm really sorry to hear about your separation; it must be a challenging time for you. I'm here to help you figure out what support might be available.\n\nLet's start by gathering some more details to see what you might be entitled to. First, could you tell me about your housing situation? Are you currently living in the home with the mortgage, or have you moved out?\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Living in the home\", \"value\": \"Living in the home\"}, {\"label\": \"Moved out\", \"value\": \"Moved out\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"separated\", \"gross_annual_income\": 12000, \"income_band\": \"under_12570\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 1100}</person_data>"
       },
       {
@@ -1746,7 +1782,7 @@
         "pass": true,
         "inputTokens": 5116,
         "outputTokens": 163,
-        "latencyMs": 726,
+        "latencyMs": 722,
         "rawResponse": "I'm really sorry to hear that you're going through such a tough time. It's important to know that there are services available to help people in your situation. Let's start by gathering some basic information to see what support might be available to you.\n\nFirst, could you tell me about your housing situation? Are you currently staying with anyone or in any temporary accommodation?\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Staying with family/friends\", \"value\": \"Staying with family/friends\"}, {\"label\": \"Temporary shelter\", \"value\": \"Temporary shelter\"}, {\"label\": \"No fixed address\", \"value\": \"No fixed address\"}]</quick_replies>"
       },
       {
@@ -1827,7 +1863,7 @@
         "pass": true,
         "inputTokens": 5123,
         "outputTokens": 235,
-        "latencyMs": 841,
+        "latencyMs": 825,
         "rawResponse": "I'm really glad you reached out for support during this important time. Being a student and a new parent can be quite challenging, but there are resources available to help.\n\nLet's start by gathering some more details to see what support you might be eligible for. First, could you tell me roughly what your monthly income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>new_baby, student</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £500\", \"value\": \"Under £500\"}, {\"label\": \"£500-£1000\", \"value\": \"£500-£1000\"}, {\"label\": \"Over £1000\", \"value\": \"Over £1000\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"single\", \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 650}</person_data>"
       },
       {
@@ -1913,7 +1949,7 @@
         "pass": true,
         "inputTokens": 5137,
         "outputTokens": 346,
-        "latencyMs": 1009,
+        "latencyMs": 1071,
         "rawResponse": "I'm really sorry to hear about the difficulties you're facing with your business. It's a tough situation, but we'll take it one step at a time to see what support might be available for you and your family.\n\nLet's start by gathering some more details to help us understand your situation better. First, could you tell me roughly what your household income was before your business failed? It doesn't need to be exact—a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"£25,000-£50,000\", \"value\": \"£25,000-£50,000\"}, {\"label\": \"Over £50,000\", \"value\": \"Over £50,000\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"couple_married\", \"children\": [{\"age\": 10, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}], \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 900}</person_data>"
       },
       {
@@ -1945,7 +1981,7 @@
         "pass": true,
         "inputTokens": 5114,
         "outputTokens": 267,
-        "latencyMs": 903,
+        "latencyMs": 929,
         "rawResponse": "I'm really sorry to hear that you're dealing with these challenges. It's understandable to be concerned about managing the costs of prescriptions and dental care. Let's see what support might be available for you.\n\nTo help me check what you might qualify for, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help.\n\n<situation>retirement_low_income</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £10,000\", \"value\": \"Under £10,000\"}, {\"label\": \"£10,000 - £20,000\", \"value\": \"£10,000 - £20,000\"}, {\"label\": \"Over £20,000\", \"value\": \"Over £20,000\"}]</quick_replies>\n\n<person_data>{\"age\": 62, \"relationship_status\": \"single\", \"employment_status\": \"retired\", \"income_band\": \"under_25000\", \"has_disability_or_health_condition\": true}</person_data>"
       },
       {
@@ -1997,7 +2033,7 @@
         "pass": true,
         "inputTokens": 5120,
         "outputTokens": 233,
-        "latencyMs": 925,
+        "latencyMs": 896,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with your health and the costs of prescriptions and dental care. It's understandable to be concerned about these expenses. Let's see what support might be available to you.\n\nHere's what I've gathered so far:\n<person_data>{\"age\": 35, \"has_disability_or_health_condition\": true, \"gross_annual_income\": 18000, \"income_band\": \"under_25000\"}</person_data>\n\nTo help me check what you might qualify for, could you tell me more about your health condition? Specifically, how it impacts your daily life and if you receive any disability benefits?\n\nAlso, could you share your postcode? This will help me check what's available in your local area.\n\n<quick_replies>[{\"label\": \"Mild\", \"value\": \"Mild\"}, {\"label\": \"Moderate\", \"value\": \"Moderate\"}, {\"label\": \"Severe\", \"value\": \"Severe\"}]</quick_replies>"
       },
       {
@@ -2043,7 +2079,7 @@
         "pass": true,
         "inputTokens": 5115,
         "outputTokens": 225,
-        "latencyMs": 862,
+        "latencyMs": 848,
         "rawResponse": "Hello and congratulations on your pregnancy! It's a big step, and I'm here to help you figure out what support might be available.\n\nTo determine if you might be entitled to free prescriptions, I'll need to ask a few more questions. First, could you tell me about your housing situation? Are you renting privately, renting from the council, or do you own your home outright?\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting from council\", \"value\": \"Renting from council\"}, {\"label\": \"Own home\", \"value\": \"Own home\"}]</quick_replies>\n\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"gross_annual_income\": 30000, \"income_band\": \"under_50270\", \"employment_status\": \"employed\"}</person_data>"
       },
       {
@@ -2088,7 +2124,7 @@
         "pass": true,
         "inputTokens": 5129,
         "outputTokens": 213,
-        "latencyMs": 884,
+        "latencyMs": 856,
         "rawResponse": "I'm really sorry to hear that you're dealing with such a challenging situation. Managing medication costs can be incredibly stressful. Let's see if there are any benefits or support available that might help with those costs.\n\nFirst, could you tell me a bit more about your living situation? Specifically, how many people live in your household and if anyone else is on benefits?\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}]</quick_replies>\n\n<person_data>{\"age\": 45, \"gross_annual_income\": 40000, \"has_medical_exemption\": true, \"needs_help_with_daily_living\": false}</person_data>"
       },
       {
@@ -2169,7 +2205,7 @@
         "pass": true,
         "inputTokens": 5119,
         "outputTokens": 265,
-        "latencyMs": 898,
+        "latencyMs": 906,
         "rawResponse": "Hello! It's wonderful that you're looking into additional support for your family. Let's start by gathering some information to see what else you might be entitled to.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"employment_status\": \"unemployed\", \"children\": [{\"age\": 8, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 3, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": false}]}</person_data>"
       },
       {
@@ -2207,9 +2243,9 @@
         "overallScore": 0.9999999999999999,
         "pass": true,
         "inputTokens": 5131,
-        "outputTokens": 231,
-        "latencyMs": 872,
-        "rawResponse": "I'm really sorry to hear that you're facing these challenges. It's understandable to feel overwhelmed, but I'm here to help you explore what support might be available.\n\nLet's start by gathering some more details to see what you might be entitled to. First, could you tell me about your housing situation? Are you renting, owning, or living with family?\n\n<situation>retirement_low_income</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"age\": 70, \"gross_annual_income\": 14000, \"income_band\": \"under_16000\", \"nation\": \"england\"}</person_data>"
+        "outputTokens": 225,
+        "latencyMs": 852,
+        "rawResponse": "I'm really sorry to hear that you're facing these challenges. It's understandable to feel overwhelmed, but I'm here to help you explore what support might be available.\n\nLet's start by gathering some more details to see what you might be entitled to. First, could you tell me about your housing situation? Are you renting, owning, or living with family?\n\n<situation>retirement_low_income</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"age\": 70, \"gross_annual_income\": 14000, \"income_band\": \"under_16000\"}</person_data>"
       },
       {
         "scenarioId": "L1",
@@ -2240,7 +2276,7 @@
         "pass": true,
         "inputTokens": 5120,
         "outputTokens": 186,
-        "latencyMs": 733,
+        "latencyMs": 717,
         "rawResponse": "I'm really glad you reached out because you might be eligible for some support that can make a big difference. Let's start by gathering some details to see what you might qualify for.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might be entitled to.\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -2320,7 +2356,7 @@
         "pass": true,
         "inputTokens": 5132,
         "outputTokens": 249,
-        "latencyMs": 949,
+        "latencyMs": 940,
         "rawResponse": "I'm really sorry to hear that childcare is such a big expense for you. It's understandable to be concerned about managing those costs. Let's see what support might be available to help with this.\n\nFirst, could you tell me a little more about your housing situation? Are you renting or owning your home?\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council\", \"value\": \"Renting council\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Mortgage\", \"value\": \"Mortgage\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"employment_status\": \"employed\", \"gross_annual_income\": 35000, \"relationship_status\": \"couple_married\", \"children\": [{\"age\": 1, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": false}]}</person_data>"
       },
       {
@@ -2358,7 +2394,7 @@
         "pass": true,
         "inputTokens": 5115,
         "outputTokens": 209,
-        "latencyMs": 762,
+        "latencyMs": 804,
         "rawResponse": "I'm really sorry to hear that you're struggling with childcare costs. It's a tough situation, but we'll do our best to find some support that might be available to you.\n\nTo help me understand your situation better, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>student_with_child</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n"
       },
       {
@@ -2404,7 +2440,7 @@
         "pass": true,
         "inputTokens": 5118,
         "outputTokens": 222,
-        "latencyMs": 860,
+        "latencyMs": 916,
         "rawResponse": "Hello and congratulations on your pregnancy! It's a big step, and I'm here to help you find out what support you might be entitled to.\n\nLet's start by gathering a bit more information to see what could be available to you. First, could you tell me about your housing situation? Are you renting privately, renting from the council, or do you own your home?\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting from council\", \"value\": \"Renting from council\"}, {\"label\": \"Own home\", \"value\": \"Own home\"}]</quick_replies>\n\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"gross_annual_income\": 8000, \"income_band\": \"under_12570\", \"employment_status\": \"employed\"}</person_data>"
       },
       {
@@ -2471,7 +2507,7 @@
         "pass": true,
         "inputTokens": 5131,
         "outputTokens": 233,
-        "latencyMs": 844,
+        "latencyMs": 848,
         "rawResponse": "I'm sorry to hear that your son needs extra support for college. It's great that he's doing A-levels; it's a big step. Let's see what support might be available for you both.\n\nFirst, could you tell me a bit more about your household? Specifically, how many people live there and their ages?\n\n<situation>child_struggling_school</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and kids\", \"value\": \"Me, partner, and kids\"}]</quick_replies>\n\n<person_data>{\"gross_annual_income\": 15000, \"income_band\": \"under_16000\", \"children\": [{\"age\": 17, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}]}</person_data>"
       },
       {
@@ -2522,7 +2558,7 @@
         "pass": true,
         "inputTokens": 5121,
         "outputTokens": 270,
-        "latencyMs": 953,
+        "latencyMs": 955,
         "rawResponse": "I'm really sorry to hear that you're facing these challenges at your age. It's understandable to feel overwhelmed, but we're here to help you find the support you might be entitled to.\n\nLet's start by gathering some more details to see what might be available to you. First, could you tell me roughly what your household income is? It doesn't need to be exact—a ballpark figure will help me check what you might qualify for.\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<person_data>{\"age\": 70, \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 650, \"income_band\": \"under_12570\", \"gross_annual_income\": 0}</person_data>"
       },
       {
@@ -2573,7 +2609,7 @@
         "pass": true,
         "inputTokens": 5134,
         "outputTokens": 218,
-        "latencyMs": 986,
+        "latencyMs": 840,
         "rawResponse": "I'm really sorry to hear that you're going through such a tough time. It sounds like you're dealing with a lot of stress right now. Let's see what support might be available to you.\n\nFirst, could you tell me a bit more about your household? Specifically, how many people live with you and if anyone needs special care or support?\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and kids\", \"value\": \"Me, partner, and kids\"}]</quick_replies>\n\n<person_data>{\"employment_status\": \"unemployed\", \"monthly_housing_cost\": 1000, \"gross_annual_income\": 8000, \"income_band\": \"under_12570\"}</person_data>"
       },
       {
@@ -2704,7 +2740,7 @@
         "pass": true,
         "inputTokens": 5126,
         "outputTokens": 254,
-        "latencyMs": 898,
+        "latencyMs": 924,
         "rawResponse": "I'm really sorry to hear that you're facing such a tough time with the water bills. It's understandable to be concerned about managing everything when you're on Universal Credit and have four young children.\n\nLet me ask a few questions to help us figure out what support might be available for you:\n\n1. Could you tell me roughly what your household income is? It doesn't need to be exact—a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"employment_status\": \"unemployed\", \"children\": [{\"age\": 1}, {\"age\": 3}, {\"age\": 5}, {\"age\": 8}]}</person_data>"
       },
       {
@@ -2734,24 +2770,122 @@
         "pass": true,
         "inputTokens": 5116,
         "outputTokens": 186,
-        "latencyMs": 673,
+        "latencyMs": 722,
         "rawResponse": "I'm really sorry to hear that you're going through this. It sounds incredibly tough, especially with the heating issues. Let's see what support might be available to help you.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
+      },
+      {
+        "scenarioId": "N1",
+        "scenarioName": "67, PIP enhanced mobility — VED exemption + Motability + bus pass",
+        "xmlValid": true,
+        "situationScore": 1,
+        "fieldScores": [
+          {
+            "field": "age",
+            "expected": 67,
+            "score": 0.3,
+            "note": "Missing"
+          },
+          {
+            "field": "disability_benefit_received",
+            "expected": "pip_mobility_enhanced",
+            "score": 0.3,
+            "note": "Missing"
+          },
+          {
+            "field": "has_disability_or_health_condition",
+            "expected": true,
+            "score": 0.3,
+            "note": "Missing"
+          }
+        ],
+        "fieldAverage": 0.3,
+        "stageCorrect": true,
+        "hasConversationalText": true,
+        "textContainsPass": true,
+        "overallScore": 0.7899999999999999,
+        "pass": true,
+        "inputTokens": 5116,
+        "outputTokens": 191,
+        "latencyMs": 729,
+        "rawResponse": "I'm really sorry to hear that you're struggling with transport costs. It's definitely a tough situation. To help you find out what support might be available, I'll need to ask a few questions.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>"
+      },
+      {
+        "scenarioId": "N2",
+        "scenarioName": "On UC, housing tribunal — court fee remission",
+        "xmlValid": true,
+        "situationScore": 1,
+        "fieldScores": [
+          {
+            "field": "gross_annual_income",
+            "expected": 10000,
+            "actual": 10000,
+            "score": 1,
+            "note": "Exact"
+          },
+          {
+            "field": "income_band",
+            "expected": "under_12570",
+            "actual": "under_12570",
+            "score": 1,
+            "note": "Exact"
+          }
+        ],
+        "fieldAverage": 1,
+        "stageCorrect": true,
+        "hasConversationalText": true,
+        "textContainsPass": true,
+        "overallScore": 0.9999999999999999,
+        "pass": true,
+        "inputTokens": 5127,
+        "outputTokens": 213,
+        "latencyMs": 881,
+        "rawResponse": "I'm really sorry to hear that you're dealing with this stressful situation. It sounds like you're in a tough spot with both your housing tribunal and your financial situation. Let's see if we can find some support for you.\n\nFirst, could you tell me a bit more about your household? Specifically, how many people live with you and if anyone needs special care or has any disabilities?\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and kids\", \"value\": \"Me, partner, and kids\"}]</quick_replies>\n\n<person_data>{\"employment_status\": \"unemployed\", \"gross_annual_income\": 10000, \"income_band\": \"under_12570\"}</person_data>"
+      },
+      {
+        "scenarioId": "N3",
+        "scenarioName": "Mum died, on UC, need funeral help — Funeral Expenses Payment",
+        "xmlValid": true,
+        "situationScore": 1,
+        "fieldScores": [
+          {
+            "field": "is_bereaved",
+            "expected": true,
+            "score": 0.3,
+            "note": "Missing"
+          },
+          {
+            "field": "deceased_relationship",
+            "expected": "parent",
+            "score": 0.3,
+            "note": "Missing"
+          }
+        ],
+        "fieldAverage": 0.3,
+        "stageCorrect": true,
+        "hasConversationalText": true,
+        "textContainsPass": true,
+        "overallScore": 0.7899999999999999,
+        "pass": true,
+        "inputTokens": 5118,
+        "outputTokens": 203,
+        "latencyMs": 793,
+        "rawResponse": "I'm really sorry to hear about your loss. Losing a loved one is incredibly tough, and I can understand how stressful this time must be for you, especially with the added responsibility of funeral arrangements.\n\nLet me ask a few questions to help you find out what support might be available:\n\n1. What is your current household income, roughly? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n"
       }
     ]
   },
   "combined": {
-    "timestamp": "2026-02-21T17:25:01.804Z",
+    "timestamp": "2026-02-21T17:28:52.259Z",
     "model": "amazon.nova-micro-v1:0",
-    "totalScenarios": 57,
-    "passed": 57,
+    "totalScenarios": 60,
+    "passed": 60,
     "failed": 0,
-    "overallScore": 0.9552555555555553,
+    "overallScore": 0.9602527777777775,
     "overallPass": true,
-    "totalInputTokens": 292385,
-    "totalOutputTokens": 11468,
-    "totalLatencyMs": 46353,
-    "avgLatencyMs": 813,
-    "estimatedCostPerConversation": 0.0010385083333333334,
+    "totalInputTokens": 307746,
+    "totalOutputTokens": 12196,
+    "totalLatencyMs": 46947,
+    "avgLatencyMs": 782,
+    "estimatedCostPerConversation": 0.0010398791666666669,
     "scenarios": [
       {
         "scenarioId": "A1",
@@ -2825,20 +2959,23 @@
           {
             "field": "children[0].has_additional_needs",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[0].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[0].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].age",
@@ -2850,20 +2987,23 @@
           {
             "field": "children[1].has_additional_needs",
             "expected": false,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": false,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[2].age",
@@ -2875,20 +3015,23 @@
           {
             "field": "children[2].has_additional_needs",
             "expected": false,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": false,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[2].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[2].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "cared_for_person.relationship",
@@ -2914,8 +3057,9 @@
           {
             "field": "cared_for_person.disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "postcode",
@@ -2925,16 +3069,16 @@
             "note": "Exact"
           }
         ],
-        "fieldAverage": 0.7200000000000003,
-        "stageCorrect": false,
+        "fieldAverage": 1,
+        "stageCorrect": true,
         "hasConversationalText": true,
         "textContainsPass": true,
-        "overallScore": 0.8160000000000001,
+        "overallScore": 0.9999999999999999,
         "pass": true,
         "inputTokens": 5187,
-        "outputTokens": 350,
-        "latencyMs": 1312,
-        "rawResponse": "I'm really sorry to hear about your mum's situation and your job loss. It sounds like a lot to manage. I'm here to help you find out what support might be available for you and your family.\n\nLet me ask a few questions to gather more details:\n\n<situation>ageing_parent, lost_job, child_struggling_school</situation>\n<person_data>{\"relationship_status\": \"couple_married\", \"employment_status\": \"unemployed\", \"recently_redundant\": true, \"gross_annual_income\": 12000, \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 2000, \"children\": [{\"age\": 14}, {\"age\": 9}, {\"age\": 5}], \"cared_for_person\": {\"relationship\": \"parent\", \"age\": 79, \"needs_help_daily_living\": true}, \"postcode\": \"S11 8YA\", \"nation\": \"england\"}</person_data>\n\nFirst, can you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
+        "outputTokens": 478,
+        "latencyMs": 1398,
+        "rawResponse": "I'm really sorry to hear about your mum's situation and your job loss. It sounds like a lot to manage. Let's see what support might be available for you and your family.\n\nFrom what you've shared, here's what we've gathered so far:\n\n<situation>ageing_parent, lost_job, child_struggling_school</situation>\n<person_data>{\"relationship_status\": \"couple_married\", \"employment_status\": \"unemployed\", \"recently_redundant\": true, \"gross_annual_income\": 12000, \"income_band\": \"under_12570\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 2000, \"children\": [{\"age\": 14, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 9, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 5, \"has_additional_needs\": true, \"disability_benefit\": \"none\", \"in_education\": true}], \"cared_for_person\": {\"relationship\": \"parent\", \"age\": 79, \"disability_benefit\": \"none\", \"needs_help_daily_living\": true}, \"postcode\": \"S11 8YA\", \"nation\": \"england\", \"household_capital\": 0}</person_data>\n\nTo help us find out what you might be entitled to, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<stage_transition>questions</stage_transition>"
       },
       {
         "scenarioId": "A2",
@@ -2972,7 +3116,7 @@
         "pass": true,
         "inputTokens": 5106,
         "outputTokens": 241,
-        "latencyMs": 1001,
+        "latencyMs": 812,
         "rawResponse": "Hello! Congratulations on your new arrival! It's a big step, and I'm here to help you find out what support might be available for you and your growing family.\n\nTo get started, could you tell me roughly how much you earn from your part-time job at Tesco? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"employment_status\": \"employed\"}</person_data>"
       },
       {
@@ -2989,7 +3133,7 @@
         "pass": true,
         "inputTokens": 5099,
         "outputTokens": 136,
-        "latencyMs": 538,
+        "latencyMs": 536,
         "rawResponse": "I'm sorry to hear that — it's understandable to be worried about your mum. I can help you find out what support might be available for both of you.\n\nLet me ask a few questions. First, who lives in your household?\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and my partner\", \"value\": \"Me and my partner\"}, {\"label\": \"Me, partner and children\", \"value\": \"Me, partner and children\"}]</quick_replies>"
       },
       {
@@ -3063,7 +3207,7 @@
         "pass": true,
         "inputTokens": 5138,
         "outputTokens": 287,
-        "latencyMs": 909,
+        "latencyMs": 942,
         "rawResponse": "Hello, I'm really sorry to hear about your job loss. Losing a job can be incredibly stressful, but we'll take it one step at a time to see what support you might be entitled to.\n\nLet's start by gathering some more details to help us understand your situation better. First, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<person_data>{\"age\": 34, \"relationship_status\": \"single\", \"housing_tenure\": \"rent_social\", \"monthly_housing_cost\": 600, \"household_capital\": 3000, \"postcode\": \"B15 1AA\", \"nation\": \"england\"}</person_data>"
       },
       {
@@ -3116,7 +3260,7 @@
         "pass": true,
         "inputTokens": 5117,
         "outputTokens": 153,
-        "latencyMs": 708,
+        "latencyMs": 737,
         "rawResponse": "I'm really sorry to hear about your situation — it sounds incredibly challenging. It's great that you're reaching out for support. Let's see what we can find to help.\n\nTo start, could you tell me a bit more about your household? Specifically, how many people live there and their ages?\n\n<situation>child_struggling_school</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}]</quick_replies>"
       },
       {
@@ -3175,7 +3319,7 @@
         "pass": true,
         "inputTokens": 5117,
         "outputTokens": 194,
-        "latencyMs": 905,
+        "latencyMs": 840,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with your dad's care and your partner's job loss. It sounds incredibly tough, but you're doing an amazing job caring for your dad.\n\nLet's start by gathering some information to see what support might be available for you both. First, could you tell me about the household composition? Specifically, who lives with you and any other details about your family?\n\n<situation>ageing_parent, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me and my partner\", \"value\": \"Just me and my partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}, {\"label\": \"Me, partner, and elderly parent\", \"value\": \"Me, partner, and elderly parent\"}]</quick_replies>"
       },
       {
@@ -3206,9 +3350,9 @@
         "overallScore": 0.9999999999999999,
         "pass": true,
         "inputTokens": 5163,
-        "outputTokens": 29,
-        "latencyMs": 467,
-        "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you also tell me what your monthly housing cost is?"
+        "outputTokens": 30,
+        "latencyMs": 396,
+        "rawResponse": "Thank you for sharing that. Just to help me check what you might qualify for, could you also tell me what your monthly housing cost is?"
       },
       {
         "scenarioId": "B2",
@@ -3239,7 +3383,7 @@
         "pass": true,
         "inputTokens": 5170,
         "outputTokens": 75,
-        "latencyMs": 536,
+        "latencyMs": 529,
         "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you also tell me how much you both earn together? This will give me a better idea of your total household income. \n\n<person_data>{\"relationship_status\": \"couple_married\", \"gross_annual_income\": 25000}</person_data>"
       },
       {
@@ -3271,7 +3415,7 @@
         "pass": true,
         "inputTokens": 5171,
         "outputTokens": 79,
-        "latencyMs": 544,
+        "latencyMs": 496,
         "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you also tell me how long you've been on a mortgage? This helps in understanding your housing situation better. \n\n<person_data>{\"gross_annual_income\": 45000, \"income_band\": \"under_50270\"}</person_data>"
       },
       {
@@ -3295,7 +3439,7 @@
         "pass": true,
         "inputTokens": 5173,
         "outputTokens": 38,
-        "latencyMs": 449,
+        "latencyMs": 386,
         "rawResponse": "Thank you for sharing that. To help me check what you might qualify for, could you tell me how long you've been unemployed? This will help us understand your situation better."
       },
       {
@@ -3319,7 +3463,7 @@
         "pass": true,
         "inputTokens": 5169,
         "outputTokens": 38,
-        "latencyMs": 443,
+        "latencyMs": 461,
         "rawResponse": "Thank you for sharing that. Just to clarify, are you receiving any other benefits or support apart from the Jobseeker's Allowance? This will help me understand your financial situation better."
       },
       {
@@ -3344,7 +3488,7 @@
         "pass": true,
         "inputTokens": 5101,
         "outputTokens": 183,
-        "latencyMs": 786,
+        "latencyMs": 752,
         "rawResponse": "I'm really sorry to hear about the difficulties you're facing since you lost your job. It's a tough time for many people, and I'm here to help you find out what support might be available.\n\nTo get started, could you tell me a bit more about your household? Specifically, how many people live in your home and if there are any children, their ages would be helpful too.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me and my partner\", \"value\": \"Just me and my partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}, {\"label\": \"Me, partner, and adult children\", \"value\": \"Me, partner, and adult children\"}]</quick_replies>"
       },
       {
@@ -3369,7 +3513,7 @@
         "pass": true,
         "inputTokens": 5107,
         "outputTokens": 226,
-        "latencyMs": 826,
+        "latencyMs": 769,
         "rawResponse": "I'm really sorry to hear about your job loss — it's a tough time for sure. Losing a job can definitely add a lot of stress, especially when it comes to financial responsibilities like a mortgage. Let's try to figure out what support might be available to you.\n\nTo get started, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -3401,7 +3545,7 @@
         "pass": true,
         "inputTokens": 5096,
         "outputTokens": 233,
-        "latencyMs": 893,
+        "latencyMs": 919,
         "rawResponse": "I'm really sorry to hear about your job loss. It's a tough time, but we'll get through it together. Losing a job can be really stressful, but there are benefits and support available that might help you during this period.\n\nLet's start by gathering some information to see what you might be entitled to. First, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -3426,7 +3570,7 @@
         "pass": true,
         "inputTokens": 5099,
         "outputTokens": 209,
-        "latencyMs": 1673,
+        "latencyMs": 742,
         "rawResponse": "I'm really sorry to hear that you and your partner both lost your jobs. It's a tough time, but there are some benefits and support that might be available to you. \n\nTo start, can you tell me roughly what your household income was before you lost your jobs? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -3451,7 +3595,7 @@
         "pass": true,
         "inputTokens": 5101,
         "outputTokens": 192,
-        "latencyMs": 767,
+        "latencyMs": 768,
         "rawResponse": "I'm really sorry to hear about your job loss — it's a tough time for sure. Losing a job can be really stressful, but there are some benefits and support that might be available to you. \n\nTo get started, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -3476,7 +3620,7 @@
         "pass": true,
         "inputTokens": 5104,
         "outputTokens": 211,
-        "latencyMs": 803,
+        "latencyMs": 819,
         "rawResponse": "I'm really sorry to hear about your job loss — it can be a very stressful time. Losing a job can definitely make things more challenging, but there are some benefits and support that might be available to you. \n\nTo start, can you tell me roughly what your household income was before you lost your job? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>"
       },
       {
@@ -3493,7 +3637,7 @@
         "pass": true,
         "inputTokens": 5099,
         "outputTokens": 136,
-        "latencyMs": 515,
+        "latencyMs": 495,
         "rawResponse": "I'm sorry to hear that — it's understandable to be worried about your mum. I can help you find out what support might be available for both of you.\n\nLet me ask a few questions. First, who lives in your household?\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and my partner\", \"value\": \"Me and my partner\"}, {\"label\": \"Me, partner and children\", \"value\": \"Me, partner and children\"}]</quick_replies>"
       },
       {
@@ -3518,7 +3662,7 @@
         "pass": true,
         "inputTokens": 5122,
         "outputTokens": 120,
-        "latencyMs": 627,
+        "latencyMs": 519,
         "rawResponse": "Thank you for sharing that. It's important to know who's there to support you both. And how old is your mum?\n\n<quick_replies>[{\"label\": \"66-75\", \"value\": \"66-75\"}, {\"label\": \"75-85\", \"value\": \"75-85\"}, {\"label\": \"Over 85\", \"value\": \"Over 85\"}]</quick_replies>\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>"
       },
       {
@@ -3543,7 +3687,7 @@
         "pass": true,
         "inputTokens": 5185,
         "outputTokens": 26,
-        "latencyMs": 421,
+        "latencyMs": 400,
         "rawResponse": "Thank you for sharing that. Is anyone helping look after her regularly — and if so, roughly how many hours a week?"
       },
       {
@@ -3575,7 +3719,7 @@
         "pass": true,
         "inputTokens": 5101,
         "outputTokens": 193,
-        "latencyMs": 746,
+        "latencyMs": 667,
         "rawResponse": "That's wonderful news! Expecting a first baby can be both exciting and a bit overwhelming. I'm here to help you find out what support and benefits you might be entitled to during this special time.\n\nTo get started, could you please tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>"
       },
       {
@@ -3621,7 +3765,7 @@
         "pass": true,
         "inputTokens": 5169,
         "outputTokens": 143,
-        "latencyMs": 683,
+        "latencyMs": 579,
         "rawResponse": "Thank you for sharing that information. Here’s what I’ve gathered so far:\n\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"employment_status\": \"employed\", \"gross_annual_income\": 18000, \"income_band\": \"under_25000\", \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 950}</person_data>\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n\nWhat’s your postcode? This helps me check what’s available in your local area."
       },
       {
@@ -3645,7 +3789,7 @@
         "pass": true,
         "inputTokens": 5107,
         "outputTokens": 153,
-        "latencyMs": 639,
+        "latencyMs": 675,
         "rawResponse": "I'm really sorry to hear about your situation; going through a divorce can be incredibly challenging. I'm here to help you find out what support might be available to you. \n\nLet's start by gathering some basic information. First, could you tell me if you have any children and, if so, their ages? This will help me understand your situation better.\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"No children\", \"value\": \"No children\"}, {\"label\": \"One child\", \"value\": \"One child\"}, {\"label\": \"More than one child\", \"value\": \"More than one child\"}]</quick_replies>"
       },
       {
@@ -3662,7 +3806,7 @@
         "pass": true,
         "inputTokens": 5092,
         "outputTokens": 96,
-        "latencyMs": 529,
+        "latencyMs": 541,
         "rawResponse": "I'm really sorry to hear that you're going through a tough time. It's completely okay to seek help when you need it. To get started, could you tell me a bit more about your situation? For example, are you caring for an elderly parent, expecting a new baby, or perhaps dealing with a job loss? Any details you can share will help me understand how best to assist you.\n\n<stage_transition>questions</stage_transition>"
       },
       {
@@ -3686,9 +3830,9 @@
         "overallScore": 0.9999999999999999,
         "pass": true,
         "inputTokens": 5142,
-        "outputTokens": 180,
-        "latencyMs": 818,
-        "rawResponse": "Thank you for clarifying. Owning your home outright is great to know. Let's move forward with that information. \n\nCould you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<person_data>{\"housing_tenure\": \"own_outright\"}</person_data>\n<stage_transition>questions</stage_transition>"
+        "outputTokens": 51,
+        "latencyMs": 476,
+        "rawResponse": "Thank you for clarifying. Owning your home outright is great to know. Now, could you tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help me check what you might qualify for."
       },
       {
         "scenarioId": "F4",
@@ -3713,9 +3857,9 @@
           {
             "field": "employment_status",
             "expected": "employed",
-            "actual": "unemployed",
-            "score": 0,
-            "note": "Wrong"
+            "actual": "employed",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "gross_annual_income",
@@ -3727,9 +3871,9 @@
           {
             "field": "income_band",
             "expected": "under_16000",
-            "actual": "under_16000",
-            "score": 1,
-            "note": "Exact"
+            "actual": "under_25000",
+            "score": 0.5,
+            "note": "Off by one band"
           },
           {
             "field": "housing_tenure",
@@ -3804,14 +3948,16 @@
           {
             "field": "children[0].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[0].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].age",
@@ -3830,14 +3976,16 @@
           {
             "field": "children[1].in_education",
             "expected": true,
-            "score": 0.3,
-            "note": "Missing"
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "children[1].disability_benefit",
             "expected": "none",
-            "score": 0.3,
-            "note": "Missing"
+            "actual": "none",
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "cared_for_person.relationship",
@@ -3849,9 +3997,9 @@
           {
             "field": "cared_for_person.age",
             "expected": 78,
-            "actual": 0,
-            "score": 0,
-            "note": "Wrong"
+            "actual": 78,
+            "score": 1,
+            "note": "Exact"
           },
           {
             "field": "cared_for_person.needs_help_daily_living",
@@ -3868,16 +4016,16 @@
             "note": "Exact"
           }
         ],
-        "fieldAverage": 0.8080000000000002,
+        "fieldAverage": 0.98,
         "stageCorrect": true,
         "hasConversationalText": true,
         "textContainsPass": true,
-        "overallScore": 0.9424,
+        "overallScore": 0.9939999999999999,
         "pass": true,
         "inputTokens": 5318,
-        "outputTokens": 352,
-        "latencyMs": 1098,
-        "rawResponse": "Hello Sarah, it sounds like you're going through a very challenging time with a lot on your plate. I'm here to help you find out what support might be available to you and your family.\n\nLet me ask a few questions to gather more details:\n\n1. **Household Composition**: Can you tell me if anyone else lives with you in the household apart from your husband Dave and your two children?\n\n<situation>ageing_parent, child_struggling_school, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"No one else\", \"value\": \"No one else\"}, {\"label\": \"Yes, other family members\", \"value\": \"Yes, other family members\"}]</quick_replies>\n\n---\n\n<person_data>{\"name\": \"Sarah\", \"age\": 42, \"nation\": \"england\", \"postcode\": \"LS1 4AP\", \"relationship_status\": \"couple_married\", \"children\": [{\"name\": \"Emily\", \"age\": 11, \"has_additional_needs\": false}, {\"name\": \"Jake\", \"age\": 6, \"has_additional_needs\": true}], \"is_carer\": true, \"carer_hours_per_week\": 30, \"recently_redundant\": true, \"gross_annual_income\": 14000, \"income_band\": \"under_16000\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 1200, \"household_capital\": 5000}</person_data>"
+        "outputTokens": 479,
+        "latencyMs": 1350,
+        "rawResponse": "Hello Sarah, it sounds like you're going through a very challenging time. I'm here to help you explore what support might be available to you and your family. \n\nLet's start by extracting the information you've shared:\n\n<situation>ageing_parent, lost_job, child_struggling_school</situation>\n<person_data>{\"name\": \"Sarah\", \"age\": 42, \"nation\": \"england\", \"postcode\": \"LS1 4AP\", \"relationship_status\": \"couple_married\", \"employment_status\": \"employed\", \"gross_annual_income\": 14000, \"income_band\": \"under_25000\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 1200, \"children\": [{\"age\": 11, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 6, \"has_additional_needs\": true, \"disability_benefit\": \"none\", \"in_education\": true}], \"is_carer\": true, \"carer_hours_per_week\": 30, \"cared_for_person\": {\"relationship\": \"parent\", \"age\": 78, \"disability_benefit\": \"none\", \"needs_help_daily_living\": true}, \"household_capital\": 5000, \"recently_redundant\": true, \"partner_redundancy_date\": \"three weeks ago\"}</person_data>\n\nNext, I'd like to ask a few questions to gather more details:\n\nWhat's your husband's previous job title and how long did he work there?\n\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Less than 1 year\", \"value\": \"Less than 1 year\"}, {\"label\": \"1-5 years\", \"value\": \"1-5 years\"}, {\"label\": \"5-10 years\", \"value\": \"5-10 years\"}, {\"label\": \"More than 10 years\", \"value\": \"More than 10 years\"}]</quick_replies>"
       },
       {
         "scenarioId": "G1",
@@ -3922,7 +4070,7 @@
         "pass": true,
         "inputTokens": 5116,
         "outputTokens": 220,
-        "latencyMs": 784,
+        "latencyMs": 841,
         "rawResponse": "I'm really sorry to hear about your diagnosis. Multiple Sclerosis can be incredibly challenging, and it's understandable to feel overwhelmed. I'm here to help you explore what support might be available.\n\nLet's start by gathering some more details to see what benefits you might be entitled to. First, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n"
       },
       {
@@ -3961,7 +4109,7 @@
         "pass": true,
         "inputTokens": 5117,
         "outputTokens": 252,
-        "latencyMs": 877,
+        "latencyMs": 817,
         "rawResponse": "I'm really sorry to hear that you're facing these challenges. It's great that you're getting PIP enhanced rate mobility, which means you likely have significant mobility difficulties. Let's explore what other support you might be entitled to.\n\nTo help me check, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n<person_data>{\"has_disability_or_health_condition\": true, \"disability_benefit_received\": \"pip_mobility_enhanced\"}</person_data>"
       },
       {
@@ -3993,7 +4141,7 @@
         "pass": true,
         "inputTokens": 5118,
         "outputTokens": 227,
-        "latencyMs": 899,
+        "latencyMs": 798,
         "rawResponse": "I'm really sorry to hear that you're going through such a tough time. It's important to get the support you need. Let's start by gathering some information to see what might be available to you.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"has_disability_or_health_condition\": true, \"needs_help_with_daily_living\": true}</person_data>"
       },
       {
@@ -4039,7 +4187,7 @@
         "pass": true,
         "inputTokens": 5127,
         "outputTokens": 276,
-        "latencyMs": 981,
+        "latencyMs": 967,
         "rawResponse": "I'm really sorry to hear about your husband's situation — it must be incredibly challenging for both of you. Caring for someone with dementia is a lot of work, and it's great that you're doing so much to support him. Let's see what support you might be entitled to.\n\nFirst, let's gather some more details to help us find the right benefits. Could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>ageing_parent, lost_job</situation>\n<person_data>{\"is_carer\": true, \"carer_hours_per_week\": 40, \"relationship_status\": \"couple_married\", \"age\": 56}</person_data>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -4092,7 +4240,7 @@
         "pass": true,
         "inputTokens": 5126,
         "outputTokens": 209,
-        "latencyMs": 794,
+        "latencyMs": 780,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with chronic pain and fibromyalgia. It's understandable that daily tasks can be tough. Let's see what support might be available to you.\n\nFirst, could you tell me a bit more about your living situation? For example, are you living alone, with a partner, or with children?\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Living alone\", \"value\": \"Living alone\"}, {\"label\": \"With partner\", \"value\": \"With partner\"}, {\"label\": \"With children\", \"value\": \"With children\"}]</quick_replies>\n\n<person_data>{\"has_disability_or_health_condition\": true, \"gross_annual_income\": 10000, \"income_band\": \"under_12570\", \"employment_status\": \"part_time\"}</person_data>"
       },
       {
@@ -4172,7 +4320,7 @@
         "pass": true,
         "inputTokens": 5129,
         "outputTokens": 318,
-        "latencyMs": 1051,
+        "latencyMs": 1066,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with your child's condition. It's clear that you're doing an incredible job managing everything. Let's see what support might be available to help you both.\n\nFirst, I'll need to gather a bit more information to understand your situation better. Could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>health_condition, lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n<person_data>{\"children\": [{\"age\": 4, \"has_additional_needs\": true, \"disability_benefit\": \"none\", \"in_education\": true}], \"employment_status\": \"sick_disabled\", \"relationship_status\": \"couple_married\", \"gross_annual_income\": 18000, \"housing_tenure\": \"rent_social\"}</person_data>"
       },
       {
@@ -4293,7 +4441,7 @@
         "pass": true,
         "inputTokens": 5134,
         "outputTokens": 287,
-        "latencyMs": 933,
+        "latencyMs": 966,
         "rawResponse": "I'm really sorry to hear about your loss — it must be incredibly challenging. Losing a partner is tough, and managing on your own with young children can be overwhelming. I'm here to help you find out what support might be available to you during this difficult time.\n\nLet's start by gathering some basic information. First, could you tell me about your housing situation? Are you renting, buying, or living with family?\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Mortgage\", \"value\": \"Mortgage\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"is_bereaved\": true, \"relationship_status\": \"single\", \"gross_annual_income\": 15000, \"income_band\": \"under_25000\", \"children\": [{\"age\": 5, \"has_additional_needs\": false, \"in_education\": true}, {\"age\": 3, \"has_additional_needs\": false, \"in_education\": false}]}</person_data>"
       },
       {
@@ -4345,7 +4493,7 @@
         "pass": true,
         "inputTokens": 5119,
         "outputTokens": 205,
-        "latencyMs": 821,
+        "latencyMs": 771,
         "rawResponse": "I'm really sorry to hear about your loss. It's understandable that this time might be challenging for you. Given your situation, it sounds like you might be eligible for some support. Let's start by gathering a bit more information to see what might be available to you.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -4390,7 +4538,7 @@
         "pass": true,
         "inputTokens": 5126,
         "outputTokens": 197,
-        "latencyMs": 778,
+        "latencyMs": 791,
         "rawResponse": "I'm really sorry to hear about your loss and the challenges you're facing. Losing a loved one is incredibly tough, and caring for someone full-time can be very demanding. Let's take this one step at a time.\n\nTo help you find out what support might be available, I'll need to ask a few questions. First, could you tell me about your current living situation? Are you renting, owning a home, or living with family?\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>"
       },
       {
@@ -4492,7 +4640,7 @@
         "pass": true,
         "inputTokens": 5132,
         "outputTokens": 212,
-        "latencyMs": 864,
+        "latencyMs": 912,
         "rawResponse": "I'm really sorry to hear about your situation — going through a divorce can be incredibly challenging. It's great that you're taking steps to find a place to live. Let's see what support might be available to you and your children.\n\nFirst, could you tell me a bit more about your current living situation? Specifically, who else lives with you or will be moving out with you?\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and my kids\", \"value\": \"Me and my kids\"}, {\"label\": \"Me, kids, and partner\", \"value\": \"Me, kids, and partner\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"separated\", \"gross_annual_income\": 22000, \"income_band\": \"under_25000\"}</person_data>"
       },
       {
@@ -4557,7 +4705,7 @@
         "pass": true,
         "inputTokens": 5120,
         "outputTokens": 169,
-        "latencyMs": 755,
+        "latencyMs": 675,
         "rawResponse": "I'm really sorry to hear that you're going through such a difficult time. Leaving an abusive relationship is incredibly brave, and it's important to focus on your safety and well-being first.\n\nLet me ask a few questions to help determine what support might be available to you:\n\n1. Can you tell me a bit more about your housing situation? Are you staying with family temporarily, or do you have any plans for long-term accommodation?\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Temporary stay with family\", \"value\": \"Temporary stay with family\"}, {\"label\": \"Looking for housing\", \"value\": \"Looking for housing\"}, {\"label\": \"Other\", \"value\": \"Other\"}]</quick_replies>"
       },
       {
@@ -4610,7 +4758,7 @@
         "pass": true,
         "inputTokens": 5131,
         "outputTokens": 212,
-        "latencyMs": 818,
+        "latencyMs": 801,
         "rawResponse": "I'm really sorry to hear about your separation; it must be a challenging time for you. I'm here to help you figure out what support might be available.\n\nLet's start by gathering some more details to see what you might be entitled to. First, could you tell me about your housing situation? Are you currently living in the home with the mortgage, or have you moved out?\n\n<situation>separation</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Living in the home\", \"value\": \"Living in the home\"}, {\"label\": \"Moved out\", \"value\": \"Moved out\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"separated\", \"gross_annual_income\": 12000, \"income_band\": \"under_12570\", \"housing_tenure\": \"mortgage\", \"monthly_housing_cost\": 1100}</person_data>"
       },
       {
@@ -4647,7 +4795,7 @@
         "pass": true,
         "inputTokens": 5116,
         "outputTokens": 163,
-        "latencyMs": 726,
+        "latencyMs": 722,
         "rawResponse": "I'm really sorry to hear that you're going through such a tough time. It's important to know that there are services available to help people in your situation. Let's start by gathering some basic information to see what support might be available to you.\n\nFirst, could you tell me about your housing situation? Are you currently staying with anyone or in any temporary accommodation?\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Staying with family/friends\", \"value\": \"Staying with family/friends\"}, {\"label\": \"Temporary shelter\", \"value\": \"Temporary shelter\"}, {\"label\": \"No fixed address\", \"value\": \"No fixed address\"}]</quick_replies>"
       },
       {
@@ -4730,7 +4878,7 @@
         "pass": true,
         "inputTokens": 5123,
         "outputTokens": 235,
-        "latencyMs": 841,
+        "latencyMs": 825,
         "rawResponse": "I'm really glad you reached out for support during this important time. Being a student and a new parent can be quite challenging, but there are resources available to help.\n\nLet's start by gathering some more details to see what support you might be eligible for. First, could you tell me roughly what your monthly income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>new_baby, student</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £500\", \"value\": \"Under £500\"}, {\"label\": \"£500-£1000\", \"value\": \"£500-£1000\"}, {\"label\": \"Over £1000\", \"value\": \"Over £1000\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"single\", \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 650}</person_data>"
       },
       {
@@ -4817,7 +4965,7 @@
         "pass": true,
         "inputTokens": 5137,
         "outputTokens": 346,
-        "latencyMs": 1009,
+        "latencyMs": 1071,
         "rawResponse": "I'm really sorry to hear about the difficulties you're facing with your business. It's a tough situation, but we'll take it one step at a time to see what support might be available for you and your family.\n\nLet's start by gathering some more details to help us understand your situation better. First, could you tell me roughly what your household income was before your business failed? It doesn't need to be exact—a ballpark figure will help me check what you might qualify for.\n\n<situation>lost_job</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"£25,000-£50,000\", \"value\": \"£25,000-£50,000\"}, {\"label\": \"Over £50,000\", \"value\": \"Over £50,000\"}]</quick_replies>\n\n<person_data>{\"relationship_status\": \"couple_married\", \"children\": [{\"age\": 10, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}], \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 900}</person_data>"
       },
       {
@@ -4849,7 +4997,7 @@
         "pass": true,
         "inputTokens": 5114,
         "outputTokens": 267,
-        "latencyMs": 903,
+        "latencyMs": 929,
         "rawResponse": "I'm really sorry to hear that you're dealing with these challenges. It's understandable to be concerned about managing the costs of prescriptions and dental care. Let's see what support might be available for you.\n\nTo help me check what you might qualify for, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help.\n\n<situation>retirement_low_income</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £10,000\", \"value\": \"Under £10,000\"}, {\"label\": \"£10,000 - £20,000\", \"value\": \"£10,000 - £20,000\"}, {\"label\": \"Over £20,000\", \"value\": \"Over £20,000\"}]</quick_replies>\n\n<person_data>{\"age\": 62, \"relationship_status\": \"single\", \"employment_status\": \"retired\", \"income_band\": \"under_25000\", \"has_disability_or_health_condition\": true}</person_data>"
       },
       {
@@ -4902,7 +5050,7 @@
         "pass": true,
         "inputTokens": 5120,
         "outputTokens": 233,
-        "latencyMs": 925,
+        "latencyMs": 896,
         "rawResponse": "I'm really sorry to hear about the challenges you're facing with your health and the costs of prescriptions and dental care. It's understandable to be concerned about these expenses. Let's see what support might be available to you.\n\nHere's what I've gathered so far:\n<person_data>{\"age\": 35, \"has_disability_or_health_condition\": true, \"gross_annual_income\": 18000, \"income_band\": \"under_25000\"}</person_data>\n\nTo help me check what you might qualify for, could you tell me more about your health condition? Specifically, how it impacts your daily life and if you receive any disability benefits?\n\nAlso, could you share your postcode? This will help me check what's available in your local area.\n\n<quick_replies>[{\"label\": \"Mild\", \"value\": \"Mild\"}, {\"label\": \"Moderate\", \"value\": \"Moderate\"}, {\"label\": \"Severe\", \"value\": \"Severe\"}]</quick_replies>"
       },
       {
@@ -4948,7 +5096,7 @@
         "pass": true,
         "inputTokens": 5115,
         "outputTokens": 225,
-        "latencyMs": 862,
+        "latencyMs": 848,
         "rawResponse": "Hello and congratulations on your pregnancy! It's a big step, and I'm here to help you figure out what support might be available.\n\nTo determine if you might be entitled to free prescriptions, I'll need to ask a few more questions. First, could you tell me about your housing situation? Are you renting privately, renting from the council, or do you own your home outright?\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting from council\", \"value\": \"Renting from council\"}, {\"label\": \"Own home\", \"value\": \"Own home\"}]</quick_replies>\n\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"gross_annual_income\": 30000, \"income_band\": \"under_50270\", \"employment_status\": \"employed\"}</person_data>"
       },
       {
@@ -4994,7 +5142,7 @@
         "pass": true,
         "inputTokens": 5129,
         "outputTokens": 213,
-        "latencyMs": 884,
+        "latencyMs": 856,
         "rawResponse": "I'm really sorry to hear that you're dealing with such a challenging situation. Managing medication costs can be incredibly stressful. Let's see if there are any benefits or support available that might help with those costs.\n\nFirst, could you tell me a bit more about your living situation? Specifically, how many people live in your household and if anyone else is on benefits?\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and children\", \"value\": \"Me, partner, and children\"}]</quick_replies>\n\n<person_data>{\"age\": 45, \"gross_annual_income\": 40000, \"has_medical_exemption\": true, \"needs_help_with_daily_living\": false}</person_data>"
       },
       {
@@ -5075,7 +5223,7 @@
         "pass": true,
         "inputTokens": 5119,
         "outputTokens": 265,
-        "latencyMs": 898,
+        "latencyMs": 906,
         "rawResponse": "Hello! It's wonderful that you're looking into additional support for your family. Let's start by gathering some information to see what else you might be entitled to.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"employment_status\": \"unemployed\", \"children\": [{\"age\": 8, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}, {\"age\": 3, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": false}]}</person_data>"
       },
       {
@@ -5113,9 +5261,9 @@
         "overallScore": 0.9999999999999999,
         "pass": true,
         "inputTokens": 5131,
-        "outputTokens": 231,
-        "latencyMs": 872,
-        "rawResponse": "I'm really sorry to hear that you're facing these challenges. It's understandable to feel overwhelmed, but I'm here to help you explore what support might be available.\n\nLet's start by gathering some more details to see what you might be entitled to. First, could you tell me about your housing situation? Are you renting, owning, or living with family?\n\n<situation>retirement_low_income</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"age\": 70, \"gross_annual_income\": 14000, \"income_band\": \"under_16000\", \"nation\": \"england\"}</person_data>"
+        "outputTokens": 225,
+        "latencyMs": 852,
+        "rawResponse": "I'm really sorry to hear that you're facing these challenges. It's understandable to feel overwhelmed, but I'm here to help you explore what support might be available.\n\nLet's start by gathering some more details to see what you might be entitled to. First, could you tell me about your housing situation? Are you renting, owning, or living with family?\n\n<situation>retirement_low_income</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council/social\", \"value\": \"Renting council/social\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"age\": 70, \"gross_annual_income\": 14000, \"income_band\": \"under_16000\"}</person_data>"
       },
       {
         "scenarioId": "L1",
@@ -5167,7 +5315,7 @@
         "pass": true,
         "inputTokens": 5120,
         "outputTokens": 186,
-        "latencyMs": 733,
+        "latencyMs": 717,
         "rawResponse": "I'm really glad you reached out because you might be eligible for some support that can make a big difference. Let's start by gathering some details to see what you might qualify for.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might be entitled to.\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
       },
       {
@@ -5248,7 +5396,7 @@
         "pass": true,
         "inputTokens": 5132,
         "outputTokens": 249,
-        "latencyMs": 949,
+        "latencyMs": 940,
         "rawResponse": "I'm really sorry to hear that childcare is such a big expense for you. It's understandable to be concerned about managing those costs. Let's see what support might be available to help with this.\n\nFirst, could you tell me a little more about your housing situation? Are you renting or owning your home?\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting council\", \"value\": \"Renting council\"}, {\"label\": \"Owning outright\", \"value\": \"Owning outright\"}, {\"label\": \"Mortgage\", \"value\": \"Mortgage\"}, {\"label\": \"Living with family\", \"value\": \"Living with family\"}]</quick_replies>\n\n<person_data>{\"employment_status\": \"employed\", \"gross_annual_income\": 35000, \"relationship_status\": \"couple_married\", \"children\": [{\"age\": 1, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": false}]}</person_data>"
       },
       {
@@ -5308,7 +5456,7 @@
         "pass": true,
         "inputTokens": 5115,
         "outputTokens": 209,
-        "latencyMs": 762,
+        "latencyMs": 804,
         "rawResponse": "I'm really sorry to hear that you're struggling with childcare costs. It's a tough situation, but we'll do our best to find some support that might be available to you.\n\nTo help me understand your situation better, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>student_with_child</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"£12,500-£25,000\", \"value\": \"£12,500-£25,000\"}, {\"label\": \"Over £25,000\", \"value\": \"Over £25,000\"}]</quick_replies>\n\n"
       },
       {
@@ -5354,7 +5502,7 @@
         "pass": true,
         "inputTokens": 5118,
         "outputTokens": 222,
-        "latencyMs": 860,
+        "latencyMs": 916,
         "rawResponse": "Hello and congratulations on your pregnancy! It's a big step, and I'm here to help you find out what support you might be entitled to.\n\nLet's start by gathering a bit more information to see what could be available to you. First, could you tell me about your housing situation? Are you renting privately, renting from the council, or do you own your home?\n\n<situation>new_baby</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Renting privately\", \"value\": \"Renting privately\"}, {\"label\": \"Renting from council\", \"value\": \"Renting from council\"}, {\"label\": \"Own home\", \"value\": \"Own home\"}]</quick_replies>\n\n<person_data>{\"is_pregnant\": true, \"expecting_first_child\": true, \"gross_annual_income\": 8000, \"income_band\": \"under_12570\", \"employment_status\": \"employed\"}</person_data>"
       },
       {
@@ -5421,7 +5569,7 @@
         "pass": true,
         "inputTokens": 5131,
         "outputTokens": 233,
-        "latencyMs": 844,
+        "latencyMs": 848,
         "rawResponse": "I'm sorry to hear that your son needs extra support for college. It's great that he's doing A-levels; it's a big step. Let's see what support might be available for you both.\n\nFirst, could you tell me a bit more about your household? Specifically, how many people live there and their ages?\n\n<situation>child_struggling_school</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and kids\", \"value\": \"Me, partner, and kids\"}]</quick_replies>\n\n<person_data>{\"gross_annual_income\": 15000, \"income_band\": \"under_16000\", \"children\": [{\"age\": 17, \"has_additional_needs\": false, \"disability_benefit\": \"none\", \"in_education\": true}]}</person_data>"
       },
       {
@@ -5473,7 +5621,7 @@
         "pass": true,
         "inputTokens": 5121,
         "outputTokens": 270,
-        "latencyMs": 953,
+        "latencyMs": 955,
         "rawResponse": "I'm really sorry to hear that you're facing these challenges at your age. It's understandable to feel overwhelmed, but we're here to help you find the support you might be entitled to.\n\nLet's start by gathering some more details to see what might be available to you. First, could you tell me roughly what your household income is? It doesn't need to be exact—a ballpark figure will help me check what you might qualify for.\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<person_data>{\"age\": 70, \"housing_tenure\": \"rent_private\", \"monthly_housing_cost\": 650, \"income_band\": \"under_12570\", \"gross_annual_income\": 0}</person_data>"
       },
       {
@@ -5526,7 +5674,7 @@
         "pass": true,
         "inputTokens": 5134,
         "outputTokens": 218,
-        "latencyMs": 986,
+        "latencyMs": 840,
         "rawResponse": "I'm really sorry to hear that you're going through such a tough time. It sounds like you're dealing with a lot of stress right now. Let's see what support might be available to you.\n\nFirst, could you tell me a bit more about your household? Specifically, how many people live with you and if anyone needs special care or support?\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and kids\", \"value\": \"Me, partner, and kids\"}]</quick_replies>\n\n<person_data>{\"employment_status\": \"unemployed\", \"monthly_housing_cost\": 1000, \"gross_annual_income\": 8000, \"income_band\": \"under_12570\"}</person_data>"
       },
       {
@@ -5658,7 +5806,7 @@
         "pass": true,
         "inputTokens": 5126,
         "outputTokens": 254,
-        "latencyMs": 898,
+        "latencyMs": 924,
         "rawResponse": "I'm really sorry to hear that you're facing such a tough time with the water bills. It's understandable to be concerned about managing everything when you're on Universal Credit and have four young children.\n\nLet me ask a few questions to help us figure out what support might be available for you:\n\n1. Could you tell me roughly what your household income is? It doesn't need to be exact—a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<person_data>{\"employment_status\": \"unemployed\", \"children\": [{\"age\": 1}, {\"age\": 3}, {\"age\": 5}, {\"age\": 8}]}</person_data>"
       },
       {
@@ -5689,8 +5837,110 @@
         "pass": true,
         "inputTokens": 5116,
         "outputTokens": 186,
-        "latencyMs": 673,
+        "latencyMs": 722,
         "rawResponse": "I'm really sorry to hear that you're going through this. It sounds incredibly tough, especially with the heating issues. Let's see what support might be available to help you.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>ageing_parent</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>"
+      },
+      {
+        "scenarioId": "N1",
+        "scenarioName": "67, PIP enhanced mobility — VED exemption + Motability + bus pass",
+        "xmlValid": true,
+        "situationScore": 1,
+        "fieldScores": [
+          {
+            "field": "age",
+            "expected": 67,
+            "actual": 67,
+            "score": 1,
+            "note": "Exact"
+          },
+          {
+            "field": "disability_benefit_received",
+            "expected": "pip_mobility_enhanced",
+            "actual": "pip_mobility_enhanced",
+            "score": 1,
+            "note": "Exact"
+          },
+          {
+            "field": "has_disability_or_health_condition",
+            "expected": true,
+            "score": 0.3,
+            "note": "Missing"
+          }
+        ],
+        "fieldAverage": 0.7666666666666666,
+        "stageCorrect": true,
+        "hasConversationalText": true,
+        "textContainsPass": true,
+        "overallScore": 0.9299999999999999,
+        "pass": true,
+        "inputTokens": 5116,
+        "outputTokens": 191,
+        "latencyMs": 729,
+        "rawResponse": "I'm really sorry to hear that you're struggling with transport costs. It's definitely a tough situation. To help you find out what support might be available, I'll need to ask a few questions.\n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n<situation>health_condition</situation>\n<stage_transition>questions</stage_transition>"
+      },
+      {
+        "scenarioId": "N2",
+        "scenarioName": "On UC, housing tribunal — court fee remission",
+        "xmlValid": true,
+        "situationScore": 1,
+        "fieldScores": [
+          {
+            "field": "gross_annual_income",
+            "expected": 10000,
+            "actual": 10000,
+            "score": 1,
+            "note": "Exact"
+          },
+          {
+            "field": "income_band",
+            "expected": "under_12570",
+            "actual": "under_12570",
+            "score": 1,
+            "note": "Exact"
+          }
+        ],
+        "fieldAverage": 1,
+        "stageCorrect": true,
+        "hasConversationalText": true,
+        "textContainsPass": true,
+        "overallScore": 0.9999999999999999,
+        "pass": true,
+        "inputTokens": 5127,
+        "outputTokens": 213,
+        "latencyMs": 881,
+        "rawResponse": "I'm really sorry to hear that you're dealing with this stressful situation. It sounds like you're in a tough spot with both your housing tribunal and your financial situation. Let's see if we can find some support for you.\n\nFirst, could you tell me a bit more about your household? Specifically, how many people live with you and if anyone needs special care or has any disabilities?\n\n<situation>housing_crisis</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Just me\", \"value\": \"Just me\"}, {\"label\": \"Me and partner\", \"value\": \"Me and partner\"}, {\"label\": \"Me, partner, and kids\", \"value\": \"Me, partner, and kids\"}]</quick_replies>\n\n<person_data>{\"employment_status\": \"unemployed\", \"gross_annual_income\": 10000, \"income_band\": \"under_12570\"}</person_data>"
+      },
+      {
+        "scenarioId": "N3",
+        "scenarioName": "Mum died, on UC, need funeral help — Funeral Expenses Payment",
+        "xmlValid": true,
+        "situationScore": 1,
+        "fieldScores": [
+          {
+            "field": "is_bereaved",
+            "expected": true,
+            "actual": true,
+            "score": 1,
+            "note": "Exact"
+          },
+          {
+            "field": "deceased_relationship",
+            "expected": "parent",
+            "actual": "parent",
+            "score": 1,
+            "note": "Exact"
+          }
+        ],
+        "fieldAverage": 1,
+        "stageCorrect": true,
+        "hasConversationalText": true,
+        "textContainsPass": true,
+        "overallScore": 0.9999999999999999,
+        "pass": true,
+        "inputTokens": 5118,
+        "outputTokens": 203,
+        "latencyMs": 793,
+        "rawResponse": "I'm really sorry to hear about your loss. Losing a loved one is incredibly tough, and I can understand how stressful this time must be for you, especially with the added responsibility of funeral arrangements.\n\nLet me ask a few questions to help you find out what support might be available:\n\n1. What is your current household income, roughly? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.\n\n<situation>bereavement</situation>\n<stage_transition>questions</stage_transition>\n<quick_replies>[{\"label\": \"Under £12,500\", \"value\": \"Under £12,500\"}, {\"label\": \"Around £25,000\", \"value\": \"Around £25,000\"}, {\"label\": \"Around £50,000\", \"value\": \"Around £50,000\"}]</quick_replies>\n\n"
       }
     ]
   }

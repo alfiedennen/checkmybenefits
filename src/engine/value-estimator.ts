@@ -229,6 +229,15 @@ function specificEstimate(id: string, personData: PersonData): ValueRange | null
       }
     }
 
+    case 'motability_scheme':
+      return { low: 3000, high: 5000 }
+
+    case 'vehicle_excise_duty_exemption':
+      return { low: 165, high: 190 }
+
+    case 'concessionary_bus_travel':
+      return { low: 200, high: 500 }
+
     case 'support_mortgage_interest': {
       // Rough estimate: covers interest portion of mortgage
       const mortgage = personData.monthly_housing_cost ?? 800

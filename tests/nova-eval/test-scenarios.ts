@@ -21,7 +21,7 @@ export interface Turn {
 export interface TestScenario {
   id: string
   name: string
-  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M'
+  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N'
   /** Stage the conversation is in when this message is sent */
   stage: ConversationStage
   /** Existing person data context (simulates accumulated state) */
@@ -1070,6 +1070,56 @@ const M4_PENSION_CREDIT_COLD_HOUSE: TestScenario = {
 }
 
 // ──────────────────────────────────────────────
+// Category N: Transport, Legal & Misc
+// ──────────────────────────────────────────────
+
+const N1_PIP_ENHANCED_MOBILITY_67: TestScenario = {
+  id: 'N1',
+  name: '67, PIP enhanced mobility — VED exemption + Motability + bus pass',
+  category: 'N',
+  stage: 'intake',
+  userMessage: "I'm 67, getting PIP enhanced rate mobility. I'm struggling with transport costs. Do I get any help?",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 67,
+      disability_benefit_received: 'pip_mobility_enhanced',
+      has_disability_or_health_condition: true,
+    },
+  },
+}
+
+const N2_UC_COURT_CASE: TestScenario = {
+  id: 'N2',
+  name: 'On UC, housing tribunal — court fee remission',
+  category: 'N',
+  stage: 'intake',
+  userMessage: "I'm on UC, earning about £10,000 a year. I need to go to a housing tribunal about my landlord. I can't afford the fees.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      gross_annual_income: 10000,
+      income_band: 'under_12570',
+    },
+  },
+}
+
+const N3_MUM_DIED_FUNERAL: TestScenario = {
+  id: 'N3',
+  name: 'Mum died, on UC, need funeral help — Funeral Expenses Payment',
+  category: 'N',
+  stage: 'intake',
+  userMessage: "My mum died last week. I'm on Universal Credit and I need to pay for the funeral. I don't have any savings.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      is_bereaved: true,
+      deceased_relationship: 'parent',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
 // Export all scenarios
 // ──────────────────────────────────────────────
 
@@ -1143,4 +1193,8 @@ export const ALL_SCENARIOS: TestScenario[] = [
   M2_UC_MORTGAGE_STRUGGLING,
   M3_UC_WATER_METER_4_KIDS,
   M4_PENSION_CREDIT_COLD_HOUSE,
+  // Category N: Transport, Legal & Misc
+  N1_PIP_ENHANCED_MOBILITY_67,
+  N2_UC_COURT_CASE,
+  N3_MUM_DIED_FUNERAL,
 ]
