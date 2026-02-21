@@ -57,6 +57,32 @@ export function extractFromMessage(text: string): Partial<PersonData> {
     if (carer.hoursPerWeek !== undefined) result.carer_hours_per_week = carer.hoursPerWeek
   }
 
+  if (extractDisabilityOrHealthCondition(text)) {
+    result.has_disability_or_health_condition = true
+  }
+
+  if (extractMobilityDifficulty(text)) {
+    result.mobility_difficulty = true
+  }
+
+  if (extractNeedsHelpDailyLiving(text)) {
+    result.needs_help_with_daily_living = true
+  }
+
+  const bereavement = extractBereavement(text)
+  if (bereavement) {
+    result.is_bereaved = true
+    if (bereavement.relationship) result.deceased_relationship = bereavement.relationship
+    if (bereavement.widowed && !result.relationship_status) {
+      result.relationship_status = 'widowed'
+    }
+  }
+
+  const disabilityBenefit = extractDisabilityBenefitReceived(text)
+  if (disabilityBenefit) {
+    result.disability_benefit_received = disabilityBenefit
+  }
+
   return result
 }
 
@@ -449,6 +475,74 @@ function extractCarer(text: string): CarerResult | undefined {
   const hours = hoursMatch ? parseInt(hoursMatch[1], 10) : undefined
 
   return { hoursPerWeek: hours }
+}
+
+function extractDisabilityOrHealthCondition(text: string): boolean {
+  const lower = text.toLowerCase()
+  return /\b(?:disability|disabled|health\s+condition|long[\s-]term\s+(?:sick|ill|condition)|MS\b|multiple\s+sclerosis|cancer|arthritis|COPD|diabetes|epilepsy|fibromyalgia|chronic\s+pain|mental\s+health|depression|anxiety|bipolar|schizophrenia|stroke|heart\s+condition|parkinson'?s|dementia|blind|deaf|wheelchair|cerebral\s+palsy|chronic\s+(?:fatigue|illness))/i.test(text) ||
+    /\bcan'?t\s+work\s+(?:because|due\s+to)\b/.test(lower)
+}
+
+function extractMobilityDifficulty(text: string): boolean {
+  return /\b(?:can'?t\s+walk|struggle\s+to\s+walk|wheelchair|mobility\s+scooter|mobility\s+problems?|walking\s+stick|crutches|can'?t\s+get\s+around|housebound|struggle\s+to\s+get\s+out|can'?t\s+leave\s+the\s+house|difficulty\s+(?:walking|getting\s+around|moving))/i.test(text)
+}
+
+function extractNeedsHelpDailyLiving(text: string): boolean {
+  return /\b(?:need\s+help\s+with\s+(?:washing|dressing|cooking|eating|daily)|can'?t\s+cook|can'?t\s+manage|need\s+(?:help|care)\s+daily|need\s+personal\s+care|help\s+with\s+(?:everything|daily\s+(?:tasks|living))|struggle\s+with\s+daily)/i.test(text)
+}
+
+interface BereavementResult {
+  relationship?: string
+  widowed?: boolean
+}
+
+function extractBereavement(text: string): BereavementResult | undefined {
+  const lower = text.toLowerCase()
+
+  // Partner/spouse death
+  if (/\b(?:widow(?:ed|er)?)\b/.test(lower)) {
+    return { relationship: 'partner', widowed: true }
+  }
+  if (/\b(?:partner|husband|wife|spouse)\s+(?:died|passed\s+away|passed)\b/.test(lower) ||
+      /\b(?:lost\s+my\s+(?:partner|husband|wife|spouse))\b/.test(lower)) {
+    return { relationship: 'partner', widowed: true }
+  }
+
+  // Parent death
+  if (/\b(?:mum|dad|mother|father)\s+(?:died|passed\s+away|passed)\b/.test(lower) ||
+      /\b(?:lost\s+my\s+(?:mum|dad|mother|father))\b/.test(lower)) {
+    return { relationship: 'parent' }
+  }
+
+  // General bereavement
+  if (/\b(?:bereaved|bereavement)\b/.test(lower)) {
+    return {}
+  }
+
+  return undefined
+}
+
+function extractDisabilityBenefitReceived(text: string): PersonData['disability_benefit_received'] | undefined {
+  const lower = text.toLowerCase()
+
+  if (/\b(?:pip\s+enhanced\s+(?:rate\s+)?mobility|pip\s+mobility\s+enhanced|enhanced\s+(?:rate\s+)?mobility)\b/.test(lower))
+    return 'pip_mobility_enhanced'
+  if (/\b(?:pip\s+(?:standard\s+)?mobility|standard\s+(?:rate\s+)?mobility)\b/.test(lower))
+    return 'pip_mobility_standard'
+  if (/\b(?:pip\s+enhanced\s+(?:rate\s+)?daily\s+living|pip\s+daily\s+living\s+enhanced|enhanced\s+(?:rate\s+)?daily\s+living)\b/.test(lower))
+    return 'pip_daily_living_enhanced'
+  if (/\b(?:pip\s+(?:standard\s+)?daily\s+living|on\s+pip|getting\s+pip|receive\s+pip)\b/.test(lower))
+    return 'pip_daily_living_standard'
+  if (/\b(?:dla\s+higher\s+(?:rate\s+)?mobility)\b/.test(lower))
+    return 'dla_higher_mobility'
+  if (/\b(?:dla\s+higher\s+(?:rate\s+)?care)\b/.test(lower))
+    return 'dla_higher_care'
+  if (/\b(?:getting\s+dla|receive\s+dla|on\s+dla)\b/.test(lower))
+    return 'dla_middle_care'
+  if (/\b(?:attendance\s+allowance)\b/.test(lower))
+    return 'attendance_allowance_lower'
+
+  return undefined
 }
 
 // ── Helpers ─────────────────────────────────────────

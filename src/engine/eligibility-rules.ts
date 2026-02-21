@@ -292,6 +292,36 @@ const RULE_MAP: Record<string, RuleChecker> = {
       return { id: 'blue_badge', eligible: true, confidence: 'possible' }
     return { id: 'blue_badge', eligible: false, confidence: 'likely' }
   },
+
+  bereavement_support_payment: (person) => {
+    if (person.is_bereaved && person.deceased_relationship === 'partner')
+      return { id: 'bereavement_support_payment', eligible: true, confidence: 'possible' }
+    if (person.relationship_status === 'widowed')
+      return { id: 'bereavement_support_payment', eligible: true, confidence: 'possible' }
+    return { id: 'bereavement_support_payment', eligible: false, confidence: 'likely' }
+  },
+
+  delay_repay: () => {
+    // Consumer right — not relevant in benefits screening context
+    return { id: 'delay_repay', eligible: false, confidence: 'likely' }
+  },
+
+  flight_compensation_uk261: () => {
+    // Consumer right — not relevant in benefits screening context
+    return { id: 'flight_compensation_uk261', eligible: false, confidence: 'likely' }
+  },
+
+  section_75_claim: () => {
+    // Consumer right — not relevant in benefits screening context
+    return { id: 'section_75_claim', eligible: false, confidence: 'likely' }
+  },
+
+  ni_voluntary_contributions: (person) => {
+    const age = person.age ?? 30
+    if (age >= 50 && age < SPA)
+      return { id: 'ni_voluntary_contributions', eligible: true, confidence: 'worth_checking' }
+    return { id: 'ni_voluntary_contributions', eligible: false, confidence: 'likely' }
+  },
 }
 
 function isCoupleish(person: PersonData): boolean {

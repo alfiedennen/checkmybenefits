@@ -21,7 +21,7 @@ export interface Turn {
 export interface TestScenario {
   id: string
   name: string
-  category: 'A' | 'B' | 'C' | 'D' | 'F'
+  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J'
   /** Stage the conversation is in when this message is sent */
   stage: ConversationStage
   /** Existing person data context (simulates accumulated state) */
@@ -415,15 +415,17 @@ const D2_NEW_BABY_TURN2: TestScenario = {
 // Category F: Edge Cases
 // ──────────────────────────────────────────────
 
-const F1_OUT_OF_SCOPE: TestScenario = {
+const F1_SEPARATION: TestScenario = {
   id: 'F1',
-  name: 'Out-of-scope situation (divorce)',
+  name: 'Separation / divorce — now supported',
   category: 'F',
   stage: 'intake',
   userMessage: "I'm going through a divorce and I need to know what I'm entitled to",
   expected: {
-    noSituation: true,
-    textContains: ['citizens advice', '0800 144 8848'],
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'separated',
+    },
   },
 }
 
@@ -494,6 +496,309 @@ const F4_VERY_LONG: TestScenario = {
 }
 
 // ──────────────────────────────────────────────
+// Category G: Health Condition / Disability
+// ──────────────────────────────────────────────
+
+const G1_MS_CANT_WORK: TestScenario = {
+  id: 'G1',
+  name: 'MS diagnosis, cannot work',
+  category: 'G',
+  stage: 'intake',
+  userMessage: "I've been diagnosed with MS and I can't work anymore. I'm 38, single, renting privately.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      has_disability_or_health_condition: true,
+      age: 38,
+      relationship_status: 'single',
+      housing_tenure: 'rent_private',
+    },
+  },
+}
+
+const G2_WHEELCHAIR_PIP: TestScenario = {
+  id: 'G2',
+  name: 'Wheelchair user, getting PIP enhanced mobility',
+  category: 'G',
+  stage: 'intake',
+  userMessage: "I'm in a wheelchair and I'm getting PIP enhanced rate mobility. I need to know what else I might be entitled to.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      has_disability_or_health_condition: true,
+      mobility_difficulty: true,
+      disability_benefit_received: 'pip_mobility_enhanced',
+    },
+  },
+}
+
+const G3_DEPRESSION_HOUSEBOUND: TestScenario = {
+  id: 'G3',
+  name: 'Severe depression, struggling to leave the house',
+  category: 'G',
+  stage: 'intake',
+  userMessage: "I have severe depression and I'm struggling to leave the house most days. I can't work and I need help with daily tasks.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      has_disability_or_health_condition: true,
+      needs_help_with_daily_living: true,
+    },
+  },
+}
+
+const G4_PARTNER_DEMENTIA_CARER: TestScenario = {
+  id: 'G4',
+  name: 'Partner has early-onset dementia, full-time carer',
+  category: 'G',
+  stage: 'intake',
+  userMessage: "My husband has early-onset dementia. I'm caring for him about 40 hours a week. I had to leave my job. We're both 56.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      is_carer: true,
+      carer_hours_per_week: 40,
+      relationship_status: 'couple_married',
+      age: 56,
+    },
+  },
+}
+
+const G5_CHRONIC_PAIN_PART_TIME: TestScenario = {
+  id: 'G5',
+  name: 'Chronic pain, working part-time, struggles with daily tasks',
+  category: 'G',
+  stage: 'intake',
+  userMessage: "I have chronic pain and fibromyalgia. I can work part-time but I struggle with daily tasks like cooking and cleaning. I earn about £10,000 a year.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      has_disability_or_health_condition: true,
+      needs_help_with_daily_living: true,
+      employment_status: 'employed',
+      gross_annual_income: 10000,
+      income_band: 'under_12570',
+    },
+  },
+}
+
+const G6_CHILD_CEREBRAL_PALSY: TestScenario = {
+  id: 'G6',
+  name: 'Child has cerebral palsy, parent cannot work',
+  category: 'G',
+  stage: 'intake',
+  userMessage: "My 4 year old has cerebral palsy and needs constant care. I can't work because of his needs. My partner earns £18,000. We rent from the council.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      children: [
+        { age: 4, has_additional_needs: true, disability_benefit: 'none', in_education: true },
+      ],
+      is_carer: true,
+      gross_annual_income: 18000,
+      income_band: 'under_25000',
+      housing_tenure: 'rent_social',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category H: Bereavement
+// ──────────────────────────────────────────────
+
+const H1_HUSBAND_DIED_YOUNG_CHILDREN: TestScenario = {
+  id: 'H1',
+  name: 'Husband died, two young children',
+  category: 'H',
+  stage: 'intake',
+  userMessage: "My husband died last month. I have two children aged 5 and 3. I don't know how I'm going to manage. I work part-time earning about £15,000.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      is_bereaved: true,
+      deceased_relationship: 'partner',
+      relationship_status: 'widowed',
+      children: [
+        { age: 5, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 3, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+      employment_status: 'employed',
+      gross_annual_income: 15000,
+      income_band: 'under_16000',
+    },
+  },
+}
+
+const H2_WIDOWER_PENSION_AGE: TestScenario = {
+  id: 'H2',
+  name: 'Widower, 72, on state pension',
+  category: 'H',
+  stage: 'intake',
+  userMessage: "I'm a widower, 72 years old. I'm just living on my state pension. My wife passed away six months ago.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      is_bereaved: true,
+      deceased_relationship: 'partner',
+      relationship_status: 'widowed',
+      age: 72,
+      employment_status: 'retired',
+    },
+  },
+}
+
+const H3_MUM_DIED_WAS_CARER: TestScenario = {
+  id: 'H3',
+  name: 'Mum passed away, was her carer',
+  category: 'H',
+  stage: 'intake',
+  userMessage: "My mum passed away last week. I was her full-time carer for the last three years. I'm 45 and I don't have a job now.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      is_bereaved: true,
+      deceased_relationship: 'parent',
+      age: 45,
+      employment_status: 'unemployed',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category I: Separation / Relationship Breakdown
+// ──────────────────────────────────────────────
+
+const I1_DIVORCE_TWO_KIDS: TestScenario = {
+  id: 'I1',
+  name: 'Going through divorce, 2 kids, moving out',
+  category: 'I',
+  stage: 'intake',
+  userMessage: "I'm going through a divorce. I have two kids aged 8 and 12. I'll be moving out and need to rent somewhere. I earn about £22,000.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'separated',
+      children: [
+        { age: 8, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 12, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+      gross_annual_income: 22000,
+      income_band: 'under_25000',
+    },
+  },
+}
+
+const I2_ABUSIVE_RELATIONSHIP: TestScenario = {
+  id: 'I2',
+  name: 'Left abusive relationship, no income, staying with family',
+  category: 'I',
+  stage: 'intake',
+  userMessage: "I've left an abusive relationship. I have no income and I'm staying with my family for now. I have a 2 year old.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'separated',
+      housing_tenure: 'living_with_family',
+      children: [
+        { age: 2, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+    },
+  },
+}
+
+const I3_SEPARATED_JOINT_MORTGAGE: TestScenario = {
+  id: 'I3',
+  name: 'Separated, joint mortgage, minimum wage',
+  category: 'I',
+  stage: 'intake',
+  userMessage: "I've separated from my husband. The mortgage is in both our names, £1100 a month. I'm on minimum wage, about £12,000 a year.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'separated',
+      housing_tenure: 'mortgage',
+      monthly_housing_cost: 1100,
+      gross_annual_income: 12000,
+      income_band: 'under_12570',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category J: Mixed / Novel Situations
+// ──────────────────────────────────────────────
+
+const J1_HOMELESS_ADDICTION: TestScenario = {
+  id: 'J1',
+  name: 'Homeless with drug addiction',
+  category: 'J',
+  stage: 'intake',
+  userMessage: "I'm homeless and I have a drug addiction. I'm 32. I've got no income at all.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      housing_tenure: 'homeless',
+      has_disability_or_health_condition: true,
+      age: 32,
+    },
+  },
+}
+
+const J2_EARLY_RETIREMENT_SAVINGS_LOW: TestScenario = {
+  id: 'J2',
+  name: 'Retired early at 58, savings running out',
+  category: 'J',
+  stage: 'intake',
+  userMessage: "I retired early at 58. My savings are running out and I'm not old enough for state pension yet. I own my house outright.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 58,
+      employment_status: 'retired',
+      housing_tenure: 'own_outright',
+    },
+  },
+}
+
+const J3_STUDENT_WITH_BABY: TestScenario = {
+  id: 'J3',
+  name: 'University student with a baby',
+  category: 'J',
+  stage: 'intake',
+  userMessage: "I'm a university student and I've just had a baby. I'm 21, single, renting privately for £650 a month.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 21,
+      relationship_status: 'single',
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 650,
+    },
+  },
+}
+
+const J4_SELF_EMPLOYED_BUSINESS_FAILED: TestScenario = {
+  id: 'J4',
+  name: 'Self-employed, business failed, massive debts',
+  category: 'J',
+  stage: 'intake',
+  userMessage: "I was self-employed but my business has failed. I've got massive debts and no income. I'm 40, married with one child aged 10. We rent privately for £900 a month.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      employment_status: 'unemployed',
+      relationship_status: 'couple_married',
+      age: 40,
+      children: [
+        { age: 10, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 900,
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
 // Export all scenarios
 // ──────────────────────────────────────────────
 
@@ -525,8 +830,28 @@ export const ALL_SCENARIOS: TestScenario[] = [
   D2_NEW_BABY_TURN1,
   D2_NEW_BABY_TURN2,
   // Category F: Edge Cases
-  F1_OUT_OF_SCOPE,
+  F1_SEPARATION,
   F2_NO_INFO,
   F3_CONTRADICTORY,
   F4_VERY_LONG,
+  // Category G: Health Condition / Disability
+  G1_MS_CANT_WORK,
+  G2_WHEELCHAIR_PIP,
+  G3_DEPRESSION_HOUSEBOUND,
+  G4_PARTNER_DEMENTIA_CARER,
+  G5_CHRONIC_PAIN_PART_TIME,
+  G6_CHILD_CEREBRAL_PALSY,
+  // Category H: Bereavement
+  H1_HUSBAND_DIED_YOUNG_CHILDREN,
+  H2_WIDOWER_PENSION_AGE,
+  H3_MUM_DIED_WAS_CARER,
+  // Category I: Separation / Relationship Breakdown
+  I1_DIVORCE_TWO_KIDS,
+  I2_ABUSIVE_RELATIONSHIP,
+  I3_SEPARATED_JOINT_MORTGAGE,
+  // Category J: Mixed / Novel Situations
+  J1_HOMELESS_ADDICTION,
+  J2_EARLY_RETIREMENT_SAVINGS_LOW,
+  J3_STUDENT_WITH_BABY,
+  J4_SELF_EMPLOYED_BUSINESS_FAILED,
 ]
