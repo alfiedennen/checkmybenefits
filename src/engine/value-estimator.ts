@@ -173,6 +173,42 @@ function specificEstimate(id: string, personData: PersonData): ValueRange | null
         high: Math.round(rates.nhs_prescription_charge * 24 - rates.nhs_ppc_12_month),
       }
 
+    case 'free_childcare_15hrs_universal':
+    case 'free_childcare_15hrs_disadvantaged':
+      // 15hrs × 38 weeks × hourly rate
+      return {
+        low: Math.round(15 * 38 * rates.free_childcare_hourly_rate * 0.7),
+        high: Math.round(15 * 38 * rates.free_childcare_hourly_rate),
+      }
+
+    case 'free_childcare_30hrs':
+      // 30hrs × 38 weeks × hourly rate
+      return {
+        low: Math.round(30 * 38 * rates.free_childcare_hourly_rate * 0.7),
+        high: Math.round(30 * 38 * rates.free_childcare_hourly_rate),
+      }
+
+    case 'sure_start_maternity_grant':
+      return {
+        low: rates.sure_start_maternity_grant,
+        high: rates.sure_start_maternity_grant,
+      }
+
+    case 'childcare_grant_students':
+      return {
+        low: Math.round(rates.childcare_grant_max_weekly_1_child * 0.3 * 40),
+        high: Math.round(rates.childcare_grant_max_weekly_2_plus * 40),
+      }
+
+    case '16_19_bursary':
+      return {
+        low: 100,
+        high: rates['16_19_bursary_vulnerable'],
+      }
+
+    case 'student_maintenance_loan':
+      return { low: 4000, high: 14000 }
+
     default:
       return null
   }

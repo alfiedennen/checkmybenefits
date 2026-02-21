@@ -21,7 +21,7 @@ export interface Turn {
 export interface TestScenario {
   id: string
   name: string
-  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K'
+  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L'
   /** Stage the conversation is in when this message is sent */
   stage: ConversationStage
   /** Existing person data context (simulates accumulated state) */
@@ -903,6 +903,98 @@ const K6_JUST_ABOVE_PC_THRESHOLD: TestScenario = {
 }
 
 // ──────────────────────────────────────────────
+// Category L: Childcare & Education
+// ──────────────────────────────────────────────
+
+const L1_TWO_YEAR_OLD_ON_UC: TestScenario = {
+  id: 'L1',
+  name: '2 year old on UC — free 15hrs childcare',
+  category: 'L',
+  stage: 'intake',
+  userMessage: "I have a 2 year old and I'm on Universal Credit. I didn't know there was free childcare for 2 year olds.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      children: [
+        { age: 2, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+    },
+  },
+}
+
+const L2_BOTH_WORKING_CHILD_1: TestScenario = {
+  id: 'L2',
+  name: 'Both parents working, child aged 1 — 30hrs + Tax-Free Childcare',
+  category: 'L',
+  stage: 'intake',
+  userMessage: "We both work full-time. I earn £35,000 and my husband earns £30,000. Our daughter is 1 year old. Childcare is costing us a fortune.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'couple_married',
+      employment_status: 'employed',
+      gross_annual_income: 35000,
+      income_band: 'under_50270',
+      children: [
+        { age: 1, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+    },
+  },
+}
+
+const L3_STUDENT_WITH_3YR_OLD: TestScenario = {
+  id: 'L3',
+  name: 'Student parent with 3 year old — childcare grant + 15hrs universal',
+  category: 'L',
+  stage: 'intake',
+  userMessage: "I'm a full-time university student with a 3 year old. I'm single and struggling with childcare costs.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'single',
+      children: [
+        { age: 3, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+    },
+  },
+}
+
+const L4_PREGNANT_FIRST_BABY_UC: TestScenario = {
+  id: 'L4',
+  name: 'Pregnant, first baby, on UC — Sure Start Maternity Grant',
+  category: 'L',
+  stage: 'intake',
+  userMessage: "I'm pregnant with my first baby. I'm on Universal Credit earning about £8,000 a year part-time.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      is_pregnant: true,
+      expecting_first_child: true,
+      gross_annual_income: 8000,
+      income_band: 'under_12570',
+    },
+  },
+}
+
+const L5_17YR_OLD_IN_COLLEGE: TestScenario = {
+  id: 'L5',
+  name: '17 year old in college, low income — 16-19 bursary',
+  category: 'L',
+  stage: 'intake',
+  userMessage: "My 17 year old is in college doing A-levels. We're on a low income, about £15,000 a year. He needs money for transport and books.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      children: [
+        { age: 17, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+      gross_annual_income: 15000,
+      income_band: 'under_16000',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
 // Export all scenarios
 // ──────────────────────────────────────────────
 
@@ -965,4 +1057,10 @@ export const ALL_SCENARIOS: TestScenario[] = [
   K4_LOTS_OF_PRESCRIPTIONS,
   K5_UC_WITH_KIDS,
   K6_JUST_ABOVE_PC_THRESHOLD,
+  // Category L: Childcare & Education
+  L1_TWO_YEAR_OLD_ON_UC,
+  L2_BOTH_WORKING_CHILD_1,
+  L3_STUDENT_WITH_3YR_OLD,
+  L4_PREGNANT_FIRST_BABY_UC,
+  L5_17YR_OLD_IN_COLLEGE,
 ]

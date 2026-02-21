@@ -96,6 +96,8 @@ SITUATION-SPECIFIC QUESTIONS:
 - For separation/divorce: Ask about children, housing situation (who stays in the home), income change. Set relationship_status: "separated".
 - For disability benefits: If they mention PIP, DLA, or Attendance Allowance, extract disability_benefit_received with the specific level.
 - For NHS health costs: If they mention prescriptions, medication, dental costs, or eye tests, ask about frequency. If they have diabetes, epilepsy, thyroid conditions, or other qualifying medical conditions, set has_medical_exemption: true. If they mention "lots of prescriptions" or "regular medication", note this for prescription prepayment certificates.
+- For parents with young children: Ask about childcare arrangements and costs. If both parents are working, check for 30 hours free childcare eligibility. For 2-year-olds on low income, flag 15 hours free childcare.
+- For students with children: Ask about childcare costs — Childcare Grant covers 85% up to £10,000/year for full-time students.
 
 SENSITIVITY:
 - For bereavement, health conditions, and separation: slower pace, extra empathy

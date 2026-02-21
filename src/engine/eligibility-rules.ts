@@ -406,6 +406,114 @@ const RULE_MAP: Record<string, RuleChecker> = {
     return { id: 'maternity_exemption_cert', eligible: false, confidence: 'likely' }
   },
 
+  free_childcare_15hrs_universal: (person) => {
+    // Universal for all 3-4 year olds
+    const hasChild3to4 = person.children.some((c) => c.age >= 3 && c.age <= 4)
+    if (hasChild3to4)
+      return { id: 'free_childcare_15hrs_universal', eligible: true, confidence: 'likely' }
+    return { id: 'free_childcare_15hrs_universal', eligible: false, confidence: 'likely' }
+  },
+
+  free_childcare_15hrs_disadvantaged: (person) => {
+    // For 2 year olds on qualifying benefits
+    const hasChild2 = person.children.some((c) => c.age === 2)
+    if (!hasChild2)
+      return { id: 'free_childcare_15hrs_disadvantaged', eligible: false, confidence: 'likely' }
+    // Qualifying benefits proxy: low income
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'free_childcare_15hrs_disadvantaged', eligible: true, confidence: 'likely' }
+    // Also eligible if child has DLA/EHCP
+    if (person.children.some((c) => c.age === 2 && c.has_additional_needs))
+      return { id: 'free_childcare_15hrs_disadvantaged', eligible: true, confidence: 'possible' }
+    return { id: 'free_childcare_15hrs_disadvantaged', eligible: false, confidence: 'likely' }
+  },
+
+  free_childcare_30hrs: (person) => {
+    // Working parents, child 9mo-4yr, each earning 16hrs NMW, neither >£100k
+    const hasYoungChild = person.children.some((c) => c.age <= 4)
+    const expecting = person.is_pregnant || person.expecting_first_child
+    if (!hasYoungChild && !expecting)
+      return { id: 'free_childcare_30hrs', eligible: false, confidence: 'likely' }
+    // Must be working
+    if (
+      person.employment_status === 'employed' ||
+      person.employment_status === 'self_employed'
+    ) {
+      // Neither parent above £100k
+      if (
+        person.income_band === 'under_100000' ||
+        person.income_band === 'under_60000' ||
+        person.income_band === 'under_50270' ||
+        person.income_band === 'under_25000' ||
+        person.income_band === 'under_16000' ||
+        person.income_band === 'under_12570' ||
+        person.income_band === 'under_7400'
+      )
+        return { id: 'free_childcare_30hrs', eligible: true, confidence: 'possible' }
+    }
+    return { id: 'free_childcare_30hrs', eligible: false, confidence: 'likely' }
+  },
+
+  sure_start_maternity_grant: (person) => {
+    if (!person.is_pregnant && !person.expecting_first_child)
+      return { id: 'sure_start_maternity_grant', eligible: false, confidence: 'likely' }
+    // First child + qualifying benefit
+    if (person.expecting_first_child) {
+      if (
+        person.income_band === 'under_7400' ||
+        person.income_band === 'under_12570' ||
+        person.income_band === 'under_16000'
+      )
+        return { id: 'sure_start_maternity_grant', eligible: true, confidence: 'possible' }
+    }
+    // Pregnant but not first child — only if multiple birth (can't determine)
+    if (person.is_pregnant && !person.expecting_first_child) {
+      if (
+        person.income_band === 'under_7400' ||
+        person.income_band === 'under_12570'
+      )
+        return { id: 'sure_start_maternity_grant', eligible: true, confidence: 'worth_checking' }
+    }
+    return { id: 'sure_start_maternity_grant', eligible: false, confidence: 'likely' }
+  },
+
+  student_maintenance_loan: (person) => {
+    if (person.employment_status === 'student')
+      return { id: 'student_maintenance_loan', eligible: true, confidence: 'possible' }
+    return { id: 'student_maintenance_loan', eligible: false, confidence: 'likely' }
+  },
+
+  childcare_grant_students: (person) => {
+    if (person.employment_status !== 'student')
+      return { id: 'childcare_grant_students', eligible: false, confidence: 'likely' }
+    // Full-time student with children
+    if (person.children.length > 0)
+      return { id: 'childcare_grant_students', eligible: true, confidence: 'possible' }
+    if (person.is_pregnant)
+      return { id: 'childcare_grant_students', eligible: true, confidence: 'worth_checking' }
+    return { id: 'childcare_grant_students', eligible: false, confidence: 'likely' }
+  },
+
+  '16_19_bursary': (person) => {
+    // Check if any child is 16-19 in education
+    const hasChild16to19 = person.children.some((c) => c.age >= 16 && c.age <= 19 && c.in_education)
+    if (!hasChild16to19)
+      return { id: '16_19_bursary', eligible: false, confidence: 'likely' }
+    // Low income or vulnerable student
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000' ||
+      person.income_band === 'under_25000'
+    )
+      return { id: '16_19_bursary', eligible: true, confidence: 'possible' }
+    return { id: '16_19_bursary', eligible: true, confidence: 'worth_checking' }
+  },
+
   prescription_prepayment_cert: (person) => {
     const age = person.age ?? 30
     // Not needed if already exempt (age 60+, pregnant, medical exemption, low income on benefits)

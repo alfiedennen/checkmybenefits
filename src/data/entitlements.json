@@ -787,6 +787,133 @@
       "conflicts_with": []
     },
     {
+      "id": "free_childcare_15hrs_universal",
+      "name": "15 Hours Free Childcare (3-4 year olds)",
+      "short_description": "All 3-4 year olds get 15 hours free childcare per week during term time. Universal — no means test.",
+      "admin_body": "local_council",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/help-with-childcare-costs/free-childcare-and-education-for-2-to-4-year-olds",
+      "estimated_annual_value_range": [3000, 5000],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Universal for all 3-4 year olds. Available from the term after child's 3rd birthday until they start Reception. 570 hours per year (38 weeks × 15hrs)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "free_childcare_15hrs_disadvantaged",
+      "name": "15 Hours Free Childcare (2 year olds)",
+      "short_description": "Free 15 hours/week childcare for 2 year olds if on qualifying benefits. Worth £3,000-£5,000/year.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "application_url": "https://www.gov.uk/help-with-childcare-costs/free-childcare-2-year-olds",
+      "estimated_annual_value_range": [3000, 5000],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Child aged 2, parent on qualifying benefit (UC with income <£15,400, IS, JSA-IR, ESA-IR, PC), or child has EHCP/DLA, or child is looked-after/adopted." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "free_childcare_30hrs",
+      "name": "30 Hours Free Childcare",
+      "short_description": "30 hours free childcare per week for working parents of children from 9 months to school age. Worth £5,000-£10,000/year.",
+      "admin_body": "hmrc",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/30-hours-free-childcare",
+      "estimated_annual_value_range": [5000, 10000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Both parents working (or single parent working) earning equivalent of 16hrs/week at NMW. Neither parent earns above £100,000. Child aged 9 months to school age (from Sept 2025). Must reconfirm every 3 months via Childcare Service account." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "sure_start_maternity_grant",
+      "name": "Sure Start Maternity Grant",
+      "short_description": "£500 one-off payment for first baby if on qualifying benefits. Claim from 11 weeks before due date to 6 months after birth.",
+      "admin_body": "dwp",
+      "application_method": ["paper_form"],
+      "application_url": "https://www.gov.uk/sure-start-maternity-grant",
+      "estimated_annual_value_range": [500, 500],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "field": "is_pregnant", "operator": "==", "value": true },
+          { "note": "Must be on qualifying benefit (UC/PC/IS/JSA-IR/ESA-IR) AND first child (or multiple birth). England & Wales only. £500 lump sum." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "student_maintenance_loan",
+      "name": "Student Maintenance Loan",
+      "short_description": "Means-tested loan for living costs during undergraduate study. £4,000-£14,000/year depending on circumstances.",
+      "admin_body": "student_loans_company",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/student-finance",
+      "estimated_annual_value_range": [4000, 14000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Full-time or part-time undergraduate student. Amount depends on household income, living situation (at home vs away, London vs elsewhere). Repayable from income >£25,000/year after graduation (Plan 5)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
+      "id": "childcare_grant_students",
+      "name": "Childcare Grant (Students)",
+      "short_description": "Up to £10,000/year for full-time students with children to help with childcare costs. 85% of costs covered.",
+      "admin_body": "student_loans_company",
+      "application_method": ["online"],
+      "application_url": "https://www.gov.uk/childcare-grant",
+      "estimated_annual_value_range": [1000, 10000],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Full-time higher education student with dependent children. Covers 85% of childcare costs up to max £193.62/week (1 child) or £332.10/week (2+ children). Cannot be combined with UC childcare element." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["universal_credit"]
+    },
+    {
+      "id": "16_19_bursary",
+      "name": "16-19 Bursary Fund",
+      "short_description": "Financial help for 16-19 year olds in education. Vulnerable students get £1,200/year; discretionary awards vary.",
+      "admin_body": "education_provider",
+      "application_method": ["apply_to_school_college"],
+      "application_url": "https://www.gov.uk/1619-bursary-fund",
+      "estimated_annual_value_range": [100, 1200],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Aged 16-19, in full-time education/training. Vulnerable student bursary (£1,200): in care, care leaver, receiving UC/IS in own right, or receiving PIP/DLA+UC/IS. Discretionary bursary: applied for through school/college, means-tested." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": []
+    },
+    {
       "id": "prescription_prepayment_cert",
       "name": "Prescription Prepayment Certificate (PPC)",
       "short_description": "Saves money if you pay for prescriptions regularly. 3-month PPC £32.05, 12-month PPC £111.60 vs £9.90 per item.",
@@ -855,14 +982,17 @@
     { "from": "nhs_low_income_scheme", "to": "free_nhs_dental", "type": "gateway" },
     { "from": "nhs_low_income_scheme", "to": "free_nhs_sight_tests", "type": "gateway" },
     { "from": "nhs_low_income_scheme", "to": "nhs_optical_vouchers", "type": "gateway" },
-    { "from": "nhs_low_income_scheme", "to": "nhs_travel_costs", "type": "gateway" }
+    { "from": "nhs_low_income_scheme", "to": "nhs_travel_costs", "type": "gateway" },
+    { "from": "universal_credit", "to": "free_childcare_15hrs_disadvantaged", "type": "gateway" },
+    { "from": "universal_credit", "to": "sure_start_maternity_grant", "type": "gateway" }
   ],
 
   "conflict_edges": [
     { "between": ["tax_free_childcare", "universal_credit"], "type": "mutual_exclusion", "resolution": "Calculate both, recommend higher value. UC childcare element (85% of costs) usually better for lower income." },
     { "between": ["pension_credit", "universal_credit"], "type": "mutual_exclusion", "resolution": "Age-dependent. Under SPA = UC. Over SPA = PC. Mixed-age couples = UC (since May 2019)." },
     { "between": ["pip", "attendance_allowance"], "type": "mutual_exclusion", "resolution": "Age-dependent. Under SPA = PIP. Over SPA = AA." },
-    { "between": ["carers_allowance", "state_pension"], "type": "overlapping_benefit", "resolution": "Cannot receive both. If SP > CA, get SP. But underlying CA entitlement is preserved — still triggers carer premiums and passported benefits. Always worth claiming CA even if SP higher." }
+    { "between": ["carers_allowance", "state_pension"], "type": "overlapping_benefit", "resolution": "Cannot receive both. If SP > CA, get SP. But underlying CA entitlement is preserved — still triggers carer premiums and passported benefits. Always worth claiming CA even if SP higher." },
+    { "between": ["childcare_grant_students", "universal_credit"], "type": "mutual_exclusion", "resolution": "Cannot combine student childcare grant with UC childcare element. Student Childcare Grant (85% of costs up to £10k) is usually better for full-time students." }
   ],
 
   "situations": [
