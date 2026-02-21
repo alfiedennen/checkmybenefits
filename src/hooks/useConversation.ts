@@ -16,6 +16,26 @@ const SITUATION_QUICK_REPLIES: QuickReply[] = [
 
 const FALLBACK_MESSAGE = `I'm sorry, I'm having trouble connecting right now. In the meantime, you can contact Citizens Advice on 0800 144 8848 or visit citizensadvice.org.uk for help with benefits and entitlements.`
 
+const OFFLINE_MESSAGE = `You appear to be offline. Please check your internet connection and try again. If you need immediate help, you can call Citizens Advice on 0800 144 8848.`
+
+const BUNDLE_ERROR_MESSAGE = `We couldn't generate your results right now. You can still contact Citizens Advice on 0800 144 8848 or visit citizensadvice.org.uk for a benefits check.`
+
+const API_TIMEOUT_MS = 15_000
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('Request timed out')), ms)
+    promise.then(
+      (val) => { clearTimeout(timer); resolve(val) },
+      (err) => { clearTimeout(timer); reject(err) },
+    )
+  })
+}
+
+function delay(ms: number): Promise<void> {
+  return new Promise((resolve) => setTimeout(resolve, ms))
+}
+
 export function useConversation() {
   const [state, dispatch] = useReducer(conversationReducer, undefined, () => {
     const initial = createInitialState()
@@ -42,6 +62,13 @@ export function useConversation() {
       dispatch({ type: 'ADD_USER_MESSAGE', content: text })
       dispatch({ type: 'SET_LOADING', isLoading: true })
 
+      // Offline check
+      if (!navigator.onLine) {
+        dispatch({ type: 'ADD_ASSISTANT_MESSAGE', content: OFFLINE_MESSAGE })
+        dispatch({ type: 'SET_LOADING', isLoading: false })
+        return
+      }
+
       try {
         const current = stateRef.current
         // Build messages list including the new user message
@@ -55,12 +82,21 @@ export function useConversation() {
           },
         ]
 
-        const response = await sendMessage(
-          allMessages,
-          current.stage,
-          current.personData,
-          current.situations,
-        )
+        // Send with timeout + 1 retry
+        let response
+        try {
+          response = await withTimeout(
+            sendMessage(allMessages, current.stage, current.personData, current.situations),
+            API_TIMEOUT_MS,
+          )
+        } catch {
+          // Retry once after a short delay
+          await delay(2000)
+          response = await withTimeout(
+            sendMessage(allMessages, current.stage, current.personData, current.situations),
+            API_TIMEOUT_MS,
+          )
+        }
 
         // Apply person data updates
         if (response.personData) {
@@ -68,15 +104,23 @@ export function useConversation() {
 
           // If postcode was provided, do a lookup for nation/local authority
           if (response.personData.postcode) {
-            const postcodeResult = await lookupPostcode(response.personData.postcode)
-            if (postcodeResult) {
-              dispatch({
-                type: 'UPDATE_PERSON_DATA',
-                data: {
-                  nation: countryToNation(postcodeResult.country),
-                  local_authority: postcodeResult.admin_district,
-                },
-              })
+            try {
+              const postcodeResult = await lookupPostcode(response.personData.postcode)
+              if (postcodeResult) {
+                dispatch({
+                  type: 'UPDATE_PERSON_DATA',
+                  data: {
+                    nation: countryToNation(postcodeResult.country),
+                    local_authority: postcodeResult.admin_district,
+                  },
+                })
+              } else {
+                // Default to england if lookup fails
+                dispatch({ type: 'UPDATE_PERSON_DATA', data: { nation: 'england' } })
+              }
+            } catch {
+              // Default to england if lookup fails
+              dispatch({ type: 'UPDATE_PERSON_DATA', data: { nation: 'england' } })
             }
           }
         }
@@ -104,8 +148,13 @@ export function useConversation() {
             ]
             const uniqueSituations = [...new Set(allSituations)]
 
-            const bundle = buildBundle(updatedPerson, uniqueSituations)
-            dispatch({ type: 'SET_BUNDLE', bundle })
+            try {
+              const bundle = buildBundle(updatedPerson, uniqueSituations)
+              dispatch({ type: 'SET_BUNDLE', bundle })
+            } catch (err) {
+              console.error('Bundle build error:', err)
+              dispatch({ type: 'ADD_ASSISTANT_MESSAGE', content: BUNDLE_ERROR_MESSAGE })
+            }
           }
         }
 

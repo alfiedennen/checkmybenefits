@@ -15,11 +15,12 @@ export function WhatYouNeed({ items }: Props) {
         className="what-you-need-toggle"
         onClick={() => setExpanded(!expanded)}
         aria-expanded={expanded}
+        aria-controls="what-you-need-list"
       >
         What you'll need {expanded ? '(hide)' : `(${items.length} items)`}
       </button>
       {expanded && (
-        <ul className="what-you-need-list">
+        <ul className="what-you-need-list" id="what-you-need-list">
           {items.map((item, i) => (
             <li key={i}>{item}</li>
           ))}

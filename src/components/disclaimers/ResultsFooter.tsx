@@ -2,7 +2,7 @@ import benefitRates from '../../data/benefit-rates.json'
 
 export function ResultsFooter() {
   return (
-    <div className="results-footer" role="contentinfo">
+    <footer className="results-footer">
       <p>
         <strong>We try to be thorough, but we can't cover everything.</strong> There may be
         local schemes, discretionary funds, or entitlements we've missed. Our estimates are
@@ -55,6 +55,6 @@ export function ResultsFooter() {
           (SEND advice and tribunal support)
         </li>
       </ul>
-    </div>
+    </footer>
   )
 }

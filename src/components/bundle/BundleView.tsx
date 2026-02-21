@@ -32,7 +32,12 @@ export function BundleView({ bundle }: Props) {
 
   return (
     <div className="bundle-view" aria-label="Your entitlements bundle">
-      <h2 className="bundle-heading">Based on what you've told us, here's what you may be entitled to:</h2>
+      <div className="bundle-header-row">
+        <h2 className="bundle-heading">Based on what you've told us, here's what you may be entitled to:</h2>
+        <button className="print-btn" onClick={() => window.print()}>
+          Print / save as PDF
+        </button>
+      </div>
 
       <TotalValueBanner
         low={bundle.total_estimated_annual_value.low}

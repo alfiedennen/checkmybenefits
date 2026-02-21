@@ -8,7 +8,7 @@ interface Props {
 export function GatewayCard({ entitlement }: Props) {
   return (
     <div className="gateway-card" aria-label={`Gateway benefit: ${entitlement.name}`}>
-      <div className="gateway-badge">START HERE</div>
+      <span className="gateway-badge" role="img" aria-label="Priority: start here">START HERE</span>
       <EntitlementCard entitlement={entitlement} showWhyThisMatters />
     </div>
   )

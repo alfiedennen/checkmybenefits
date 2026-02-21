@@ -13,10 +13,11 @@ export function App() {
 
   return (
     <div className="app">
+      <a href="#main-content" className="skip-link">Skip to content</a>
       <Header />
       <PrivacyBanner />
 
-      <main className="main-content">
+      <main className="main-content" id="main-content">
         <ConversationView
           messages={state.messages}
           isLoading={state.isLoading}
