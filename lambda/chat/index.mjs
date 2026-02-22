@@ -1,7 +1,7 @@
 import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime'
 
 const client = new BedrockRuntimeClient({ region: 'eu-west-2' })
-const MODEL_ID = 'amazon.nova-micro-v1:0'
+const MODEL_ID = 'amazon.nova-lite-v1:0'
 
 export async function handler(event) {
   // Handle CORS preflight
@@ -36,7 +36,7 @@ export async function handler(event) {
       modelId: MODEL_ID,
       system: [{ text: system }],
       messages: bedrockMessages,
-      inferenceConfig: { maxTokens: 1024, temperature: 0.7 },
+      inferenceConfig: { maxTokens: 4096, temperature: 0.7 },
       guardrailConfig: {
         guardrailIdentifier: process.env.GUARDRAIL_ID,
         guardrailVersion: process.env.GUARDRAIL_VERSION,
