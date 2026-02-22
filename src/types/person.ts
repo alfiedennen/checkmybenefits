@@ -99,6 +99,8 @@ export interface PersonData {
   council_tax_band?: string
   weekly_childcare_costs?: number
   partner_age?: number
+  lsoa?: string
+  deprivation_decile?: number
 }
 
 export function createEmptyPerson(): PersonData {

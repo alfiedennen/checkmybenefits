@@ -3,6 +3,7 @@ export interface PostcodeLookupResult {
   admin_district: string
   region: string
   country: string
+  lsoa: string
 }
 
 export async function lookupPostcode(postcode: string): Promise<PostcodeLookupResult | null> {
@@ -21,6 +22,7 @@ export async function lookupPostcode(postcode: string): Promise<PostcodeLookupRe
       admin_district: data.result.admin_district ?? '',
       region: data.result.region ?? '',
       country: data.result.country ?? 'England',
+      lsoa: data.result.codes?.lsoa ?? '',
     }
   } catch {
     return null

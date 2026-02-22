@@ -5,6 +5,7 @@ import { buildBundle } from '../engine/bundle-builder.ts'
 import { sendMessage } from '../services/claude.ts'
 import { extractFromMessage, mergeExtraction } from '../services/message-extractor.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
+import { getDeprivationDecile } from '../services/deprivation.ts'
 
 const OPENING_MESSAGE = `What's going on in your life right now? Tell me in your own words, or pick one of these to get started.`
 
@@ -114,11 +115,16 @@ export function useConversation() {
             try {
               const postcodeResult = await lookupPostcode(mergedPersonData.postcode!)
               if (postcodeResult) {
+                const deprivationDecile = postcodeResult.lsoa
+                  ? getDeprivationDecile(postcodeResult.lsoa)
+                  : null
                 dispatch({
                   type: 'UPDATE_PERSON_DATA',
                   data: {
                     nation: countryToNation(postcodeResult.country),
                     local_authority: postcodeResult.admin_district,
+                    lsoa: postcodeResult.lsoa || undefined,
+                    deprivation_decile: deprivationDecile ?? undefined,
                   },
                 })
               } else {
