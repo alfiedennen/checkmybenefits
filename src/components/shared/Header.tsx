@@ -11,8 +11,8 @@ export function Header({ onAboutToggle, isAboutOpen }: Props) {
       <div className="header-inner">
         <div className="header-row">
           <div>
-            <h1 className="header-title">CitizenFirst</h1>
-            <p className="header-subtitle">Discover what you're entitled to</p>
+            <h1 className="header-title">Check My Benefits</h1>
+            <p className="header-subtitle">Free UK benefits checker</p>
           </div>
           <button
             className="header-about-btn"

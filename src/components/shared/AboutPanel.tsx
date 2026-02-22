@@ -7,10 +7,10 @@ export function AboutPanel({ isOpen, onClose }: Props) {
   if (!isOpen) return null
 
   return (
-    <div className="about-panel" role="region" aria-label="About CitizenFirst">
+    <div className="about-panel" role="region" aria-label="About Check My Benefits">
       <div className="about-panel-inner">
         <div className="about-panel-header">
-          <h2 className="about-panel-title">About CitizenFirst</h2>
+          <h2 className="about-panel-title">About Check My Benefits</h2>
           <button className="about-panel-close" onClick={onClose} aria-label="Close about panel">
             Close
           </button>
@@ -20,7 +20,7 @@ export function AboutPanel({ isOpen, onClose }: Props) {
           <div className="about-panel-section">
             <h3>What it does</h3>
             <p>
-              CitizenFirst helps UK citizens discover benefits, grants, and support they may be
+              Check My Benefits helps UK citizens discover benefits, grants, and support they may be
               entitled to. Tell us about your situation and we'll show you what to claim, in what
               order, and how to apply.
             </p>
@@ -38,8 +38,8 @@ export function AboutPanel({ isOpen, onClose }: Props) {
           <div className="about-panel-section">
             <h3>Data sources</h3>
             <p>
-              All eligibility information comes from publicly available government data, including
-              GOV.UK benefit rates and rules. We use open-source policy engines where possible.
+              All eligibility rules are based on published GOV.UK criteria and official benefit
+              rates for 2025-26.
             </p>
           </div>
 
@@ -56,7 +56,7 @@ export function AboutPanel({ isOpen, onClose }: Props) {
             <ul>
               <li>This is guidance, not formal benefits advice</li>
               <li>We can't guarantee eligibility — results are estimates</li>
-              <li>Currently covers 4 life situations (more coming soon)</li>
+              <li>Covers 52 UK entitlements across any life situation</li>
               <li>Does not replace Citizens Advice or professional advisers</li>
             </ul>
           </div>

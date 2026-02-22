@@ -11,7 +11,7 @@ export function MessageBubble({ message }: Props) {
     <div
       className={`message-bubble ${isUser ? 'message-user' : 'message-assistant'}`}
       role="article"
-      aria-label={`${isUser ? 'You' : 'CitizenFirst'} said`}
+      aria-label={`${isUser ? 'You' : 'Check My Benefits'} said`}
     >
       <div className="message-content">{message.content}</div>
     </div>

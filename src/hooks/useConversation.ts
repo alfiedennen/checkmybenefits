@@ -6,13 +6,7 @@ import { sendMessage } from '../services/claude.ts'
 import { extractFromMessage, mergeExtraction } from '../services/message-extractor.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
 
-const OPENING_MESSAGE = `Hi! I'm here to help you find out what benefits and support you might be entitled to.
-
-Tell me what's going on in your own words — whatever your situation, I'll ask a few questions and show you what you could claim, how much it might be worth, and how to apply.
-
-This is guidance, not formal benefits advice — but it's a good place to start.
-
-Or tap one of these to get started.`
+const OPENING_MESSAGE = `What's going on in your life right now? Tell me in your own words, or pick one of these to get started.`
 
 const SITUATION_QUICK_REPLIES: QuickReply[] = [
   { label: "My parent is struggling to cope", value: "My mum can't cope on her own anymore" },
