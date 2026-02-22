@@ -48,7 +48,7 @@ User message
   │
   ▼
 ┌─────────────────────────────┐
-│  Amazon Nova Micro (Bedrock) │  Situation classification, empathetic conversation,
+│  Amazon Nova Lite (Bedrock) │  Situation classification, empathetic conversation,
 │  + Bedrock Guardrails        │  structured data extraction from natural language
 └─────────────┬───────────────┘
               │
@@ -70,7 +70,7 @@ User message
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React 19 SPA, mobile-first, no backend storage |
-| AI | Amazon Nova Micro via AWS Bedrock Converse API |
+| AI | Amazon Nova Lite via AWS Bedrock Converse API |
 | Content safety | Bedrock Guardrails (content filters, PII blocking, topic denial) |
 | Data | Static JSON entitlement model + GOV.UK benefit rates (auto-updated) |
 | Infrastructure | Terraform — S3, CloudFront, Lambda, API Gateway, Route 53 |
@@ -85,8 +85,12 @@ All infrastructure is defined in Terraform (`infrastructure/`):
 Route 53 (DNS)
   └── CloudFront (CDN + SSL)
         ├── S3 (static site)
-        └── API Gateway → Lambda (chat API → Bedrock Nova Micro)
+        └── API Gateway → Lambda (chat API → Bedrock Nova Lite)
                                     └── Bedrock Guardrail
+
+SNS Topic → Email alerts
+  ├── AWS Budget ($50/month Bedrock)
+  └── CloudWatch Alarm (invocation spike)
 ```
 
 ### Bedrock Guardrails
@@ -97,6 +101,14 @@ The chat API is protected by a Bedrock Guardrail that runs server-side, filterin
 - **Denied topics** — investment advice, medical diagnosis, legal advice
 - **PII blocking** — NI numbers, credit/debit card numbers, NHS numbers
 - **Profanity filter** — AWS managed word list
+
+### Cost Monitoring
+
+Bedrock spend is tracked with a $50/month budget and email alerts:
+
+- **AWS Budget** — filtered to Amazon Bedrock, alerts at 50% ($25), 80% ($40), 100% ($50)
+- **CloudWatch alarm** — Lambda invocation count threshold (fast-reacting proxy, since Budgets data lags 12–24hrs)
+- **SNS notifications** — email alerts to the project owner
 
 ### GitHub Actions Workflows
 
@@ -255,7 +267,7 @@ scripts/
 └── build-imd-lookup.ts         # Build LSOA → IMD decile lookup
 
 infrastructure/
-├── main.tf                     # S3, CloudFront, Lambda, API Gateway, Bedrock Guardrail
+├── main.tf                     # S3, CloudFront, Lambda, API Gateway, Bedrock Guardrail, Cost Monitoring
 ├── provider.tf                 # AWS providers (eu-west-2 + us-east-1 for ACM)
 ├── variables.tf
 └── outputs.tf
@@ -369,15 +381,17 @@ npx tsx tests/nova-eval/run-eval.ts
 | M: Housing & energy | 4 | Pensioner renting, SMI mortgage, WaterSure, ECO4 |
 | N: Transport & legal | 3 | PIP mobility + transport, court fee remission, funeral expenses |
 
-### Results (Nova Micro)
+### Results (Nova Lite)
 
 | Metric | Model-only | Model + code fallback |
 |--------|-----------|----------------------|
 | Overall score | 85.9% | **96.0%** |
 | Scenarios passed | 61/61 | 61/61 |
 | Avg latency | 810ms | 810ms |
-| Est. cost/conversation | $0.001 | $0.001 |
-| Conversations per dollar | ~1,013 | ~1,013 |
+| Est. cost/conversation | ~$0.002 | ~$0.002 |
+| Conversations per dollar | ~500 | ~500 |
+
+*Note: Originally built on Nova Micro ($0.001/conv) but switched to Nova Lite — Micro couldn't reliably follow the structured XML output format for data extraction.*
 
 ## Deployment
 
@@ -406,7 +420,7 @@ git push origin main
 npm run dev:full
 ```
 
-Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claude API using the key in `.env.local`.
+Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claude API (Sonnet) using the key in `.env.local`. Production uses Nova Lite via Bedrock.
 
 ## Accessibility
 
@@ -443,7 +457,7 @@ Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claud
 
 **Why gateway cascade?** Because it's the highest-value insight we can give someone. "Claim Pension Credit first — it unlocks 6 other things worth £5,000/year" is worth more than a flat list of 20 benefits.
 
-**Why Nova Micro over Claude?** At $0.001/conversation with 810ms latency, it's 10–50x cheaper than Claude Sonnet for this use case. The code-based extraction fallback compensates for the smaller model's weaknesses, bringing accuracy to 96%.
+**Why Nova Lite over Claude?** At ~$0.002/conversation, it's 10–50x cheaper than Claude Sonnet for this use case. Nova Micro was even cheaper but couldn't reliably follow the structured XML output format. Nova Lite handles it well, and the code-based extraction fallback compensates for any remaining weaknesses, bringing accuracy to 96%.
 
 ## License
 
