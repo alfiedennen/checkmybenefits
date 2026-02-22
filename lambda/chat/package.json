@@ -1,0 +1,8 @@
+{
+  "name": "checkmybenefits-chat",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@aws-sdk/client-bedrock-runtime": "^3.995.0"
+  }
+}
