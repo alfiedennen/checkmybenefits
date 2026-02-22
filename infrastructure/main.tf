@@ -506,3 +506,73 @@ resource "aws_cloudfront_distribution" "main" {
     }
   }
 }
+
+# -----------------------------------------------------------------------------
+# Cost Monitoring — $50/month Bedrock budget with email alerts
+# -----------------------------------------------------------------------------
+
+resource "aws_sns_topic" "cost_alerts" {
+  name = "checkmybenefits-cost-alerts"
+}
+
+resource "aws_sns_topic_subscription" "cost_alerts_email" {
+  topic_arn = aws_sns_topic.cost_alerts.arn
+  protocol  = "email"
+  endpoint  = var.alert_email
+}
+
+resource "aws_budgets_budget" "bedrock" {
+  name         = "checkmybenefits-bedrock-monthly"
+  budget_type  = "COST"
+  limit_amount = var.monthly_budget
+  limit_unit   = "USD"
+  time_unit    = "MONTHLY"
+
+  cost_filter {
+    name   = "Service"
+    values = ["Amazon Bedrock"]
+  }
+
+  notification {
+    comparison_operator       = "GREATER_THAN"
+    threshold                 = 50
+    threshold_type            = "PERCENTAGE"
+    notification_type         = "ACTUAL"
+    subscriber_sns_topic_arns = [aws_sns_topic.cost_alerts.arn]
+  }
+
+  notification {
+    comparison_operator       = "GREATER_THAN"
+    threshold                 = 80
+    threshold_type            = "PERCENTAGE"
+    notification_type         = "ACTUAL"
+    subscriber_sns_topic_arns = [aws_sns_topic.cost_alerts.arn]
+  }
+
+  notification {
+    comparison_operator       = "GREATER_THAN"
+    threshold                 = 100
+    threshold_type            = "PERCENTAGE"
+    notification_type         = "ACTUAL"
+    subscriber_sns_topic_arns = [aws_sns_topic.cost_alerts.arn]
+  }
+}
+
+resource "aws_cloudwatch_metric_alarm" "lambda_invocations" {
+  alarm_name          = "checkmybenefits-invocation-alarm"
+  alarm_description   = "High Lambda invocation count — possible runaway costs"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Invocations"
+  namespace           = "AWS/Lambda"
+  period              = 86400
+  statistic           = "Sum"
+  threshold           = 50000
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    FunctionName = aws_lambda_function.chat.function_name
+  }
+
+  alarm_actions = [aws_sns_topic.cost_alerts.arn]
+}

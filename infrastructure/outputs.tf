@@ -27,3 +27,8 @@ output "guardrail_id" {
   description = "Bedrock Guardrail ID for chat API"
   value       = aws_bedrock_guardrail.chat.guardrail_id
 }
+
+output "sns_topic_arn" {
+  description = "SNS topic ARN for cost and usage alerts"
+  value       = aws_sns_topic.cost_alerts.arn
+}

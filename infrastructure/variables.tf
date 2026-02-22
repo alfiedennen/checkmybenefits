@@ -9,3 +9,15 @@ variable "bucket_name" {
   type        = string
   default     = "checkmybenefits-website"
 }
+
+variable "alert_email" {
+  description = "Email address for cost and usage alerts"
+  type        = string
+  default     = "alfied@gmail.com"
+}
+
+variable "monthly_budget" {
+  description = "Monthly budget limit in USD for Bedrock spend"
+  type        = string
+  default     = "50"
+}
