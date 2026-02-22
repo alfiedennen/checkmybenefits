@@ -29,7 +29,7 @@ export async function handler(event) {
 
     const bedrockMessages = trimmed.map((m) => ({
       role: m.role,
-      content: [{ text: m.content }],
+      content: [{ text: m.content?.trim() || '...' }],
     }))
 
     const command = new ConverseCommand({
