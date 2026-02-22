@@ -199,6 +199,9 @@ resource "aws_bedrock_guardrail" "chat" {
   blocked_input_messaging   = "I can only help with questions about UK benefits and entitlements. Please rephrase your question."
   blocked_outputs_messaging = "I wasn't able to generate a helpful response. Please try rephrasing your question about benefits."
 
+  # Override default_tags — IAM user lacks bedrock:TagResource
+  tags = {}
+
   content_policy_config {
     filters_config {
       type            = "HATE"
@@ -236,16 +239,19 @@ resource "aws_bedrock_guardrail" "chat" {
     topics_config {
       name       = "investment_advice"
       definition = "Advice on investing money, stocks, crypto, or financial products"
+      examples   = []
       type       = "DENY"
     }
     topics_config {
       name       = "medical_diagnosis"
       definition = "Diagnosing medical conditions or prescribing treatments"
+      examples   = []
       type       = "DENY"
     }
     topics_config {
       name       = "legal_advice"
       definition = "Specific legal advice on cases, litigation, or legal strategy"
+      examples   = []
       type       = "DENY"
     }
   }
