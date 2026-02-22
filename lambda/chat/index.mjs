@@ -21,7 +21,13 @@ export async function handler(event) {
       return response(400, { error: 'Missing messages or system prompt' })
     }
 
-    const bedrockMessages = messages.map((m) => ({
+    // Bedrock requires conversation to start with a user message.
+    // The frontend sends the opening assistant greeting — strip leading assistant messages.
+    const filtered = messages.filter((m) => m.role === 'user' || m.role === 'assistant')
+    const firstUserIdx = filtered.findIndex((m) => m.role === 'user')
+    const trimmed = firstUserIdx >= 0 ? filtered.slice(firstUserIdx) : filtered
+
+    const bedrockMessages = trimmed.map((m) => ({
       role: m.role,
       content: [{ text: m.content }],
     }))
