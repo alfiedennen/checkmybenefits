@@ -183,8 +183,8 @@ resource "aws_lambda_function_url" "chat" {
 
   cors {
     allow_origins = ["*"]
-    allow_methods = ["POST", "OPTIONS"]
-    allow_headers = ["Content-Type"]
+    allow_methods = ["POST"]
+    allow_headers = ["content-type"]
   }
 }
 
