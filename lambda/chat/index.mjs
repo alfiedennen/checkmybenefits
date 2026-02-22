@@ -37,9 +37,22 @@ export async function handler(event) {
       system: [{ text: system }],
       messages: bedrockMessages,
       inferenceConfig: { maxTokens: 1024, temperature: 0.7 },
+      guardrailConfig: {
+        guardrailIdentifier: process.env.GUARDRAIL_ID,
+        guardrailVersion: process.env.GUARDRAIL_VERSION,
+      },
     })
 
     const result = await client.send(command)
+
+    // Handle guardrail intervention
+    if (result.stopReason === 'guardrail_intervened') {
+      const blockedText = result.output?.message?.content
+        ?.map((block) => ('text' in block ? block.text : ''))
+        .join('') ?? "I can only help with questions about UK benefits and entitlements. Please try rephrasing your question."
+
+      return response(200, { content: [{ type: 'text', text: blockedText }] })
+    }
 
     const text = result.output?.message?.content
       ?.map((block) => ('text' in block ? block.text : ''))

@@ -22,3 +22,8 @@ output "api_gateway_url" {
   description = "API Gateway URL for chat API"
   value       = aws_api_gateway_stage.prod.invoke_url
 }
+
+output "guardrail_id" {
+  description = "Bedrock Guardrail ID for chat API"
+  value       = aws_bedrock_guardrail.chat.guardrail_id
+}

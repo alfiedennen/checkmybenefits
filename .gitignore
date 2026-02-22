@@ -1,6 +1,42 @@
 node_modules
 dist
-.env.local
-.env
-*.local
 .cache/
+
+# Environment variables — never commit secrets
+.env
+.env.*
+*.local
+
+# Terraform
+infrastructure/.terraform/
+infrastructure/tfplan
+infrastructure/tfplan.*
+*.tfstate
+*.tfstate.*
+*.tfvars
+!infrastructure/variables.tf
+crash.log
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Build artifacts
+*.zip
+lambda/chat/package-lock.json
+
+# Test payloads (may contain PII samples)
+lambda-output.json
+lambda-payload.json
+
+# IDE / OS
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# Claude Code agent data
+.claude/

@@ -156,6 +156,11 @@ resource "aws_iam_role_policy" "lambda_bedrock" {
         Effect   = "Allow"
         Action   = "bedrock:InvokeModel"
         Resource = "arn:aws:bedrock:eu-west-2::foundation-model/amazon.nova-micro-v1:0"
+      },
+      {
+        Effect   = "Allow"
+        Action   = "bedrock:ApplyGuardrail"
+        Resource = aws_bedrock_guardrail.chat.guardrail_arn
       }
     ]
   })
@@ -175,6 +180,101 @@ resource "aws_lambda_function" "chat" {
   memory_size      = 256
   timeout          = 30
   source_code_hash = filebase64sha256("${path.module}/../lambda/chat/chat-lambda.zip")
+
+  environment {
+    variables = {
+      GUARDRAIL_ID      = aws_bedrock_guardrail.chat.guardrail_id
+      GUARDRAIL_VERSION = aws_bedrock_guardrail_version.chat.version
+    }
+  }
+}
+
+# -----------------------------------------------------------------------------
+# Bedrock Guardrail — Content safety for chat API
+# -----------------------------------------------------------------------------
+
+resource "aws_bedrock_guardrail" "chat" {
+  name                      = "checkmybenefits-chat-guardrail"
+  description               = "Content safety guardrail for Check My Benefits chat API"
+  blocked_input_messaging   = "I can only help with questions about UK benefits and entitlements. Please rephrase your question."
+  blocked_outputs_messaging = "I wasn't able to generate a helpful response. Please try rephrasing your question about benefits."
+
+  content_policy_config {
+    filters_config {
+      type            = "HATE"
+      input_strength  = "HIGH"
+      output_strength = "HIGH"
+    }
+    filters_config {
+      type            = "INSULTS"
+      input_strength  = "HIGH"
+      output_strength = "HIGH"
+    }
+    filters_config {
+      type            = "SEXUAL"
+      input_strength  = "HIGH"
+      output_strength = "HIGH"
+    }
+    filters_config {
+      type            = "VIOLENCE"
+      input_strength  = "HIGH"
+      output_strength = "HIGH"
+    }
+    filters_config {
+      type            = "MISCONDUCT"
+      input_strength  = "HIGH"
+      output_strength = "HIGH"
+    }
+    filters_config {
+      type            = "PROMPT_ATTACK"
+      input_strength  = "HIGH"
+      output_strength = "NONE"
+    }
+  }
+
+  topic_policy_config {
+    topics_config {
+      name       = "investment_advice"
+      definition = "Advice on investing money, stocks, crypto, or financial products"
+      type       = "DENY"
+    }
+    topics_config {
+      name       = "medical_diagnosis"
+      definition = "Diagnosing medical conditions or prescribing treatments"
+      type       = "DENY"
+    }
+    topics_config {
+      name       = "legal_advice"
+      definition = "Specific legal advice on cases, litigation, or legal strategy"
+      type       = "DENY"
+    }
+  }
+
+  word_policy_config {
+    managed_word_lists_config {
+      type = "PROFANITY"
+    }
+  }
+
+  sensitive_information_policy_config {
+    pii_entities_config {
+      type   = "UK_NATIONAL_INSURANCE_NUMBER"
+      action = "BLOCK"
+    }
+    pii_entities_config {
+      type   = "CREDIT_DEBIT_CARD_NUMBER"
+      action = "BLOCK"
+    }
+    pii_entities_config {
+      type   = "UK_NATIONAL_HEALTH_SERVICE_NUMBER"
+      action = "BLOCK"
+    }
+  }
+}
+
+resource "aws_bedrock_guardrail_version" "chat" {
+  guardrail_arn = aws_bedrock_guardrail.chat.guardrail_arn
+  description   = "Production version"
 }
 
 # -----------------------------------------------------------------------------
