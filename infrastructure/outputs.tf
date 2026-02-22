@@ -18,7 +18,7 @@ output "s3_bucket" {
   value       = aws_s3_bucket.website.id
 }
 
-output "lambda_function_url" {
-  description = "Lambda function URL for chat API"
-  value       = aws_lambda_function_url.chat.function_url
+output "api_gateway_url" {
+  description = "API Gateway URL for chat API"
+  value       = aws_api_gateway_stage.prod.invoke_url
 }

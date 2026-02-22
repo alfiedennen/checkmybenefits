@@ -177,15 +177,124 @@ resource "aws_lambda_function" "chat" {
   source_code_hash = filebase64sha256("${path.module}/../lambda/chat/chat-lambda.zip")
 }
 
-resource "aws_lambda_function_url" "chat" {
-  function_name      = aws_lambda_function.chat.function_name
-  authorization_type = "NONE"
+# -----------------------------------------------------------------------------
+# API Gateway — REST API for /api/chat
+# -----------------------------------------------------------------------------
 
-  cors {
-    allow_origins = ["*"]
-    allow_methods = ["POST"]
-    allow_headers = ["content-type"]
+resource "aws_api_gateway_rest_api" "chat" {
+  name        = "checkmybenefits-chat-api"
+  description = "Check My Benefits chat API"
+
+  endpoint_configuration {
+    types = ["REGIONAL"]
   }
+}
+
+resource "aws_api_gateway_resource" "api" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  parent_id   = aws_api_gateway_rest_api.chat.root_resource_id
+  path_part   = "api"
+}
+
+resource "aws_api_gateway_resource" "chat" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  parent_id   = aws_api_gateway_resource.api.id
+  path_part   = "chat"
+}
+
+# POST /api/chat
+resource "aws_api_gateway_method" "chat_post" {
+  rest_api_id   = aws_api_gateway_rest_api.chat.id
+  resource_id   = aws_api_gateway_resource.chat.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "chat_post" {
+  rest_api_id             = aws_api_gateway_rest_api.chat.id
+  resource_id             = aws_api_gateway_resource.chat.id
+  http_method             = aws_api_gateway_method.chat_post.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.chat.invoke_arn
+}
+
+# OPTIONS /api/chat (CORS preflight)
+resource "aws_api_gateway_method" "chat_options" {
+  rest_api_id   = aws_api_gateway_rest_api.chat.id
+  resource_id   = aws_api_gateway_resource.chat.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "chat_options" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  resource_id = aws_api_gateway_resource.chat.id
+  http_method = aws_api_gateway_method.chat_options.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "chat_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  resource_id = aws_api_gateway_resource.chat.id
+  http_method = aws_api_gateway_method.chat_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "chat_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  resource_id = aws_api_gateway_resource.chat.id
+  http_method = aws_api_gateway_method.chat_options.http_method
+  status_code = aws_api_gateway_method_response.chat_options_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+}
+
+# Deploy the API
+resource "aws_api_gateway_deployment" "chat" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+
+  depends_on = [
+    aws_api_gateway_integration.chat_post,
+    aws_api_gateway_integration.chat_options,
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "prod" {
+  rest_api_id   = aws_api_gateway_rest_api.chat.id
+  deployment_id = aws_api_gateway_deployment.chat.id
+  stage_name    = "prod"
+}
+
+# Allow API Gateway to invoke Lambda
+resource "aws_lambda_permission" "api_gateway" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.chat.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.chat.execution_arn}/*/*"
 }
 
 # -----------------------------------------------------------------------------
@@ -214,10 +323,11 @@ resource "aws_cloudfront_distribution" "main" {
     origin_access_control_id = aws_cloudfront_origin_access_control.s3.id
   }
 
-  # Lambda function URL origin for /api/*
+  # API Gateway origin for /api/*
   origin {
-    domain_name = replace(replace(aws_lambda_function_url.chat.function_url, "https://", ""), "/", "")
-    origin_id   = "lambda-api"
+    domain_name = "${aws_api_gateway_rest_api.chat.id}.execute-api.eu-west-2.amazonaws.com"
+    origin_id   = "api-gateway"
+    origin_path = "/prod"
 
     custom_origin_config {
       http_port              = 80
@@ -250,7 +360,7 @@ resource "aws_cloudfront_distribution" "main" {
     path_pattern           = "/api/*"
     allowed_methods        = ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"]
     cached_methods         = ["GET", "HEAD"]
-    target_origin_id       = "lambda-api"
+    target_origin_id       = "api-gateway"
     viewer_protocol_policy = "redirect-to-https"
     compress               = false
 
