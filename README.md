@@ -447,4 +447,4 @@ Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claud
 
 ## License
 
-Private. Not open source.
+[CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/) — Public Domain Dedication.

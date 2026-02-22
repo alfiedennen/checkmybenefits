@@ -23,7 +23,6 @@ override.tf.json
 
 # Build artifacts
 *.zip
-lambda/chat/package-lock.json
 
 # Test payloads (may contain PII samples)
 lambda-output.json
