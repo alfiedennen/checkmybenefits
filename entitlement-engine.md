@@ -52,61 +52,69 @@ The question is: why does this approach only exist for death?
 
 ---
 
-## Part 2: V0.1 Scope — What We're Building Now
+## Part 2: What We've Built
 
-### The product: Situation Screener
+### The product: Situation Screener + Gateway Prioritiser
 
-V0.1 is a **Situation Screener** — a conversational web tool where a citizen describes their life situation in plain language and receives a prioritised bundle of entitlements they're likely eligible for, with estimated values, gateway/cascade dependencies, and an action plan.
+Check My Benefits is a conversational web tool where a citizen describes their life situation in plain language and receives a prioritised bundle of entitlements they're likely eligible for, with estimated values, gateway/cascade dependencies, and an action plan.
 
 It is an **awareness and prioritisation tool**. It does not submit applications, auto-fill forms, integrate with government APIs, or store user data.
+
+**Current status (V0.2):** 52 entitlements, 48 deterministic eligibility rules, 45 dependency edges, 5 conflict edges. Any life situation supported. 61 eval scenarios at 96% accuracy.
 
 ### Constraints
 
 - **Public APIs and open data only.** No government integrations, no private data, no scraping behind auth. Everything must be publicly accessible.
 - **Standalone product.** We build it, we ship it, citizens use it. Not a pitch, not a partnership.
-- **Hybrid calculation model.** PolicyEngine UK (open source, OpenFisca framework) handles deterministic means-tested calculations. Claude handles situation classification, conversation, and fuzzy eligibility reasoning where rules are non-computable.
+- **Deterministic rules + LLM conversation.** The entitlement engine uses deterministic eligibility rules (48 rule checkers in code) with heuristic value estimation from GOV.UK benefit rates. Claude handles situation classification, conversation, and structured data extraction. PolicyEngine integration is wired in but dormant (API requires auth; heuristic ranges are sufficient for the awareness use case).
 - **Gateway cascade is the core value.** The sequenced "claim X first, it unlocks Y and Z" journey is the primary differentiator. Every design decision should reinforce this.
 - **Complementary positioning.** Not competing with Caddy (adviser-facing), entitledto (form-based calculator), or Turn2us (grants search). We are the conversational, situation-first, cascade-aware layer that doesn't exist yet.
 
-### What V0.1 does
+### What it does
 
 - Conversational intake: citizen describes their situation, engine asks targeted follow-up questions
-- Situation classification against a defined taxonomy
-- Eligibility assessment: cross-references circumstances against entitlement data to produce a prioritised bundle
+- Situation classification against a defined taxonomy (any situation supported)
+- Eligibility assessment: deterministic rules cross-reference circumstances against 52 entitlements
 - Gateway/cascade visualisation: shows which benefits to claim first and what they unlock
 - Conflict resolution: where entitlements are mutually exclusive (e.g. Tax-Free Childcare vs UC childcare element), calculates which is better
+- Value estimation: heuristic ranges based on GOV.UK 2025-26 benefit rates
 - Action plan: time-ordered steps with difficulty ratings and links to apply
 - Signposting: links to official application routes and professional advice services
 
-### What V0.1 does not do
+### What it does not do
 
 - Submit or auto-fill any application
 - Integrate with any government API or database
 - Store user data or create accounts (session only, in-browser)
 - Provide ongoing monitoring or reminders
-- Calculate precise benefit amounts (estimates and ranges only)
+- Calculate precise means-tested benefit amounts (estimates and ranges only)
 - Cover council-specific Council Tax Support rules (flags "apply to your council" with a link)
+- Cover devolved nation schemes (Scotland, Wales, NI — partially supported)
 
-### Situations in scope for V0.1
+### Entitlement coverage
 
-Four life situations are fully developed and included in V0.1:
+**52 entitlements across 8 categories:**
 
-1. **"Mum can't cope on her own anymore"** — ageing parent/elderly care
-2. **"We're expecting a baby"** — new parents
-3. **"My child is struggling at school"** — SEND and additional needs
-4. **"I've lost my job"** — redundancy and unemployment
+| Category | Count | Examples |
+|----------|-------|---------|
+| Income & work | 8 | Universal Credit, Pension Credit, Carer's Allowance, New Style JSA |
+| Health & disability | 10 | PIP, Attendance Allowance, DLA, free NHS prescriptions/dental/sight tests, NHS Low Income Scheme |
+| Children & family | 10 | Child Benefit, DLA (child), free childcare (15/30hrs), Tax-Free Childcare, Sure Start |
+| Housing | 4 | Housing Benefit, Support for Mortgage Interest, Council Tax Support, Discretionary Housing Payment |
+| Energy & water | 4 | Warm Home Discount, Cold Weather Payment, WaterSure, ECO4 insulation |
+| Transport | 3 | Concessionary bus travel, VED exemption, Motability |
+| Legal & misc | 3 | Court fee remission, Funeral Expenses Payment, 16-19 Bursary |
+| Education | 3 | EHCP assessment, free school meals, student maintenance loan |
 
-These four have complete entitlement tables, cascade logic, friction analysis, and conversation branching.
-
-### Situations documented for future versions (V0.2+)
-
-Situations 5-10 (separation, bereavement, retirement, health condition, moving house, consumer disputes) are documented in Part 3 as design thinking for future releases. They are **not included in V0.1** — the engine will acknowledge these situations, provide general signposting to Citizens Advice and GOV.UK, and explain that more situations are coming.
+All 52 entitlements are evaluated for every user regardless of situation classification. The situation taxonomy helps guide conversation flow, but eligibility is checked universally.
 
 ### How eligibility assessment works — and its limits
 
-The engine does **not** compute eligibility deterministically. Many eligibility rules cannot be expressed as simple logical conditions (disability assessments depend on professional judgment, council tax support varies across 300+ local schemes, some thresholds interact in complex ways).
+The engine uses **deterministic rule checkers** (48 coded rules in `eligibility-rules.ts`) that test specific PersonData fields against known thresholds. This is not LLM reasoning — it is code.
 
-Instead, the engine uses an LLM (Claude) reasoning over structured entitlement data — eligibility rules expressed as a mix of computable conditions and natural language descriptions. This produces **indicative, probabilistic assessments**, not definitive answers.
+The LLM (Claude) handles the *conversation* — understanding natural language, extracting structured data, and classifying situations. A code-based extraction fallback (`message-extractor.ts`) catches fields the LLM misses using regex/keyword patterns. This hybrid approach scores 96% on 61 eval scenarios.
+
+Many eligibility rules cannot be fully expressed as simple logical conditions (disability assessments depend on professional judgment, council tax support varies across 300+ local schemes). Where data is incomplete, the engine assigns confidence tiers rather than guessing.
 
 Every result is tagged with a confidence level (`likely`, `possible`, or `worth_checking`) and accompanied by a clear disclaimer that actual eligibility is determined by the administering body. See [accuracy-and-liability.md](accuracy-and-liability.md) for the full framework.
 
@@ -202,7 +210,7 @@ The cascade logic means that the *order* in which you claim matters enormously. 
 
 Each situation below maps: what the person experiences, what outcomes they need, what entitlements exist to deliver those outcomes, the gateway/cascade dependencies, and the friction points where people currently drop out.
 
-> **V0.1 scope:** Situations 1-4 are fully implemented. Situations 5-10 are documented here as design thinking for V0.2+ and are not included in the initial build.
+> **Note:** The situations below were originally designed for V0.1 (1-4) with 5-10 planned for later. As of V0.2, all situations are supported — the engine evaluates all 52 entitlements universally regardless of situation classification. The situation mappings below remain useful as design documentation showing the cascade logic and friction analysis for each life event.
 
 ---
 
@@ -430,11 +438,11 @@ If not resolved by month 2: Local welfare assistance
 
 ---
 
-> **The following situations (5-10) are V0.2+ — documented for future development, not included in V0.1.**
+> **Situations 5-10** were originally planned for V0.2+. As of V0.2, all situations are supported via universal entitlement evaluation. The design notes below remain as reference for situation-specific cascade logic.
 
 ---
 
-### Situation 5: "I'm separating from my partner" *(V0.2+)*
+### Situation 5: "I'm separating from my partner" *(supported via universal evaluation)*
 
 **Outcomes needed:** Housing stability, child welfare, financial independence, legal protection (especially if domestic abuse)
 
@@ -444,7 +452,7 @@ If not resolved by month 2: Local welfare assistance
 
 ---
 
-### Situation 6: "Someone we love has died" *(V0.2+)*
+### Situation 6: "Someone we love has died" *(supported via universal evaluation)*
 
 **Outcomes needed:** Practical administration handled, financial transition managed, grief supported
 
@@ -464,25 +472,25 @@ Tell Us Once cancels the dead person's entitlements. Nothing in the system proac
 
 ---
 
-### Situation 7: "I'm retiring and money's tight" *(V0.2+)*
+### Situation 7: "I'm retiring and money's tight" *(supported via universal evaluation)*
 
 Full Pension Credit gateway cascade as described above, plus state pension check (many people have NI gaps that could be filled with voluntary contributions, often at extraordinary ROI — a few hundred pounds of voluntary NI can increase annual pension by thousands over a retirement).
 
 ---
 
-### Situation 8: "I've got a long-term health condition" *(V0.2+)*
+### Situation 8: "I've got a long-term health condition" *(supported via universal evaluation)*
 
 PIP/DLA as gateway → Blue Badge, Carer's Allowance for helper, Motability, vehicle excise exemption, Council Tax disability reduction, plus Access to Work (employment support), Disability Confident employers scheme, reasonable adjustments rights under Equality Act.
 
 ---
 
-### Situation 9: "We're moving house" *(V0.2+)*
+### Situation 9: "We're moving house" *(supported via universal evaluation)*
 
 Council Tax band check for new property, possible band challenge, change of school, GP re-registration, electoral roll, council tax liability transfer, utility switches, broadband change, potential Stamp Duty relief (first time buyers), Help to Buy ISA/Lifetime ISA bonus, energy grants for new property (EPC-based).
 
 ---
 
-### Situation 10: "I'm being treated unfairly" *(V0.2+)*
+### Situation 10: "I'm being treated unfairly" *(supported via universal evaluation)*
 
 Consumer rights situation — covers flight compensation, train delay repay, energy complaints (Ombudsman after 8 weeks), financial complaints (FOS), Section 75 credit card claims, GDPR SARs, parking fine appeals. Cross-cutting: the right to complain, the right to escalate, the right to compensation.
 
@@ -573,19 +581,19 @@ Approaches:
 3. **Scrape council websites** for eligibility calculators
 4. **Partner with Policy in Practice** who already have this data in their LIFT platform
 
-### What an MVP looks like
+### What's been built
 
-**V0.1 — The Situation Screener:**
-A conversational tool. You describe your situation. It tells you all the entitlements you're likely eligible for, in priority order, with estimated values and links to apply. No auto-filling, no application submission — just awareness. This alone would be transformative because the biggest barrier is people not knowing what exists.
+**V0.1 — The Situation Screener:** Conversational intake, situation classification, eligibility assessment across 47 entitlements, gateway/cascade visualisation, conflict resolution, action plans. Four core situations with full coverage.
 
-**V0.2 — The Gateway Prioritiser:**
-Add cascade logic. Show the user: "Claim X first because it unlocks Y, Z, and W." Visualise the dependency graph. Calculate the total annual value of the full bundle.
+**V0.2 — Full England Coverage (current):** 52 entitlements with 48 deterministic eligibility rules. Universal situation support — any life event, not just the original four. Added NHS health costs, childcare/education, housing/energy/water, transport/legal/misc. 61 eval scenarios at 96% accuracy with hybrid LLM + code extraction.
 
-**V0.3 — The Application Assistant:**
-For each entitlement, help with the application. Pre-fill where possible. Draft letters. Generate evidence checklists. Track deadlines.
+### What could come next
 
-**V0.4 — The Monitor:**
-Ongoing tracking. "Your Attendance Allowance decision is due within 8 weeks — here's what to do if you haven't heard back." "Your Tax-Free Childcare reconfirmation is due in 12 days." "Your child's EHCP annual review is coming up — here's how to prepare."
+**V0.3 — Devolved Nations + Council Tax:** Scotland, Wales, NI variants. Working-age Council Tax Reduction (300+ LA schemes).
+
+**V0.4 — The Application Assistant:** For each entitlement, help with the application. Pre-fill where possible. Draft letters. Generate evidence checklists. Track deadlines.
+
+**V0.5 — The Monitor:** Ongoing tracking. "Your Attendance Allowance decision is due within 8 weeks." "Your Tax-Free Childcare reconfirmation is due in 12 days." "Your child's EHCP annual review is coming up."
 
 ---
 
@@ -669,28 +677,36 @@ Pension Credit ⟷ UC (age-dependent — cannot claim both)
 
 ---
 
-## Part 8: What We're Building (V0.1)
+## Part 8: Current State and Roadmap
 
-**The Situation Screener** — this is the current build target. See [technical-build-spec.md](technical-build-spec.md) for the full technical specification.
+### What's shipped (V0.2 — Full England Coverage)
 
-One conversational page. You describe your situation. It asks the minimum follow-up questions needed (household composition, rough income, postcode, any disabilities or caring responsibilities). It returns:
+One conversational page at checkmybenefits.uk. You describe your situation. It asks the minimum follow-up questions needed (household composition, rough income, postcode, any disabilities or caring responsibilities). It returns:
 
 - "Based on what you've told me, here's what you might be entitled to:"
 - Ordered list with estimated annual value
 - Gateway benefits flagged: "START HERE — this unlocks the others"
+- Cascaded entitlements grouped under their gateway
 - Total estimated annual value of the full bundle
-- For each entitlement: one-line description, estimated value, confidence level, difficulty rating (🟢 easy / 🟡 moderate / 🔴 complex), link to apply
+- Conflict resolution for mutually exclusive benefits (e.g. TFC vs UC childcare)
+- Week-by-week action plan with priorities and deadlines
+- For each entitlement: one-line description, estimated value, confidence level, difficulty rating, link to apply
 - Disclaimer and signposting to professional advice (see [accuracy-and-liability.md](accuracy-and-liability.md))
 
-**V0.1 covers four situations:** ageing parent, new baby, child struggling at school, lost job. Other situations get graceful fallback with general signposting.
+**52 entitlements** across DWP, HMRC, NHS, DfE, DfT, and MoJ schemes. Any life situation supported. 48 deterministic eligibility rules. 45 dependency edges. 5 conflict edges. 61 eval scenarios at 96% accuracy.
 
-### Future versions (not current build)
+### Version history
+
+- **V0.1** — Situation Screener. 47 entitlements, 24 eligibility rules, 4 core situations, 42 eval scenarios at 95%.
+- **V0.2** — Full England coverage. Added NHS health costs (8), childcare & education (7), housing/energy/water (6), transport/legal/misc (5). Universal situation support. 52 entitlements, 48 rules, 61 scenarios at 96%.
+
+### Future directions
 
 These are design directions, not commitments:
 
-- **V0.2 — Gateway Prioritiser:** Add cascade visualisation. Show dependency graphs. Calculate total bundle value including cascaded benefits.
-- **V0.3 — Application Assistant:** Help with individual applications. Pre-fill where possible. Draft letters. Generate evidence checklists.
-- **V0.4 — Monitor:** Ongoing tracking, deadline reminders, annual review prompts.
+- **V0.3 — Devolved nations:** Scotland, Wales, Northern Ireland variants (~30 additional schemes). Council Tax Reduction working-age (300+ LA schemes).
+- **V0.4 — Application Assistant:** Help with individual applications. Pre-fill where possible. Draft letters. Generate evidence checklists.
+- **V0.5 — Monitor:** Ongoing tracking, deadline reminders, annual review prompts.
 
 Each future version will require its own scope lock, technical spec, and accuracy review before build.
 

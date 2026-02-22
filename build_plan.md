@@ -1,4 +1,4 @@
-# Build Plan: CitizenFirst Entitlement Engine V0.1
+# Build Plan: Check My Benefits Entitlement Engine V0.1
 
 ## Context
 
@@ -30,7 +30,7 @@ User describes situation
 ## Folder Structure
 
 ```
-citizenfirst/
+checkmybenefits/
 ├── api/
 │   └── chat.ts                     # Vercel serverless function: Claude API proxy
 ├── public/

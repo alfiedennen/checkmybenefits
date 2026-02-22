@@ -1,4 +1,4 @@
-# CitizenFirst
+# Check My Benefits
 
 A conversational web app that helps UK citizens discover what benefits and support they're entitled to. Describe your situation in plain English, answer a few questions, and get a prioritised bundle of entitlements — including what to claim first and what it unlocks.
 
@@ -6,7 +6,7 @@ A conversational web app that helps UK citizens discover what benefits and suppo
 
 ## What It Does
 
-Most people don't know what they're entitled to. Government websites list hundreds of benefits but don't tell you which ones apply to *your* situation, or that claiming one benefit can unlock three others. CitizenFirst fixes this.
+Most people don't know what they're entitled to. Government websites list hundreds of benefits but don't tell you which ones apply to *your* situation, or that claiming one benefit can unlock three others. Check My Benefits fixes this.
 
 **The conversation:**
 1. You describe what's happening — "My mum can't cope on her own anymore" or "I've just lost my job"
@@ -256,7 +256,7 @@ Rules check specific PersonData fields and return a confidence tier:
 
 ### Gateway Cascade
 
-The cascade is what makes CitizenFirst unique. Example:
+The cascade is what makes Check My Benefits unique. Example:
 
 ```
 Pension Credit (GATEWAY — claim first)
