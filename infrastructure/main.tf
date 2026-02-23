@@ -254,12 +254,6 @@ resource "aws_bedrock_guardrail" "chat" {
       examples   = []
       type       = "DENY"
     }
-    topics_config {
-      name       = "off_topic"
-      definition = "Requests that have nothing to do with financial support or benefits eligibility, such as writing CVs, career coaching, homework, coding, recipes, trivia, or creative writing"
-      examples   = ["write me a CV", "what is the capital of France", "write a poem", "help me with my homework", "give me a recipe for pasta"]
-      type       = "DENY"
-    }
   }
 
   word_policy_config {

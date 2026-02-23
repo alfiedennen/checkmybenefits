@@ -47,7 +47,7 @@ describe('System Prompt — Scope boundary', () => {
 
   it('instructs redirect to benefits rather than helping off-topic', () => {
     const prompt = promptFor('intake')
-    expect(prompt).toMatch(/do not.*attempt.*help.*off-topic/i)
+    expect(prompt).toMatch(/NEVER generate.*poems|Do not provide any part/i)
   })
 
   it('situation taxonomy no longer says "no scope restrictions"', () => {
