@@ -11,9 +11,6 @@ export function AboutPanel({ isOpen, onClose }: Props) {
       <div className="about-panel-inner">
         <div className="about-panel-header">
           <h2 className="about-panel-title">About Check My Benefits</h2>
-          <button className="about-panel-close" onClick={onClose} aria-label="Close about panel">
-            Close
-          </button>
         </div>
 
         <div className="about-panel-content">
