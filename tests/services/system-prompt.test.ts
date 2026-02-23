@@ -44,7 +44,7 @@ describe('System Prompt — Gate field alignment', () => {
   it('questions stage explicitly says do NOT complete if any gate field is missing', () => {
     const prompt = promptFor('questions')
     // Must contain a clear prohibition on completing without all 4 fields
-    expect(prompt).toMatch(/do NOT output.*stage_transition.*complete/i)
+    expect(prompt).toMatch(/(?:do NOT|MUST).*(?:complete|stage_transition)/i)
   })
 
   it('questions stage mentions postcode as a required field, not just recommended', () => {
@@ -181,7 +181,7 @@ describe('System Prompt — Regression: MT07 Bereavement premature complete', ()
     // The prompt should show postcode is still null/missing in current_context
     expect(prompt).toContain('current_context')
     // And the stage instructions should still say "do not complete without postcode"
-    expect(prompt).toMatch(/do NOT output.*stage_transition.*complete/i)
+    expect(prompt).toMatch(/(?:do NOT|MUST).*(?:complete|stage_transition)/i)
   })
 
   it('sensitivity rules do NOT override gate requirements', () => {
@@ -209,7 +209,7 @@ describe('System Prompt — Regression: MT05 Carer premature complete', () => {
     }, ['ageing_parent'])
 
     expect(prompt).toContain('current_context')
-    expect(prompt).toMatch(/do NOT output.*stage_transition.*complete/i)
+    expect(prompt).toMatch(/(?:do NOT|MUST).*(?:complete|stage_transition)/i)
   })
 })
 

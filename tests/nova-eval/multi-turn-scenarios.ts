@@ -195,6 +195,7 @@ const MT07: MultiTurnScenario = {
     is_bereaved: true,
     deceased_relationship: 'partner',
     age: 68,
+    employment_status: 'retired',
     income_band: 'under_12570',
     housing_tenure: 'own_outright',
     postcode: 'NE1 7RU',
