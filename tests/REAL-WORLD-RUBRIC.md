@@ -12,7 +12,7 @@ Two bugs hit production (Feb 2026) because nothing tested the full loop: messy u
 
 Simulates multi-turn conversations using only the code extractor. No Bedrock calls. Runs in <1s. Catches extraction gaps that would silently block results in production.
 
-### Layer 2: Multi-Turn AI Evals (Bedrock, weekly) — TODO
+### Layer 2: Multi-Turn AI Evals (Bedrock, weekly)
 
 **Files:** `tests/nova-eval/multi-turn-scenarios.ts` + `tests/nova-eval/run-multi-turn-eval.ts`
 
@@ -37,18 +37,18 @@ Tests AI conversation management — does it collect all 4 required fields befor
 | R11 | Zero income edge case | PASS | "£0" as standalone input |
 | R12 | Typos and lowercase | PASS | "morgage" documents gap, lowercase postcode |
 
-### Layer 2: Multi-Turn AI Evals (not yet implemented)
+### Layer 2: Multi-Turn AI Evals (implemented, pending first run)
 
 | ID | Name | Status | Key test |
 |----|------|--------|----------|
-| MT01 | Job loss, evasive income | TODO | AI persists when user says "not much honestly" |
-| MT02 | Pensioner, missing housing | TODO | AI asks for housing when user skips it |
-| MT03 | Everything in one message | TODO | AI handles info-dense single turn |
-| MT04 | No housing → must not complete | TODO | Direct reproduction of bug 1 |
-| MT05 | Carer, gradual reveal | TODO | Accumulates carer data across 6 turns |
-| MT06 | Disability, PIP received | TODO | AI recognises existing benefit receipt |
-| MT07 | Bereavement, emotional context | TODO | AI handles emotion while collecting data |
-| MT08 | Student employment type | TODO | AI correctly classifies uncommon status |
+| MT01 | Job loss, evasive income | READY | AI persists when user says "not much honestly" |
+| MT02 | Pensioner, missing housing | READY | AI asks for housing when user skips it |
+| MT03 | Everything in one message | READY | AI handles info-dense single turn |
+| MT04 | No housing → must not complete | READY | Direct reproduction of bug 1 |
+| MT05 | Carer, gradual reveal | READY | Accumulates carer data across 6 turns |
+| MT06 | Disability, PIP received | READY | AI recognises existing benefit receipt |
+| MT07 | Bereavement, emotional context | READY | AI handles emotion while collecting data |
+| MT08 | Student employment type | READY | AI correctly classifies uncommon status |
 
 ## Failure Mode Coverage
 
@@ -101,5 +101,5 @@ Every push (vitest, ~2s):
 
 Weekly (Bedrock eval):
   ├── run-eval.ts                  (61 single-turn scenarios)
-  └── run-multi-turn-eval.ts       (8 multi-turn scenarios — TODO)
+  └── run-multi-turn-eval.ts       (8 multi-turn scenarios)
 ```

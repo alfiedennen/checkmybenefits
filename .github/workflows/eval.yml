@@ -23,12 +23,17 @@ jobs:
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: eu-west-2
 
-      - name: Run eval
+      - name: Run single-turn eval
         run: npm run eval
+
+      - name: Run multi-turn eval
+        run: npm run eval:multi-turn
 
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: eval-results
-          path: tests/nova-eval/results.json
+          path: |
+            tests/nova-eval/results.json
+            tests/nova-eval/multi-turn-results.json
