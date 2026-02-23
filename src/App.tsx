@@ -42,7 +42,7 @@ export function App() {
       <div className="beta-banner" role="region" aria-label="Beta status">
         <strong className="beta-banner-tag">Beta</strong>
         <span>
-          This is a new service.{' '}
+          This is not a government service. Results may be wrong.{' '}
           <a href="mailto:feedback@checkmybenefits.uk">Give feedback</a> to help us improve it.
         </span>
       </div>

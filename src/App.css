@@ -311,7 +311,15 @@ a:hover { color: var(--color-primary-light); }
   font-size: 0.875rem;
   color: var(--color-text-muted);
   letter-spacing: 0.04em;
+  margin-bottom: 8px;
+}
+
+.welcome-hero-caveat {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
   margin-bottom: 32px;
+  line-height: 1.5;
 }
 
 .welcome-hero-chips {

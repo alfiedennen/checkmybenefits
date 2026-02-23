@@ -19,6 +19,10 @@ export function WelcomeHero({ onGetStarted }: Props) {
           Check now — it takes 2 minutes
         </button>
         <p className="welcome-hero-trust">Free · Private · No sign-up needed</p>
+        <p className="welcome-hero-caveat">
+          This is not a government service. Results are estimates and may be wrong — always
+          check with the official scheme before applying.
+        </p>
 
         <div className="welcome-hero-steps">
           <h3 className="welcome-hero-section-heading">How it works</h3>
@@ -74,9 +78,10 @@ export function WelcomeHero({ onGetStarted }: Props) {
         <div className="welcome-hero-privacy">
           <h3 className="welcome-hero-section-heading">Your privacy</h3>
           <p>
-            Nothing is stored. Your conversation exists only in your browser
-            and disappears when you close the page. No accounts, no tracking,
-            no cookies.
+            Nothing you type is stored. Your conversation exists only in your browser
+            and disappears when you close the page. No accounts, no sign-ups,
+            no tracking cookies. We use privacy-friendly analytics to count
+            page views — no personal data is collected.
           </p>
         </div>
       </div>
