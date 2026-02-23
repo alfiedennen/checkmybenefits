@@ -1,4 +1,4 @@
-import type { ClaudeResponse } from '../../src/services/claude.ts'
+import type { AIResponse } from '../../src/services/ai.ts'
 import type { PersonData, ChildData, CaredForPerson } from '../../src/types/person.ts'
 import type { SituationId } from '../../src/types/conversation.ts'
 import type { ExpectedOutput } from './test-scenarios.ts'
@@ -41,7 +41,7 @@ export function scoreScenario(
   scenarioId: string,
   scenarioName: string,
   expected: ExpectedOutput,
-  parsed: ClaudeResponse | null,
+  parsed: AIResponse | null,
   parseError: boolean,
 ): ScenarioScore {
   const xmlValid = !parseError && parsed !== null

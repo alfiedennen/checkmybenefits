@@ -2,9 +2,9 @@ import { createBedrockClient } from './bedrock-client.ts'
 import { ALL_SCENARIOS } from './test-scenarios.ts'
 import { scoreScenario } from './scoring.ts'
 import { buildReport, printReport, type EvalReport } from './report.ts'
-import { parseClaudeResponse, type ClaudeResponse } from '../../src/services/claude.ts'
+import { parseAIResponse, type AIResponse } from '../../src/services/ai.ts'
 import { extractFromMessage, mergeExtraction } from '../../src/services/message-extractor.ts'
-import { buildSystemPrompt } from '../../src/services/claude-system-prompt.ts'
+import { buildSystemPrompt } from '../../src/services/system-prompt.ts'
 import { createEmptyPerson } from '../../src/types/person.ts'
 import type { PersonData } from '../../src/types/person.ts'
 import type { SituationId } from '../../src/types/conversation.ts'
@@ -59,7 +59,7 @@ async function main() {
     let inputTokens = 0
     let outputTokens = 0
     let latencyMs = 0
-    let parsed: ClaudeResponse | null = null
+    let parsed: AIResponse | null = null
     let parseError = false
 
     try {
@@ -70,7 +70,7 @@ async function main() {
       latencyMs = response.latencyMs
 
       try {
-        parsed = parseClaudeResponse(rawText)
+        parsed = parseAIResponse(rawText)
       } catch {
         parseError = true
       }

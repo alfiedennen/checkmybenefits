@@ -1,8 +1,8 @@
 import type { Message, QuickReply, ConversationStage, SituationId } from '../types/conversation.ts'
 import type { PersonData } from '../types/person.ts'
-import { buildSystemPrompt } from './claude-system-prompt.ts'
+import { buildSystemPrompt } from './system-prompt.ts'
 
-export interface ClaudeResponse {
+export interface AIResponse {
   text: string
   personData?: Partial<PersonData>
   quickReplies?: QuickReply[]
@@ -15,7 +15,7 @@ export async function sendMessage(
   stage: ConversationStage,
   personData: PersonData,
   situations: SituationId[],
-): Promise<ClaudeResponse> {
+): Promise<AIResponse> {
   const system = buildSystemPrompt(stage, personData, situations)
 
   const apiMessages = messages
@@ -38,10 +38,10 @@ export async function sendMessage(
   const data = await response.json()
   const rawText = data.content?.[0]?.text ?? ''
 
-  return parseClaudeResponse(rawText)
+  return parseAIResponse(rawText)
 }
 
-export function parseClaudeResponse(raw: string): ClaudeResponse {
+export function parseAIResponse(raw: string): AIResponse {
   let text = raw
 
   // Extract ALL <person_data> blocks and merge them
