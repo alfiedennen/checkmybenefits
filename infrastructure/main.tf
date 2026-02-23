@@ -256,8 +256,8 @@ resource "aws_bedrock_guardrail" "chat" {
     }
     topics_config {
       name       = "off_topic"
-      definition = "Requests unrelated to UK benefits and entitlements, such as career coaching, CV writing, job searching, homework, coding, recipes, travel planning, or general knowledge"
-      examples   = ["write me a CV", "help me find a job", "what is the capital of France", "write a poem", "help me with my homework"]
+      definition = "Requests that have nothing to do with financial support or benefits eligibility, such as writing CVs, career coaching, homework, coding, recipes, trivia, or creative writing"
+      examples   = ["write me a CV", "what is the capital of France", "write a poem", "help me with my homework", "give me a recipe for pasta"]
       type       = "DENY"
     }
   }
