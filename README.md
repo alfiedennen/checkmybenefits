@@ -4,7 +4,7 @@ A conversational web app that helps UK citizens discover what benefits and suppo
 
 **Live:** [checkmybenefits.uk](https://checkmybenefits.uk)
 
-**Status:** V0.9 — 52 entitlements, 48 eligibility rules, 61 eval scenarios at 96%. Auto-updating benefit rates. Bedrock Guardrails for content safety. Full England coverage.
+**Status:** V0.9.1 — 52 entitlements, 48 eligibility rules, 215 tests (including 61 single-turn + 8 multi-turn AI evals) at 96%. Auto-updating benefit rates. Bedrock Guardrails for content safety. Partial postcode support. Full England coverage.
 
 ## What It Does
 
@@ -115,6 +115,7 @@ Bedrock spend is tracked with a $50/month budget and email alerts:
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
 | `deploy.yml` | Push to `main` | Build site, sync to S3, invalidate CloudFront, deploy Lambda |
+| `eval.yml` | Weekly + manual | Run 61 single-turn + 8 multi-turn AI evals against Bedrock |
 | `update-rates.yml` | Weekly cron | Fetch GOV.UK benefit rates, validate, commit if changed |
 | `check-dwp-feed.yml` | Daily cron | Monitor DWP Atom feed for rate publications, trigger update |
 
@@ -162,8 +163,10 @@ npm run dev:full
 | `npm run dev:full` | Both dev server + API proxy |
 | `npm run build` | TypeScript compile + Vite production build |
 | `npm run preview` | Preview production build locally |
-| `npm test` | Run unit tests (Vitest) |
+| `npm test` | Run unit tests (Vitest, 215 tests) |
 | `npm run test:watch` | Watch mode tests |
+| `npm run eval` | Run 61 single-turn AI eval scenarios (requires Bedrock) |
+| `npm run eval:multi-turn` | Run 8 multi-turn AI eval scenarios (requires Bedrock) |
 | `npm run update-rates` | Manually fetch latest GOV.UK benefit rates |
 | `npm run build-imd` | Rebuild IMD deprivation lookup from source data |
 
@@ -210,13 +213,14 @@ src/
 │   ├── cascade-resolver.ts     # Groups entitlements by gateway dependency
 │   ├── conflict-resolver.ts    # Resolves mutually exclusive entitlements
 │   ├── value-estimator.ts      # Calculates estimated annual values from benefit rates
+│   ├── critical-fields.ts      # Gate check: 4 required fields before bundle build
 │   └── state-machine.ts        # Conversation state reducer
 │
 ├── services/
-│   ├── claude.ts               # API client + response parser (XML tag extraction)
-│   ├── claude-system-prompt.ts # System prompt builder
+│   ├── ai.ts                   # API client + response parser (XML tag extraction)
+│   ├── system-prompt.ts        # System prompt builder (completion gate, stage instructions)
 │   ├── message-extractor.ts    # Code-based fallback extraction (regex/keywords)
-│   ├── postcodes.ts            # postcodes.io lookup (nation, local authority, LSOA)
+│   ├── postcodes.ts            # postcodes.io lookup (full + outcode/partial postcodes)
 │   ├── deprivation.ts          # IMD deprivation decile from LSOA
 │   └── policyengine.ts         # PolicyEngine integration (wired in, dormant)
 │
@@ -247,17 +251,22 @@ tests/
 │   ├── conflict-resolver.test.ts
 │   ├── validate-rates.test.ts
 │   ├── deprivation.test.ts
-│   ├── postcodes.test.ts
+│   ├── postcodes.test.ts           # Full + outcode/partial postcode tests
+│   ├── conversation-replay.test.ts # 12 multi-turn conversation replays (deterministic)
 │   ├── policyengine-integration.test.ts
 │   └── persona-scenarios.test.ts
 ├── services/
-│   └── message-extractor.test.ts
-└── nova-eval/                  # LLM evaluation framework
-    ├── run-eval.ts
-    ├── test-scenarios.ts       # 61 scenarios across 14 categories
-    ├── bedrock-client.ts
-    ├── scoring.ts
-    └── report.ts
+│   ├── message-extractor.test.ts
+│   └── system-prompt.test.ts       # 20 system prompt guardrail tests
+├── nova-eval/                      # LLM evaluation framework
+│   ├── run-eval.ts                 # Single-turn eval runner
+│   ├── run-multi-turn-eval.ts      # Multi-turn eval runner (Bedrock conversations)
+│   ├── test-scenarios.ts           # 61 single-turn scenarios across 14 categories
+│   ├── multi-turn-scenarios.ts     # 8 multi-turn conversation scenarios
+│   ├── bedrock-client.ts
+│   ├── scoring.ts
+│   └── report.ts
+└── REAL-WORLD-RUBRIC.md            # Test layer documentation
 
 scripts/
 ├── update-rates.ts             # Fetch + parse GOV.UK Content API rates
@@ -277,6 +286,7 @@ lambda/chat/
 
 .github/workflows/
 ├── deploy.yml                  # Build + deploy on push to main
+├── eval.yml                    # Weekly single-turn + multi-turn AI evals
 ├── update-rates.yml            # Weekly benefit rate auto-update
 └── check-dwp-feed.yml          # Daily DWP Atom feed monitor
 ```
@@ -294,7 +304,7 @@ The LLM handles situation classification and natural conversation. The system pr
 <quick_replies>[{"label": "Just me", "value": "Just me"}]</quick_replies>
 ```
 
-The parser (`claude.ts`) extracts these tags via regex. A code-based fallback (`message-extractor.ts`) catches fields the LLM misses using deterministic pattern matching.
+The parser (`ai.ts`) extracts these tags via regex. A code-based fallback (`message-extractor.ts`) catches fields the LLM misses using deterministic pattern matching.
 
 ### Conversation Stages
 
@@ -353,16 +363,46 @@ Current GOV.UK rates (auto-updated weekly). Covers 31 rate values across all maj
 
 32,844 LSOA to deprivation decile mappings from the Index of Multiple Deprivation 2019. Used for area-based eligibility (e.g., ECO4, Sure Start).
 
-## LLM Evaluation
+## Testing
 
-### Running the Eval
+### Test Layers
+
+| Layer | Count | What it tests | Runs |
+|-------|-------|---------------|------|
+| Unit tests (Vitest) | 215 | Engine, extraction, postcodes, system prompt guardrails | Every push |
+| Conversation replays | 12 | Multi-turn extraction → gate → bundle (deterministic, no AI) | Every push |
+| System prompt tests | 20 | Completion gate, premature-complete guards, regression scenarios | Every push |
+| Single-turn AI evals | 61 | LLM extraction quality across 14 categories | Weekly + manual |
+| Multi-turn AI evals | 8 | Full AI conversation management (field collection, gate compliance) | Weekly + manual |
+
+See [`tests/REAL-WORLD-RUBRIC.md`](tests/REAL-WORLD-RUBRIC.md) for detailed scenario documentation.
+
+### Completion Gate
+
+The system uses a dual-layer gate to prevent premature results:
+
+1. **AI-level gate** — System prompt contains a "COMPLETION GATE — MANDATORY CHECKLIST" requiring 4 fields (employment_status, income_band, housing_tenure, postcode) before the AI can transition to complete
+2. **Code-level gate** — `critical-fields.ts` blocks the `complete` transition if any of the 4 fields are missing, regardless of what the AI says
+
+This catches cases where the AI non-deterministically skips fields, especially in emotional contexts (bereavement, carer scenarios).
+
+### Partial Postcode Support
+
+If a user provides only the first part of their postcode (e.g., "SE1", "M1"), the system:
+- Calls the postcodes.io outcode API for country and local authority
+- Passes the gate (postcode field is populated)
+- Flags results with `postcode_partial: true` so the UI can note reduced precision
+- Still asks for full postcodes by default ("your full postcode helps me check local support")
+
+### Running Evals
 
 ```bash
 # Requires AWS credentials with Bedrock access
-npx tsx tests/nova-eval/run-eval.ts
+npm run eval              # 61 single-turn scenarios
+npm run eval:multi-turn   # 8 multi-turn conversation scenarios
 ```
 
-### Test Categories (61 scenarios)
+### Single-Turn Eval Categories (61 scenarios)
 
 | Category | Count | Tests |
 |----------|-------|-------|
@@ -380,6 +420,19 @@ npx tsx tests/nova-eval/run-eval.ts
 | L: Childcare & education | 5 | 2yr UC childcare, working parents 30hrs, student parent |
 | M: Housing & energy | 4 | Pensioner renting, SMI mortgage, WaterSure, ECO4 |
 | N: Transport & legal | 3 | PIP mobility + transport, court fee remission, funeral expenses |
+
+### Multi-Turn Eval Scenarios (8 scenarios)
+
+| ID | Name | Key test |
+|----|------|----------|
+| MT01 | Job loss, evasive income | AI persists when user says "not much honestly" |
+| MT02 | Pensioner, missing housing | AI asks for housing when user skips it |
+| MT03 | Everything in one message | AI handles info-dense single turn |
+| MT04 | No housing → must not complete | Direct reproduction of production bug |
+| MT05 | Carer, gradual reveal | Accumulates carer data across 6 turns |
+| MT06 | Disability, PIP received | AI recognises existing benefit receipt |
+| MT07 | Bereavement, emotional context | AI handles emotion while collecting data |
+| MT08 | Student employment type | AI correctly classifies uncommon status |
 
 ### Results (Nova Lite)
 
@@ -438,7 +491,7 @@ Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claud
 - No accounts, no cookies, no tracking, no analytics
 - Session disappears when you close the tab
 - PII (NI numbers, card numbers, NHS numbers) blocked by Bedrock Guardrails before reaching the model
-- Postcode lookup uses postcodes.io (public, no auth required)
+- Postcode lookup uses postcodes.io (public, no auth required) — accepts full or partial postcodes
 
 ## Limitations
 
