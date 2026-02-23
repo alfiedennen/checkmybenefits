@@ -166,6 +166,15 @@ function extractAge(text: string): number | undefined {
 }
 
 function extractIncome(text: string): number | undefined {
+  // Zero / no income: "none", "nothing", "no income", "£0", "zero"
+  const lower = text.toLowerCase()
+  if (
+    /\b(?:no\s+income|nothing|none|zero|£0|0\s+income)\b/.test(lower) &&
+    !/\bnone\s+of\b/.test(lower)
+  ) {
+    return 0
+  }
+
   // "earning about £12,000" / "earns £12k" / "income of £25,000"
   const annualPatterns = [
     /(?:earn|earning|earns|income|salary)\s*(?:of|is|about|around|roughly)?\s*£([\d,]+)/i,

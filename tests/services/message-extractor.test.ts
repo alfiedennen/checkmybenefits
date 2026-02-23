@@ -79,6 +79,35 @@ describe('extractFromMessage', () => {
       expect(result.gross_annual_income).toBe(25000)
       expect(result.income_band).toBe('under_25000')
     })
+
+    it('extracts "none" as zero income', () => {
+      const result = extractFromMessage('None I lost my job')
+      expect(result.gross_annual_income).toBe(0)
+      expect(result.income_band).toBe('under_7400')
+    })
+
+    it('extracts "nothing" as zero income', () => {
+      const result = extractFromMessage('Nothing at the moment')
+      expect(result.gross_annual_income).toBe(0)
+      expect(result.income_band).toBe('under_7400')
+    })
+
+    it('extracts "no income" as zero income', () => {
+      const result = extractFromMessage('We have no income right now')
+      expect(result.gross_annual_income).toBe(0)
+      expect(result.income_band).toBe('under_7400')
+    })
+
+    it('extracts "zero" as zero income', () => {
+      const result = extractFromMessage('Zero income since I was let go')
+      expect(result.gross_annual_income).toBe(0)
+      expect(result.income_band).toBe('under_7400')
+    })
+
+    it('does not match "none of" as zero income', () => {
+      const result = extractFromMessage('None of the above apply to me')
+      expect(result.gross_annual_income).toBeUndefined()
+    })
   })
 
   // ── Employment ──────────────────────────────────
