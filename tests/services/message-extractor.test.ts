@@ -132,6 +132,32 @@ describe('extractFromMessage', () => {
       const result = extractFromMessage('I work part-time at Tesco')
       expect(result.employment_status).toBe('employed')
     })
+
+    it('extracts "can\'t work" as unemployed', () => {
+      const result = extractFromMessage("I have MS and can't work anymore")
+      expect(result.employment_status).toBe('unemployed')
+    })
+
+    it('extracts "had to give up work" as unemployed', () => {
+      const result = extractFromMessage('Nothing, I had to give up work')
+      expect(result.employment_status).toBe('unemployed')
+    })
+
+    it('extracts "let go" as unemployed', () => {
+      const result = extractFromMessage('Zero income since I was let go')
+      expect(result.employment_status).toBe('unemployed')
+    })
+
+    it('extracts student', () => {
+      const result = extractFromMessage("I'm a full time student")
+      expect(result.employment_status).toBe('student')
+    })
+
+    it('extracts "£0" as zero income', () => {
+      const result = extractFromMessage('£0')
+      expect(result.gross_annual_income).toBe(0)
+      expect(result.income_band).toBe('under_7400')
+    })
   })
 
   // ── Housing ─────────────────────────────────────

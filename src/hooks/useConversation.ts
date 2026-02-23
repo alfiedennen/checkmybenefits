@@ -1,37 +1,12 @@
 import { useReducer, useCallback, useRef } from 'react'
 import type { QuickReply } from '../types/conversation.ts'
 import { conversationReducer, createInitialState } from '../engine/state-machine.ts'
-import type { PersonData } from '../types/person.ts'
 import { buildBundle } from '../engine/bundle-builder.ts'
+import { hasCriticalFields, getMissingFields } from '../engine/critical-fields.ts'
 import { sendMessage } from '../services/ai.ts'
 import { extractFromMessage, mergeExtraction } from '../services/message-extractor.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
 import { getDeprivationDecile } from '../services/deprivation.ts'
-
-/**
- * Check that we have the minimum fields needed to produce useful results.
- * Only gates on fields that heavily affect eligibility outcomes.
- * Age and relationship_status have sensible defaults in eligibility rules.
- */
-function hasCriticalFields(person: PersonData): boolean {
-  return !!(
-    person.employment_status &&
-    person.income_band &&
-    person.housing_tenure &&
-    person.postcode
-  )
-}
-
-function getMissingFields(person: PersonData): string {
-  const missing: string[] = []
-  if (!person.employment_status) missing.push('your employment situation')
-  if (!person.income_band) missing.push('your approximate household income')
-  if (!person.housing_tenure) missing.push('your housing situation (renting, own home, etc.)')
-  if (!person.postcode) missing.push('your postcode')
-  if (missing.length === 0) return 'a few more details'
-  if (missing.length === 1) return missing[0]
-  return missing.slice(0, -1).join(', ') + ' and ' + missing[missing.length - 1]
-}
 
 const OPENING_MESSAGE = `What's going on in your life right now? Tell me in your own words, or pick one of these to get started.`
 

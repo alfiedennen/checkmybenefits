@@ -169,7 +169,7 @@ function extractIncome(text: string): number | undefined {
   // Zero / no income: "none", "nothing", "no income", "£0", "zero"
   const lower = text.toLowerCase()
   if (
-    /\b(?:no\s+income|nothing|none|zero|£0|0\s+income)\b/.test(lower) &&
+    /(?:\bno\s+income\b|\bnothing\b|\bnone\b|\bzero\b|£0\b|\b0\s+income\b)/.test(lower) &&
     !/\bnone\s+of\b/.test(lower)
   ) {
     return 0
@@ -304,6 +304,15 @@ function extractEmployment(text: string): EmploymentResult | undefined {
   }
   if (/\blost\s+(?:my|his|her|their)\s+job\b/.test(lower)) {
     return { status: 'unemployed' }
+  }
+  if (/\b(?:can'?t|cannot)\s+work\b/.test(lower) || /\blet\s+(?:me\s+)?go\b/.test(lower)) {
+    return { status: 'unemployed' }
+  }
+  if (/\bgave?\s+up\s+(?:my\s+)?(?:work|job)\b/.test(lower) || /\bhad\s+to\s+give\s+up\s+work\b/.test(lower)) {
+    return { status: 'unemployed' }
+  }
+  if (/\b(?:i'm|i am)\s+(?:a\s+)?(?:full[\s-]*time\s+)?student\b/.test(lower)) {
+    return { status: 'student' }
   }
   if (/\bretired\b/.test(lower)) {
     return { status: 'retired' }
@@ -510,7 +519,7 @@ function extractMobilityDifficulty(text: string): boolean {
 }
 
 function extractNeedsHelpDailyLiving(text: string): boolean {
-  return /\b(?:need\s+help\s+with\s+(?:washing|dressing|cooking|eating|daily)|can'?t\s+cook|can'?t\s+manage|need\s+(?:help|care)\s+daily|need\s+personal\s+care|help\s+with\s+(?:everything|daily\s+(?:tasks|living))|struggle\s+with\s+daily)/i.test(text)
+  return /\b(?:need\s+help\s+with\s+(?:washing|dressing|cooking|eating|daily)|can'?t\s+cook|can'?t\s+manage|need\s+(?:help|care)\s+daily|need\s+personal\s+care|help(?:s\s+me)?\s+with\s+(?:everything|daily\s+(?:tasks|living))|struggle\s+with\s+daily)/i.test(text)
 }
 
 interface BereavementResult {

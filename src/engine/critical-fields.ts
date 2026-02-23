@@ -1,0 +1,26 @@
+import type { PersonData } from '../types/person.ts'
+
+/**
+ * Check that we have the minimum fields needed to produce useful results.
+ * Only gates on fields that heavily affect eligibility outcomes.
+ * Age and relationship_status have sensible defaults in eligibility rules.
+ */
+export function hasCriticalFields(person: PersonData): boolean {
+  return !!(
+    person.employment_status &&
+    person.income_band &&
+    person.housing_tenure &&
+    person.postcode
+  )
+}
+
+export function getMissingFields(person: PersonData): string {
+  const missing: string[] = []
+  if (!person.employment_status) missing.push('your employment situation')
+  if (!person.income_band) missing.push('your approximate household income')
+  if (!person.housing_tenure) missing.push('your housing situation (renting, own home, etc.)')
+  if (!person.postcode) missing.push('your postcode')
+  if (missing.length === 0) return 'a few more details'
+  if (missing.length === 1) return missing[0]
+  return missing.slice(0, -1).join(', ') + ' and ' + missing[missing.length - 1]
+}
