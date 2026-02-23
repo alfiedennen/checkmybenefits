@@ -62,6 +62,14 @@ export function App() {
           <div className="results-section">
             <PreResultsDisclaimer />
             <StaleDataWarning />
+            {state.personData.postcode_partial && (
+              <div className="disclaimer partial-postcode-notice" role="note">
+                <p>
+                  Results are based on a partial postcode. For more precise local results, you can
+                  share your full postcode in the conversation above.
+                </p>
+              </div>
+            )}
             <BundleView bundle={state.bundle} />
             <ActionPlanView steps={state.bundle.action_plan} />
             <ResultsFooter />

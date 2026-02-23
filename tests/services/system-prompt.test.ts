@@ -83,7 +83,12 @@ describe('System Prompt — Premature completion guards', () => {
   it('questions stage does NOT allow fabricating a postcode', () => {
     const prompt = promptFor('questions')
     // The AI should never default to a placeholder postcode
-    expect(prompt).toMatch(/(?:never|do not|must not).*(?:guess|fabricat|invent|default|placeholder|assume).*postcode/is)
+    expect(prompt).toMatch(/do not.*(?:guess|fabricat|default|placeholder).*postcode/is)
+  })
+
+  it('questions stage accepts partial postcodes', () => {
+    const prompt = promptFor('questions')
+    expect(prompt).toMatch(/partial postcode/i)
   })
 })
 

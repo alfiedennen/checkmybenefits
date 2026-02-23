@@ -126,6 +126,7 @@ export function useConversation() {
                     local_authority: postcodeResult.admin_district,
                     lsoa: postcodeResult.lsoa || undefined,
                     deprivation_decile: deprivationDecile ?? undefined,
+                    postcode_partial: postcodeResult.partial || undefined,
                   },
                 })
               } else {

@@ -101,6 +101,7 @@ export interface PersonData {
   partner_age?: number
   lsoa?: string
   deprivation_decile?: number
+  postcode_partial?: boolean
 }
 
 export function createEmptyPerson(): PersonData {
