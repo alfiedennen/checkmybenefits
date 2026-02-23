@@ -254,6 +254,12 @@ resource "aws_bedrock_guardrail" "chat" {
       examples   = []
       type       = "DENY"
     }
+    topics_config {
+      name       = "off_topic"
+      definition = "Requests unrelated to UK benefits and entitlements, such as career coaching, CV writing, job searching, homework, coding, recipes, travel planning, or general knowledge"
+      examples   = ["write me a CV", "help me find a job", "what is the capital of France", "write a poem", "help me with my homework"]
+      type       = "DENY"
+    }
   }
 
   word_policy_config {

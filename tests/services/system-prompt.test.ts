@@ -30,6 +30,32 @@ function promptFor(
   return buildSystemPrompt(stage, person, situations)
 }
 
+// ── Scope boundary ─────────────────────────────────
+
+describe('System Prompt — Scope boundary', () => {
+  it('includes scope restriction in conversation rules', () => {
+    const prompt = promptFor('intake')
+    expect(prompt).toMatch(/SCOPE/i)
+    expect(prompt).toMatch(/only.*help.*benefits/i)
+  })
+
+  it('explicitly prohibits CV writing and career coaching', () => {
+    const prompt = promptFor('questions')
+    expect(prompt).toMatch(/CV/i)
+    expect(prompt).toMatch(/career coaching/i)
+  })
+
+  it('instructs redirect to benefits rather than helping off-topic', () => {
+    const prompt = promptFor('intake')
+    expect(prompt).toMatch(/do not.*attempt.*help.*off-topic/i)
+  })
+
+  it('situation taxonomy no longer says "no scope restrictions"', () => {
+    const prompt = promptFor('intake')
+    expect(prompt).not.toMatch(/no scope restrictions/i)
+  })
+})
+
 // ── Gate field alignment ────────────────────────────
 
 describe('System Prompt — Gate field alignment', () => {
