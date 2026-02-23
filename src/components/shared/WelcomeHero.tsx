@@ -1,3 +1,5 @@
+import { RelatedContent } from './RelatedContent.tsx'
+
 interface Props {
   onGetStarted: () => void
 }
@@ -5,7 +7,8 @@ interface Props {
 export function WelcomeHero({ onGetStarted }: Props) {
   return (
     <section className="welcome-hero" aria-label="Check My Benefits">
-      <div className="welcome-hero-inner">
+      <div className="welcome-hero-inner welcome-hero-layout">
+        <div className="welcome-hero-main">
         <h2 className="welcome-hero-title">
           You could be missing out on thousands of pounds a year
         </h2>
@@ -84,6 +87,8 @@ export function WelcomeHero({ onGetStarted }: Props) {
             page views — no personal data is collected.
           </p>
         </div>
+        </div>
+        <RelatedContent />
       </div>
     </section>
   )

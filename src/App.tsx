@@ -1,4 +1,5 @@
 import { useState, useCallback } from 'react'
+import { Footer } from './components/shared/Footer.tsx'
 import { Header } from './components/shared/Header.tsx'
 import { PrivacyBanner } from './components/shared/PrivacyBanner.tsx'
 import { WelcomeHero } from './components/shared/WelcomeHero.tsx'
@@ -38,14 +39,13 @@ export function App() {
   return (
     <div className="app">
       <a href="#main-content" className="skip-link">Skip to content</a>
-      <Header onAboutToggle={toggleAbout} isAboutOpen={showAbout} />
-      <div className="beta-banner" role="region" aria-label="Beta status">
-        <strong className="beta-banner-tag">Beta</strong>
+      <div className="warning-banner" role="region" aria-label="Important notice">
         <span>
-          This is not a government service. Results may be wrong.{' '}
-          <a href="mailto:feedback@checkmybenefits.uk">Give feedback</a> to help us improve it.
+          This is an experiment, NOT an official GOV.UK website. Results may be wrong.{' '}
+          <a href="mailto:feedback@checkmybenefits.uk">Give feedback</a>
         </span>
       </div>
+      <Header onAboutToggle={toggleAbout} isAboutOpen={showAbout} />
       <PrivacyBanner />
 
       {showHero && <WelcomeHero onGetStarted={dismissHero} />}
@@ -68,6 +68,7 @@ export function App() {
           </div>
         )}
       </main>
+      <Footer />
     </div>
   )
 }
