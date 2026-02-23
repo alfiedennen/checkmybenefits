@@ -108,6 +108,30 @@ describe('extractFromMessage', () => {
       const result = extractFromMessage('None of the above apply to me')
       expect(result.gross_annual_income).toBeUndefined()
     })
+
+    it('extracts "eight thousand a year" as 8000', () => {
+      const result = extractFromMessage('just his pension, about eight thousand a year')
+      expect(result.gross_annual_income).toBe(8000)
+      expect(result.income_band).toBe('under_12570')
+    })
+
+    it('extracts "ten thousand" as 10000', () => {
+      const result = extractFromMessage('about ten thousand a year')
+      expect(result.gross_annual_income).toBe(10000)
+      expect(result.income_band).toBe('under_12570')
+    })
+
+    it('extracts "nine thousand" as 9000', () => {
+      const result = extractFromMessage('about nine thousand from pensions')
+      expect(result.gross_annual_income).toBe(9000)
+      expect(result.income_band).toBe('under_12570')
+    })
+
+    it('extracts "sixteen thousand" as 16000', () => {
+      const result = extractFromMessage('earning roughly sixteen thousand')
+      expect(result.gross_annual_income).toBe(16000)
+      expect(result.income_band).toBe('under_16000')
+    })
   })
 
   // ── Employment ──────────────────────────────────
@@ -153,6 +177,41 @@ describe('extractFromMessage', () => {
       expect(result.employment_status).toBe('student')
     })
 
+    it('extracts "housewife" as unemployed', () => {
+      const result = extractFromMessage("I was a housewife")
+      expect(result.employment_status).toBe('unemployed')
+    })
+
+    it('extracts "homemaker" as unemployed', () => {
+      const result = extractFromMessage("I was a homemaker all my life")
+      expect(result.employment_status).toBe('unemployed')
+    })
+
+    it('extracts "stay at home mum" as unemployed', () => {
+      const result = extractFromMessage("I'm a stay at home mum")
+      expect(result.employment_status).toBe('unemployed')
+    })
+
+    it('extracts "self employed" as self_employed', () => {
+      const result = extractFromMessage("I am self employed")
+      expect(result.employment_status).toBe('self_employed')
+    })
+
+    it('extracts "self-employed" as self_employed', () => {
+      const result = extractFromMessage("self-employed, plumber")
+      expect(result.employment_status).toBe('self_employed')
+    })
+
+    it('extracts "state pension" as retired', () => {
+      const result = extractFromMessage("just my state pension")
+      expect(result.employment_status).toBe('retired')
+    })
+
+    it('extracts "on the state pension" as retired', () => {
+      const result = extractFromMessage("I'm on the state pension")
+      expect(result.employment_status).toBe('retired')
+    })
+
     it('extracts "£0" as zero income', () => {
       const result = extractFromMessage('£0')
       expect(result.gross_annual_income).toBe(0)
@@ -188,6 +247,16 @@ describe('extractFromMessage', () => {
       const result = extractFromMessage("I'm living with my parents")
       expect(result.housing_tenure).toBe('living_with_family')
     })
+
+    it('extracts "we own our home" without outright', () => {
+      const result = extractFromMessage('we own our home')
+      expect(result.housing_tenure).toBe('own_outright')
+    })
+
+    it('extracts "I own my flat"', () => {
+      const result = extractFromMessage('I own my flat')
+      expect(result.housing_tenure).toBe('own_outright')
+    })
   })
 
   // ── Relationship ────────────────────────────────
@@ -219,6 +288,16 @@ describe('extractFromMessage', () => {
 
     it('extracts separated', () => {
       const result = extractFromMessage("We've recently separated")
+      expect(result.relationship_status).toBe('separated')
+    })
+
+    it('extracts "divorced" as separated', () => {
+      const result = extractFromMessage("I got divorced last year")
+      expect(result.relationship_status).toBe('separated')
+    })
+
+    it('extracts "going through a divorce" as separated', () => {
+      const result = extractFromMessage("going through a divorce")
       expect(result.relationship_status).toBe('separated')
     })
   })

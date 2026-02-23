@@ -201,14 +201,29 @@ function extractIncome(text: string): number | undefined {
     }
   }
 
-  // "twelve grand" / "twelve thousand"
+  // "twelve grand" / "twelve thousand" / "eight thousand a year"
   const wordPatterns: Array<[RegExp, number]> = [
+    [/\b(?:about|around|roughly)?\s*five\s*(?:grand|thousand)\b/i, 5000],
+    [/\b(?:about|around|roughly)?\s*six\s*(?:grand|thousand)\b/i, 6000],
+    [/\b(?:about|around|roughly)?\s*seven\s*(?:grand|thousand)\b/i, 7000],
+    [/\b(?:about|around|roughly)?\s*eight\s*(?:grand|thousand)\b/i, 8000],
+    [/\b(?:about|around|roughly)?\s*nine\s*(?:grand|thousand)\b/i, 9000],
+    [/\b(?:about|around|roughly)?\s*ten\s*(?:grand|thousand)\b/i, 10000],
+    [/\b(?:about|around|roughly)?\s*eleven\s*(?:grand|thousand)\b/i, 11000],
     [/\b(?:about|around|roughly)?\s*twelve\s*(?:grand|thousand)\b/i, 12000],
+    [/\b(?:about|around|roughly)?\s*thirteen\s*(?:grand|thousand)\b/i, 13000],
+    [/\b(?:about|around|roughly)?\s*fourteen\s*(?:grand|thousand)\b/i, 14000],
     [/\b(?:about|around|roughly)?\s*fifteen\s*(?:grand|thousand)\b/i, 15000],
+    [/\b(?:about|around|roughly)?\s*sixteen\s*(?:grand|thousand)\b/i, 16000],
+    [/\b(?:about|around|roughly)?\s*seventeen\s*(?:grand|thousand)\b/i, 17000],
+    [/\b(?:about|around|roughly)?\s*eighteen\s*(?:grand|thousand)\b/i, 18000],
+    [/\b(?:about|around|roughly)?\s*nineteen\s*(?:grand|thousand)\b/i, 19000],
     [/\b(?:about|around|roughly)?\s*twenty\s*(?:grand|thousand)\b/i, 20000],
-    [/\b(?:about|around|roughly)?\s*twenty\s*five\s*(?:grand|thousand)\b/i, 25000],
+    [/\b(?:about|around|roughly)?\s*twenty[\s-]*five\s*(?:grand|thousand)\b/i, 25000],
     [/\b(?:about|around|roughly)?\s*thirty\s*(?:grand|thousand)\b/i, 30000],
+    [/\b(?:about|around|roughly)?\s*thirty[\s-]*five\s*(?:grand|thousand)\b/i, 35000],
     [/\b(?:about|around|roughly)?\s*forty\s*(?:grand|thousand)\b/i, 40000],
+    [/\b(?:about|around|roughly)?\s*forty[\s-]*five\s*(?:grand|thousand)\b/i, 45000],
     [/\b(?:about|around|roughly)?\s*fifty\s*(?:grand|thousand)\b/i, 50000],
   ]
   for (const [p, val] of wordPatterns) {
@@ -273,6 +288,7 @@ function extractRelationship(
   if (/\bon\s+my\s+own\b/.test(lower) || /\bjust\s+me\b/.test(lower)) return 'single'
   if (/\bwidow(?:ed|er)?\b/.test(lower)) return 'widowed'
   if (/\bseparated\b/.test(lower)) return 'separated'
+  if (/\bdivorce[d]?\b/.test(lower)) return 'separated'
   return undefined
 }
 
@@ -287,8 +303,10 @@ function extractHousingTenure(text: string): PersonData['housing_tenure'] | unde
   if (/\brent(?:ing)?\b/.test(lower) && !/council|social/.test(lower)) return 'rent_private'
   if (/\bliving\s+with\s+(?:my\s+)?(?:parents?|family|mum|dad)\b/.test(lower))
     return 'living_with_family'
-  if (/\bown\s+(?:our\s+)?(?:house|home|property)\s+outright\b/.test(lower)) return 'own_outright'
+  if (/\bown\s+(?:our\s+)?(?:house|home|flat|property)\s+outright\b/.test(lower)) return 'own_outright'
   if (/\bown\s+outright\b/.test(lower)) return 'own_outright'
+  // "we own our home" / "I own my flat" (without "outright") — assume own_outright
+  if (/\b(?:we|i)\s+own\s+(?:our|my|the)\s+(?:house|home|flat|property)\b/.test(lower)) return 'own_outright'
   return undefined
 }
 
@@ -316,6 +334,19 @@ function extractEmployment(text: string): EmploymentResult | undefined {
   }
   if (/\bretired\b/.test(lower)) {
     return { status: 'retired' }
+  }
+  // "on the state pension" / "just my pension" → retired
+  if (/\b(?:state\s+pension|my\s+pension|on\s+(?:a\s+)?pension)\b/.test(lower)) {
+    return { status: 'retired' }
+  }
+  // "housewife" / "homemaker" / "stay at home mum/dad" → unemployed
+  // (useConversation or AI may upgrade to 'retired' if age >= 66)
+  if (/\b(?:housewife|homemaker|stay[\s-]*at[\s-]*home\s+(?:mum|mom|dad|parent))\b/.test(lower)) {
+    return { status: 'unemployed' }
+  }
+  // "self-employed" / "self employed"
+  if (/\bself[\s-]*employed\b/.test(lower)) {
+    return { status: 'self_employed' }
   }
   // "I work at" / "work part-time" / "I'm employed" — but NOT "lost my job at"
   if (
