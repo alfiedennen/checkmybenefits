@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect } from 'react'
+import { useState, useRef, useEffect } from 'react'
 
 interface Props {
   onSend: (text: string) => void
@@ -10,21 +10,12 @@ export function TextInput({ onSend, disabled = false, placeholder = 'Type your m
   const [text, setText] = useState('')
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  const resizeTextarea = useCallback(() => {
+  useEffect(() => {
     const el = textareaRef.current
     if (!el) return
     el.style.height = 'auto'
     el.style.height = `${el.scrollHeight}px`
-  }, [])
-
-  useEffect(() => {
-    resizeTextarea()
-  }, [resizeTextarea])
-
-  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
-    setText(e.target.value)
-    resizeTextarea()
-  }
+  }, [text])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -54,7 +45,7 @@ export function TextInput({ onSend, disabled = false, placeholder = 'Type your m
         ref={textareaRef}
         className="text-input"
         value={text}
-        onChange={handleChange}
+        onChange={(e) => setText(e.target.value)}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
