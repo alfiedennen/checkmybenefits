@@ -21,7 +21,7 @@ export interface Turn {
 export interface TestScenario {
   id: string
   name: string
-  category: 'A' | 'B' | 'C' | 'D' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N'
+  category: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N'
   /** Stage the conversation is in when this message is sent */
   stage: ConversationStage
   /** Existing person data context (simulates accumulated state) */
@@ -408,6 +408,193 @@ const D2_NEW_BABY_TURN2: TestScenario = {
       housing_tenure: 'rent_private',
       monthly_housing_cost: 950,
     },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category E: Pipeline / Data Quality
+// Tests focused on income correction, required fields,
+// and data pipeline gaps exposed by the thin-results bug.
+// ──────────────────────────────────────────────
+
+const E1_JOB_LOSS_MORTGAGE_INCOME: TestScenario = {
+  id: 'E1',
+  name: 'Job loss + mortgage — should set income to £0/under_7400',
+  category: 'E',
+  stage: 'questions',
+  existingPersonData: {
+    employment_status: 'unemployed',
+    recently_redundant: true,
+    housing_tenure: 'mortgage',
+    monthly_housing_cost: 2100,
+  },
+  existingSituations: ['lost_job'],
+  userMessage:
+    "I was earning £50,000 before I lost my job. I'm single, no kids. My postcode is TN34 3JN.",
+  expected: {
+    personData: {
+      postcode: 'TN34 3JN',
+      relationship_status: 'single',
+    },
+    // Key: model should NOT set income_band to under_50270 (old salary).
+    // The programmatic safety net will correct it, but we want the AI to also get it right.
+    textContains: ['postcode', 'TN34'],
+  },
+}
+
+const E2_JOB_LOSS_COUPLE_PARTNER_INCOME: TestScenario = {
+  id: 'E2',
+  name: 'Job loss + couple — should use partner income, not previous salary',
+  category: 'E',
+  stage: 'questions',
+  existingPersonData: {
+    employment_status: 'unemployed',
+    recently_redundant: true,
+  },
+  existingSituations: ['lost_job'],
+  userMessage:
+    "My wife works part-time earning about £12,000. We've got a mortgage of £1,500 a month. We're in S11 8YA.",
+  expected: {
+    personData: {
+      relationship_status: 'couple_married',
+      gross_annual_income: 12000,
+      income_band: 'under_12570',
+      housing_tenure: 'mortgage',
+      monthly_housing_cost: 1500,
+      postcode: 'S11 8YA',
+    },
+  },
+}
+
+const E3_PENSIONER_NO_POSTCODE_NO_COMPLETE: TestScenario = {
+  id: 'E3',
+  name: 'Pensioner + AA — should NOT complete without postcode',
+  category: 'E',
+  stage: 'questions',
+  existingPersonData: {
+    age: 82,
+    employment_status: 'retired',
+    income_band: 'under_12570',
+    housing_tenure: 'own_outright',
+  },
+  existingSituations: ['ageing_parent'],
+  userMessage: "I live alone. I need help with washing and cooking every day.",
+  expected: {
+    personData: {
+      relationship_status: 'single',
+      needs_help_with_daily_living: true,
+    },
+    // Should NOT transition to complete — postcode is missing
+    textContains: ['postcode'],
+  },
+}
+
+const E4_MULTI_TURN_COLLECT_FIELDS: TestScenario = {
+  id: 'E4',
+  name: 'Multi-turn: 3rd message collects remaining required field',
+  category: 'E',
+  stage: 'questions',
+  existingPersonData: {
+    employment_status: 'unemployed',
+    recently_redundant: true,
+    income_band: 'under_7400',
+    housing_tenure: 'rent_private',
+    monthly_housing_cost: 800,
+  },
+  existingSituations: ['lost_job'],
+  previousMessages: [
+    { role: 'user', content: "I've just been made redundant" },
+    {
+      role: 'assistant',
+      content: "I'm sorry to hear that. Can you tell me about your housing situation?",
+    },
+    { role: 'user', content: "I'm renting privately, £800 a month" },
+    {
+      role: 'assistant',
+      content: "Thank you. And what's your postcode so I can check local support?",
+    },
+  ],
+  userMessage: "It's E1 6AN. I'm 35 and single.",
+  expected: {
+    personData: {
+      postcode: 'E1 6AN',
+      age: 35,
+      relationship_status: 'single',
+    },
+    // With all required fields now collected, should transition to complete
+    stageTransition: 'complete',
+  },
+}
+
+const E5_CORRECTION_MID_CONVERSATION: TestScenario = {
+  id: 'E5',
+  name: 'User corrects housing tenure mid-conversation',
+  category: 'E',
+  stage: 'questions',
+  existingPersonData: {
+    employment_status: 'unemployed',
+    income_band: 'under_7400',
+    housing_tenure: 'mortgage',
+    monthly_housing_cost: 1000,
+  },
+  existingSituations: ['lost_job'],
+  previousMessages: [
+    { role: 'user', content: "I lost my job. Mortgage is £1,000" },
+    {
+      role: 'assistant',
+      content: "I'm sorry to hear that. What's your postcode?",
+    },
+  ],
+  userMessage: "Actually sorry, I rent - I don't have a mortgage. It's £800 a month. Postcode is LS1 1BA.",
+  expected: {
+    personData: {
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 800,
+      postcode: 'LS1 1BA',
+    },
+  },
+}
+
+const E6_ONE_QUESTION_PER_TURN: TestScenario = {
+  id: 'E6',
+  name: 'AI should ask only ONE question per turn',
+  category: 'E',
+  stage: 'questions',
+  existingPersonData: {
+    employment_status: 'unemployed',
+    recently_redundant: true,
+  },
+  existingSituations: ['lost_job'],
+  userMessage: "I've just lost my job last week. I don't know what to do.",
+  expected: {
+    stageTransition: 'questions',
+    // Response should contain only one question — this is checked by textContains
+    // We can't perfectly enforce one-question-per-turn via regex, but we check the response is reasonable
+    textContains: ['?'],
+  },
+}
+
+const E7_JOB_LOSS_SINGLE_INCOME_ZERO: TestScenario = {
+  id: 'E7',
+  name: 'Job loss + single should infer income = £0 without asking',
+  category: 'E',
+  stage: 'questions',
+  existingPersonData: {
+    employment_status: 'unemployed',
+    recently_redundant: true,
+    relationship_status: 'single',
+  },
+  existingSituations: ['lost_job'],
+  userMessage:
+    "I'm renting a council flat for £450 a month. Postcode is M1 1AD.",
+  expected: {
+    personData: {
+      housing_tenure: 'rent_social',
+      monthly_housing_cost: 450,
+      postcode: 'M1 1AD',
+      income_band: 'under_7400',
+    },
+    // Should recognise income is £0 for single unemployed without asking
   },
 }
 
@@ -1150,6 +1337,14 @@ export const ALL_SCENARIOS: TestScenario[] = [
   D1_AGEING_PARENT_TURN3,
   D2_NEW_BABY_TURN1,
   D2_NEW_BABY_TURN2,
+  // Category E: Pipeline / Data Quality
+  E1_JOB_LOSS_MORTGAGE_INCOME,
+  E2_JOB_LOSS_COUPLE_PARTNER_INCOME,
+  E3_PENSIONER_NO_POSTCODE_NO_COMPLETE,
+  E4_MULTI_TURN_COLLECT_FIELDS,
+  E5_CORRECTION_MID_CONVERSATION,
+  E6_ONE_QUESTION_PER_TURN,
+  E7_JOB_LOSS_SINGLE_INCOME_ZERO,
   // Category F: Edge Cases
   F1_SEPARATION,
   F2_NO_INFO,

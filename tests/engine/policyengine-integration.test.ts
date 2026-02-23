@@ -639,19 +639,10 @@ describe('PE fallback behavior', () => {
   })
 })
 
-// ─── End-to-End buildBundle with Mocked PE ───────────────────────────────────
+// ─── End-to-End buildBundle (heuristics only, PE removed) ────────────────────
 
-describe('buildBundle with PE integration (mocked)', () => {
-  it('produces precise UC value when PE returns data', async () => {
-    const peData = mockPeResponse({
-      universal_credit: 8400,
-      child_benefit: 0,
-      pension_credit: 0,
-      housing_benefit: 0,
-      council_tax_benefit: 0,
-    })
-    const restore = installFetchMock(peData)
-
+describe('buildBundle with heuristic values', () => {
+  it('builds bundle with heuristic value ranges', async () => {
     const bundle = await buildBundle(unemployedSingleRenter, ['lost_job'])
 
     const allResults = [
@@ -661,111 +652,15 @@ describe('buildBundle with PE integration (mocked)', () => {
     ]
     const uc = allResults.find((r) => r.id === 'universal_credit')
     expect(uc).toBeDefined()
-    // PE returned precise value → low === high
-    expect(uc!.estimated_annual_value.low).toBe(8400)
-    expect(uc!.estimated_annual_value.high).toBe(8400)
-
-    restore()
-  })
-
-  it('produces precise PC value when PE returns data', async () => {
-    const peData = mockPeResponse({
-      pension_credit: 1800,
-      universal_credit: 0,
-      child_benefit: 0,
-      housing_benefit: 0,
-      council_tax_benefit: 0,
-    })
-    const restore = installFetchMock(peData)
-
-    const bundle = await buildBundle(retiredWidow, ['ageing_parent'])
-
-    const allResults = [
-      ...bundle.gateway_entitlements,
-      ...bundle.independent_entitlements,
-      ...bundle.cascaded_entitlements.flatMap((g) => g.entitlements),
-    ]
-    const pc = allResults.find((r) => r.id === 'pension_credit')
-    expect(pc).toBeDefined()
-    expect(pc!.estimated_annual_value.low).toBe(1800)
-    expect(pc!.estimated_annual_value.high).toBe(1800)
-
-    restore()
-  })
-
-  it('produces precise Child Benefit when PE returns data', async () => {
-    const peData = mockPeResponse({
-      child_benefit: 2251,
-      universal_credit: 0,
-      pension_credit: 0,
-      housing_benefit: 0,
-      council_tax_benefit: 0,
-    })
-    const restore = installFetchMock(peData)
-
-    const bundle = await buildBundle(marriedCoupleWithKids, ['new_baby'])
-
-    const allResults = [
-      ...bundle.gateway_entitlements,
-      ...bundle.independent_entitlements,
-      ...bundle.cascaded_entitlements.flatMap((g) => g.entitlements),
-    ]
-    const cb = allResults.find((r) => r.id === 'child_benefit')
-    expect(cb).toBeDefined()
-    expect(cb!.estimated_annual_value.low).toBe(2251)
-    expect(cb!.estimated_annual_value.high).toBe(2251)
-
-    restore()
-  })
-
-  it('still builds bundle when PE fails (fallback to heuristics)', async () => {
-    const original = globalThis.fetch
-    globalThis.fetch = () => Promise.reject(new Error('PE down'))
-
-    const bundle = await buildBundle(unemployedSingleRenter, ['lost_job'])
-
-    const allResults = [
-      ...bundle.gateway_entitlements,
-      ...bundle.independent_entitlements,
-      ...bundle.cascaded_entitlements.flatMap((g) => g.entitlements),
-    ]
-    const uc = allResults.find((r) => r.id === 'universal_credit')
-    expect(uc).toBeDefined()
-    // Without PE, UC should be a heuristic range (low !== high)
+    // Heuristic range: low !== high
     expect(uc!.estimated_annual_value.high).toBeGreaterThan(uc!.estimated_annual_value.low)
 
-    // Bundle should still be structurally valid
+    // Bundle should be structurally valid
     expect(bundle.total_estimated_annual_value.high).toBeGreaterThan(0)
     expect(bundle.action_plan.length).toBeGreaterThan(0)
-
-    globalThis.fetch = original
   })
 
-  it('non-PE benefits use heuristics even when PE succeeds', async () => {
-    const peData = mockPeResponse({ universal_credit: 8400 })
-    const restore = installFetchMock(peData)
-
-    const bundle = await buildBundle(selfEmployedCarer, ['ageing_parent'])
-
-    const allResults = [
-      ...bundle.gateway_entitlements,
-      ...bundle.independent_entitlements,
-      ...bundle.cascaded_entitlements.flatMap((g) => g.entitlements),
-    ]
-    const ca = allResults.find((r) => r.id === 'carers_allowance')
-    if (ca) {
-      // CA is not PE-mapped, should use heuristic (both values the same, from fixed rate)
-      expect(ca.estimated_annual_value.low).toBeGreaterThan(0)
-    }
-
-    restore()
-  })
-
-  it('total value is positive for all test personas (with PE failing)', async () => {
-    // Simulate PE being down — all bundles should still work via heuristics
-    const original = globalThis.fetch
-    globalThis.fetch = () => Promise.reject(new Error('PE down'))
-
+  it('total value is positive for all test personas', async () => {
     const scenarios: [PersonData, string[]][] = [
       [unemployedSingleRenter, ['lost_job']],
       [retiredWidow, ['ageing_parent']],
@@ -779,34 +674,5 @@ describe('buildBundle with PE integration (mocked)', () => {
       expect(bundle.total_estimated_annual_value.high).toBeGreaterThan(0)
       expect(bundle.action_plan.length).toBeGreaterThan(0)
     }
-
-    globalThis.fetch = original
-  })
-
-  it('total value is positive for all test personas (with PE succeeding)', async () => {
-    const peData = mockPeResponse({
-      universal_credit: 7200,
-      pension_credit: 1800,
-      child_benefit: 2251,
-      housing_benefit: 5400,
-      council_tax_benefit: 1200,
-    })
-    const restore = installFetchMock(peData)
-
-    const scenarios: [PersonData, string[]][] = [
-      [unemployedSingleRenter, ['lost_job']],
-      [retiredWidow, ['ageing_parent']],
-      [marriedCoupleWithKids, ['new_baby']],
-      [selfEmployedCarer, ['ageing_parent']],
-      [disabledChildFamily, ['child_struggling_school']],
-    ]
-
-    for (const [person, situations] of scenarios) {
-      const bundle = await buildBundle(person, situations)
-      expect(bundle.total_estimated_annual_value.high).toBeGreaterThan(0)
-      expect(bundle.action_plan.length).toBeGreaterThan(0)
-    }
-
-    restore()
   })
 })
