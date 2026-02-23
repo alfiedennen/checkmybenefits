@@ -407,6 +407,38 @@ resource "aws_lambda_permission" "api_gateway" {
 # CloudFront Distribution
 # -----------------------------------------------------------------------------
 
+# ─── CloudFront access logging ────────────────────────────────────────────────
+
+resource "aws_s3_bucket" "logs" {
+  bucket = "checkmybenefits-logs"
+}
+
+resource "aws_s3_bucket_ownership_controls" "logs" {
+  bucket = aws_s3_bucket.logs.id
+  rule {
+    object_ownership = "BucketOwnerPreferred"
+  }
+}
+
+resource "aws_s3_bucket_acl" "logs" {
+  depends_on = [aws_s3_bucket_ownership_controls.logs]
+  bucket     = aws_s3_bucket.logs.id
+  acl        = "private"
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "logs" {
+  bucket = aws_s3_bucket.logs.id
+
+  rule {
+    id     = "delete-old-logs"
+    status = "Enabled"
+    filter {}
+    expiration {
+      days = 30
+    }
+  }
+}
+
 resource "aws_cloudfront_origin_access_control" "s3" {
   name                              = "checkmybenefits-s3-oac"
   origin_access_control_origin_type = "s3"
@@ -498,6 +530,12 @@ resource "aws_cloudfront_distribution" "main" {
     acm_certificate_arn      = aws_acm_certificate_validation.main.certificate_arn
     ssl_support_method       = "sni-only"
     minimum_protocol_version = "TLSv1.2_2021"
+  }
+
+  logging_config {
+    bucket          = aws_s3_bucket.logs.bucket_domain_name
+    include_cookies = false
+    prefix          = "cloudfront/"
   }
 
   restrictions {
@@ -762,6 +800,25 @@ resource "aws_cloudwatch_metric_alarm" "lambda_invocations" {
   period              = 86400
   statistic           = "Sum"
   threshold           = 50000
+  treat_missing_data  = "notBreaching"
+
+  dimensions = {
+    FunctionName = aws_lambda_function.chat.function_name
+  }
+
+  alarm_actions = [aws_sns_topic.cost_alerts.arn]
+}
+
+resource "aws_cloudwatch_metric_alarm" "lambda_errors" {
+  alarm_name          = "checkmybenefits-error-alarm"
+  alarm_description   = "Chat Lambda error rate — possible Bedrock or code failure"
+  comparison_operator = "GreaterThanThreshold"
+  evaluation_periods  = 1
+  metric_name         = "Errors"
+  namespace           = "AWS/Lambda"
+  period              = 300
+  statistic           = "Sum"
+  threshold           = 5
   treat_missing_data  = "notBreaching"
 
   dimensions = {

@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "update-rates": "tsx scripts/update-rates.ts",
-    "build-imd": "tsx scripts/build-imd-lookup.ts"
+    "build-imd": "tsx scripts/build-imd-lookup.ts",
+    "eval": "tsx tests/nova-eval/run-eval.ts"
   },
   "dependencies": {
     "react": "^19.2.0",
