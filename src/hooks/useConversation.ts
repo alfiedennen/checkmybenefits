@@ -22,6 +22,17 @@ function hasCriticalFields(person: PersonData): boolean {
   )
 }
 
+function getMissingFields(person: PersonData): string {
+  const missing: string[] = []
+  if (!person.employment_status) missing.push('your employment situation')
+  if (!person.income_band) missing.push('your approximate household income')
+  if (!person.housing_tenure) missing.push('your housing situation (renting, own home, etc.)')
+  if (!person.postcode) missing.push('your postcode')
+  if (missing.length === 0) return 'a few more details'
+  if (missing.length === 1) return missing[0]
+  return missing.slice(0, -1).join(', ') + ' and ' + missing[missing.length - 1]
+}
+
 const OPENING_MESSAGE = `What's going on in your life right now? Tell me in your own words, or pick one of these to get started.`
 
 const SITUATION_QUICK_REPLIES: QuickReply[] = [
@@ -161,6 +172,7 @@ export function useConversation() {
         }
 
         // Apply stage transition
+        let bundleBuilt = false
         if (response.stageTransition) {
           // Gate: don't allow complete transition if critical fields are missing
           const personSoFar = { ...stateRef.current.personData, ...(mergedPersonData ?? {}) }
@@ -186,19 +198,33 @@ export function useConversation() {
             try {
               const bundle = await buildBundle(updatedPerson, uniqueSituations)
               dispatch({ type: 'SET_BUNDLE', bundle })
+              bundleBuilt = true
             } catch (err) {
               console.error('Bundle build error:', err)
               dispatch({ type: 'ADD_ASSISTANT_MESSAGE', content: BUNDLE_ERROR_MESSAGE })
             }
           }
+
+          // If AI tried to complete but we blocked it, ask for missing info
+          if (response.stageTransition === 'complete' && !allowTransition) {
+            const missing = getMissingFields(personSoFar)
+            dispatch({
+              type: 'ADD_ASSISTANT_MESSAGE',
+              content: `I just need a bit more information before I can show your results. Could you tell me ${missing}?`,
+            })
+            dispatch({ type: 'SET_LOADING', isLoading: false })
+            return
+          }
         }
 
-        // Add the assistant message
-        dispatch({
-          type: 'ADD_ASSISTANT_MESSAGE',
-          content: response.text,
-          quickReplies: response.quickReplies,
-        })
+        // Add the assistant message (suppress AI's "results ready" text if bundle failed)
+        if (response.stageTransition !== 'complete' || bundleBuilt) {
+          dispatch({
+            type: 'ADD_ASSISTANT_MESSAGE',
+            content: response.text,
+            quickReplies: response.quickReplies,
+          })
+        }
       } catch (error) {
         console.error('Conversation error:', error)
         dispatch({
