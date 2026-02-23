@@ -16,6 +16,7 @@ jobs:
 
       - run: npm ci
       - run: npm run build
+      - run: npm run test
 
       - uses: aws-actions/configure-aws-credentials@v4
         with:
@@ -45,8 +46,8 @@ jobs:
             --distribution-id ${{ secrets.CLOUDFRONT_DISTRIBUTION_ID }} \
             --paths "/*"
 
-      # Deploy Lambda function
-      - name: Build and deploy Lambda
+      # Deploy chat Lambda (eu-west-2)
+      - name: Deploy chat Lambda
         run: |
           cd lambda/chat
           npm ci
@@ -56,3 +57,25 @@ jobs:
             --function-name checkmybenefits-chat \
             --zip-file fileb://chat-lambda.zip \
             --region eu-west-2
+
+      # Deploy email forwarder Lambda (eu-west-1)
+      - name: Deploy email forwarder Lambda
+        run: |
+          cd lambda/email-forwarder
+          zip -r ../../email-forwarder.zip .
+          cd ../..
+          aws lambda update-function-code \
+            --function-name checkmybenefits-email-forwarder \
+            --zip-file fileb://email-forwarder.zip \
+            --region eu-west-1
+
+      # Post-deploy smoke test
+      - name: Smoke test
+        run: |
+          sleep 10
+          STATUS=$(curl -s -o /dev/null -w "%{http_code}" https://checkmybenefits.uk)
+          if [ "$STATUS" != "200" ]; then
+            echo "Smoke test failed: got HTTP $STATUS"
+            exit 1
+          fi
+          echo "Smoke test passed: HTTP $STATUS"
