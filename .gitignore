@@ -37,5 +37,8 @@ lambda-payload.json
 .DS_Store
 Thumbs.db
 
+# Blog drafts — personal, not part of the codebase
+blogpost*.md
+
 # Claude Code agent data
 .claude/
