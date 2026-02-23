@@ -569,6 +569,7 @@ resource "aws_s3_bucket_lifecycle_configuration" "email" {
   rule {
     id     = "delete-old-emails"
     status = "Enabled"
+    filter {}
     expiration {
       days = 7
     }
