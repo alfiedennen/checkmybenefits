@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useCallback, useEffect } from 'react'
 
 interface Props {
   onSend: (text: string) => void
@@ -8,6 +8,23 @@ interface Props {
 
 export function TextInput({ onSend, disabled = false, placeholder = 'Type your message...' }: Props) {
   const [text, setText] = useState('')
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
+
+  const resizeTextarea = useCallback(() => {
+    const el = textareaRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${el.scrollHeight}px`
+  }, [])
+
+  useEffect(() => {
+    resizeTextarea()
+  }, [resizeTextarea])
+
+  const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    setText(e.target.value)
+    resizeTextarea()
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -15,6 +32,13 @@ export function TextInput({ onSend, disabled = false, placeholder = 'Type your m
     if (!trimmed || disabled) return
     onSend(trimmed)
     setText('')
+    // Reset height after clearing
+    requestAnimationFrame(() => {
+      const el = textareaRef.current
+      if (el) {
+        el.style.height = 'auto'
+      }
+    })
   }
 
   const handleKeyDown = (e: React.KeyboardEvent) => {
@@ -27,9 +51,10 @@ export function TextInput({ onSend, disabled = false, placeholder = 'Type your m
   return (
     <form className="text-input-form" onSubmit={handleSubmit}>
       <textarea
+        ref={textareaRef}
         className="text-input"
         value={text}
-        onChange={(e) => setText(e.target.value)}
+        onChange={handleChange}
         onKeyDown={handleKeyDown}
         placeholder={placeholder}
         disabled={disabled}
