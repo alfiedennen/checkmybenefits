@@ -10,12 +10,10 @@ import type {
   ActionPriority,
 } from '../types/entitlements.ts'
 import type { SituationId } from '../types/conversation.ts'
-import type { PolicyEngineCalculatedBenefits } from '../types/policyengine.ts'
 import { checkEligibility } from './eligibility-rules.ts'
 import { resolveCascade } from './cascade-resolver.ts'
 import { resolveConflicts } from './conflict-resolver.ts'
 import { estimateValue } from './value-estimator.ts'
-import { calculateBenefits } from '../services/policyengine.ts'
 import entitlementData from '../data/entitlements.json'
 
 const allEntitlements = entitlementData.entitlements as EntitlementDefinition[]
@@ -23,28 +21,50 @@ const dependencyEdges = entitlementData.dependency_edges as DependencyEdge[]
 const conflictEdges = entitlementData.conflict_edges as ConflictEdge[]
 
 /**
- * Master orchestrator: eligibility + PE calculation + values + cascade + conflicts → EntitlementBundle
+ * Fix income for recently-redundant single people.
+ * If someone just lost their job and has no partner, their current income is £0 —
+ * not their previous salary. The AI often extracts the old salary instead.
+ */
+function preprocessPersonData(person: PersonData): PersonData {
+  if (
+    person.recently_redundant &&
+    person.employment_status === 'unemployed' &&
+    !isCoupleRelationship(person.relationship_status)
+  ) {
+    return {
+      ...person,
+      gross_annual_income: 0,
+      income_band: 'under_7400',
+    }
+  }
+  return person
+}
+
+function isCoupleRelationship(status: PersonData['relationship_status']): boolean {
+  return (
+    status === 'couple_married' ||
+    status === 'couple_civil_partner' ||
+    status === 'couple_cohabiting'
+  )
+}
+
+/**
+ * Master orchestrator: eligibility + values + cascade + conflicts → EntitlementBundle
  */
 export async function buildBundle(
   personData: PersonData,
   situationIds: SituationId[],
 ): Promise<EntitlementBundle> {
+  const person = preprocessPersonData(personData)
+
   // 1. Check eligibility of ALL entitlements against PersonData
-  const eligibilityResults = checkEligibility(allEntitlements, personData, situationIds)
+  const eligibilityResults = checkEligibility(allEntitlements, person, situationIds)
   const eligibleIds = new Set(eligibilityResults.map((r) => r.id))
 
-  // 2. Call PolicyEngine for precise means-tested calculations (with fallback)
-  let peResults: PolicyEngineCalculatedBenefits | null = null
-  try {
-    peResults = await calculateBenefits(personData)
-  } catch {
-    // Silent fallback — PE unavailable, use heuristics
-  }
-
-  // 3. Build EntitlementResult objects with values
+  // 2. Build EntitlementResult objects with values
   const entitlementResults: EntitlementResult[] = eligibilityResults.map((er) => {
     const def = allEntitlements.find((e) => e.id === er.id)!
-    const value = estimateValue(def, personData, peResults)
+    const value = estimateValue(def, person, null)
     return {
       id: er.id,
       name: def.name,
@@ -63,8 +83,8 @@ export async function buildBundle(
   // 4. Resolve cascade groupings
   const cascade = resolveCascade(entitlementResults, allEntitlements, dependencyEdges)
 
-  // 5. Resolve conflicts (with PE data for precise comparisons)
-  const conflicts = resolveConflicts(eligibleIds, conflictEdges, personData, peResults)
+  // 5. Resolve conflicts
+  const conflicts = resolveConflicts(eligibleIds, conflictEdges, person, null)
 
   // 6. Calculate totals
   const allResults = [
@@ -76,7 +96,7 @@ export async function buildBundle(
   const totalHigh = allResults.reduce((sum, r) => sum + r.estimated_annual_value.high, 0)
 
   // 7. Build action plan
-  const actionPlan = buildActionPlan(cascade, situationIds, personData)
+  const actionPlan = buildActionPlan(cascade, situationIds, person)
 
   return {
     total_estimated_annual_value: { low: totalLow, high: totalHigh },

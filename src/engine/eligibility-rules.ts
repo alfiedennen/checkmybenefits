@@ -181,6 +181,9 @@ const RULE_MAP: Record<string, RuleChecker> = {
       person.income_band === 'under_16000'
     if (lowIncome)
       return { id: 'warm_home_discount', eligible: true, confidence: 'possible' }
+    // Unemployed people will be on UC, which qualifies
+    if (person.employment_status === 'unemployed')
+      return { id: 'warm_home_discount', eligible: true, confidence: 'possible' }
     return { id: 'warm_home_discount', eligible: false, confidence: 'worth_checking' }
   },
 

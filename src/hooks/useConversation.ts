@@ -1,11 +1,26 @@
 import { useReducer, useCallback, useRef } from 'react'
 import type { QuickReply } from '../types/conversation.ts'
 import { conversationReducer, createInitialState } from '../engine/state-machine.ts'
+import type { PersonData } from '../types/person.ts'
 import { buildBundle } from '../engine/bundle-builder.ts'
 import { sendMessage } from '../services/claude.ts'
 import { extractFromMessage, mergeExtraction } from '../services/message-extractor.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
 import { getDeprivationDecile } from '../services/deprivation.ts'
+
+/**
+ * Check that we have the minimum fields needed to produce useful results.
+ * Only gates on fields that heavily affect eligibility outcomes.
+ * Age and relationship_status have sensible defaults in eligibility rules.
+ */
+function hasCriticalFields(person: PersonData): boolean {
+  return !!(
+    person.employment_status &&
+    person.income_band &&
+    person.housing_tenure &&
+    person.postcode
+  )
+}
 
 const OPENING_MESSAGE = `What's going on in your life right now? Tell me in your own words, or pick one of these to get started.`
 
@@ -147,10 +162,17 @@ export function useConversation() {
 
         // Apply stage transition
         if (response.stageTransition) {
-          dispatch({ type: 'SET_STAGE', stage: response.stageTransition })
+          // Gate: don't allow complete transition if critical fields are missing
+          const personSoFar = { ...stateRef.current.personData, ...(mergedPersonData ?? {}) }
+          const allowTransition =
+            response.stageTransition !== 'complete' || hasCriticalFields(personSoFar)
+
+          if (allowTransition) {
+            dispatch({ type: 'SET_STAGE', stage: response.stageTransition })
+          }
 
           // If transitioning to complete, build the bundle
-          if (response.stageTransition === 'complete') {
+          if (response.stageTransition === 'complete' && allowTransition) {
             const updatedPerson = {
               ...stateRef.current.personData,
               ...(mergedPersonData ?? {}),

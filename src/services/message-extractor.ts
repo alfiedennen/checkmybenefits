@@ -568,6 +568,11 @@ function extractMonthsOnUC(text: string): number | undefined {
   if (yearMatch) return 12
   const monthMatch = text.match(/\b(?:on\s+(?:UC|universal\s+credit)\s+(?:for\s+)?(?:about\s+|around\s+|over\s+)?(\d{1,2})\s+months?)\b/i)
   if (monthMatch) return parseInt(monthMatch[1], 10)
+  // "lost my job 10 months ago" + mentions UC → infer months on UC
+  const jobLossMatch = text.match(/\b(?:lost\s+(?:my\s+)?job|made\s+redundant|been\s+unemployed)\s+(?:about\s+|around\s+|over\s+)?(\d{1,2})\s+months?\s+ago\b/i)
+  if (jobLossMatch && /\b(?:UC|universal\s+credit)\b/i.test(text)) {
+    return parseInt(jobLossMatch[1], 10)
+  }
   return undefined
 }
 

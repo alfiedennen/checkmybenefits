@@ -340,7 +340,7 @@ Three types of demand generated:
 
 Recommendations: forecast volume scenarios before launch; define service-level targets; budget and staff accordingly; establish human oversight.
 
-**Implication for us:** If the tool works, it will generate a wave of new claims. This is a system-level effect that government stakeholders need to be prepared for. Frame it honestly when pitching.
+**Implication for us:** If the tool works, it will generate a wave of new claims. This is a system-level effect that government stakeholders need to be prepared for. 
 
 ### 2. Friction is often deliberate policy
 
@@ -352,7 +352,7 @@ Herd & Moynihan, "Administrative Burden: Policymaking by Other Means" (Russell S
 
 Every serious project keeps human advisers in the loop. Direct-to-citizen AI advice without human review is considered too risky for vulnerable populations.
 
-**Implication for us:** V0.1 is information/signposting (lower risk), but we should consider positioning as complementary to — not a replacement for — human advice. The accuracy-and-liability framework addresses this.
+**Implication for us:** V0.9 is information/signposting (lower risk), but we should consider positioning as complementary to — not a replacement for — human advice. The accuracy-and-liability framework addresses this.
 
 ### 4. Digital exclusion
 
