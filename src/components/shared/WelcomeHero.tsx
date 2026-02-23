@@ -59,6 +59,18 @@ export function WelcomeHero({ onGetStarted }: Props) {
           </div>
         </div>
 
+        <div className="welcome-hero-before-start">
+          <h3 className="welcome-hero-section-heading">It helps to know</h3>
+          <ul className="welcome-hero-before-start-list">
+            <li>Your postcode</li>
+            <li>Roughly how much your household earns</li>
+            <li>Your housing situation (renting, mortgage, etc.)</li>
+          </ul>
+          <p className="welcome-hero-before-start-note">
+            Do not worry if you do not have exact figures. Rough answers are fine.
+          </p>
+        </div>
+
         <div className="welcome-hero-privacy">
           <h3 className="welcome-hero-section-heading">Your privacy</h3>
           <p>

@@ -18,11 +18,11 @@ export function BundleView({ bundle }: Props) {
   if (!hasResults) {
     return (
       <div className="bundle-empty">
-        <p>We couldn't identify specific entitlements based on the information provided.</p>
+        <p>We could not identify specific entitlements based on the information provided.</p>
         <p>
-          We'd recommend checking with{' '}
+          We recommend checking with{' '}
           <a href="https://www.citizensadvice.org.uk" target="_blank" rel="noopener noreferrer">
-            Citizens Advice
+            Citizens Advice (opens in new tab)
           </a>{' '}
           for a more detailed assessment.
         </p>

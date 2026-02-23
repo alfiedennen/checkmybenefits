@@ -30,6 +30,9 @@ export function ConversationView({ messages, isLoading, onSendMessage, onQuickRe
           <MessageBubble key={msg.id} message={msg} />
         ))}
         {isLoading && <TypingIndicator />}
+        <div className="sr-only" role="status" aria-live="polite">
+          {isLoading ? 'Looking up what you may be entitled to...' : ''}
+        </div>
         <div ref={messagesEndRef} />
       </div>
 

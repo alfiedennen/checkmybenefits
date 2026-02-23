@@ -12,7 +12,7 @@ export function ApplyLink({ url, method }: Props) {
         rel="noopener noreferrer"
         className="apply-link"
       >
-        Start this claim
+        Start this claim <span className="sr-only">(opens in new tab)</span>
       </a>
     )
   }

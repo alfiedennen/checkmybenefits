@@ -41,7 +41,9 @@ export function TextInput({ onSend, disabled = false, placeholder = 'Type your m
 
   return (
     <form className="text-input-form" onSubmit={handleSubmit}>
+      <label htmlFor="message-input" className="sr-only">Your message</label>
       <textarea
+        id="message-input"
         ref={textareaRef}
         className="text-input"
         value={text}
@@ -50,7 +52,6 @@ export function TextInput({ onSend, disabled = false, placeholder = 'Type your m
         placeholder={placeholder}
         disabled={disabled}
         rows={1}
-        aria-label="Your message"
       />
       <button
         type="submit"

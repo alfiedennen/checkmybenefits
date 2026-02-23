@@ -39,6 +39,13 @@ export function App() {
     <div className="app">
       <a href="#main-content" className="skip-link">Skip to content</a>
       <Header onAboutToggle={toggleAbout} isAboutOpen={showAbout} />
+      <div className="beta-banner" role="region" aria-label="Beta status">
+        <strong className="beta-banner-tag">Beta</strong>
+        <span>
+          This is a new service.{' '}
+          <a href="mailto:feedback@checkmybenefits.uk">Give feedback</a> to help us improve it.
+        </span>
+      </div>
       <PrivacyBanner />
 
       {showHero && <WelcomeHero onGetStarted={dismissHero} />}
