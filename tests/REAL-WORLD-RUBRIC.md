@@ -49,10 +49,10 @@ Scoring weights: completeness (0.4) + gate pass (0.2) + no premature complete (0
 | MT04 | No housing → must not complete | 100% | PASS | Direct reproduction of bug 1 |
 | MT05 | Carer, gradual reveal | 100% | PASS | Accumulates carer data across 6 turns |
 | MT06 | Disability, PIP received | 100% | PASS | AI recognises existing benefit receipt |
-| MT07 | Bereavement, emotional context | 73% | FLAKY | AI handles emotion while collecting data |
+| MT07 | Bereavement, emotional context | 96% | PASS | AI handles emotion while collecting data |
 | MT08 | Student employment type | 100% | PASS | AI correctly classifies uncommon status |
 
-**Note on MT07:** This scenario is inherently difficult — the AI sometimes misclassifies "housewife" employment status or maps income bands incorrectly in emotional contexts. The code-level gate in `critical-fields.ts` catches premature completion in production regardless.
+**MT07 fix:** Previously failed (53-74%) because the AI didn't extract "housewife" → employment_status or "eight thousand" → income. Adding code extractor patterns for these phrases made it deterministic (96%). Remaining 4% gap: code maps "housewife" → `unemployed` vs expected `retired`.
 
 ### Layer 3: System Prompt Tests (implemented, every push)
 
@@ -91,7 +91,7 @@ Scoring weights: completeness (0.4) + gate pass (0.2) + no premature complete (0
 
 ## Code Extractor Gaps Fixed
 
-These gaps were found by writing the replay tests:
+These gaps were found by writing the replay tests and analysing multi-turn eval failures:
 
 | Gap | Fix | Scenario |
 |-----|-----|----------|
@@ -102,6 +102,12 @@ These gaps were found by writing the replay tests:
 | "let go" not → unemployed | Added employment pattern | R06 |
 | "I'm a student" not → student | Added student pattern | R09 |
 | "helps me with everything" not → daily living | Fixed regex to allow "helps me with" | R03 |
+| "housewife"/"homemaker"/"stay at home mum" | Added → unemployed | MT07 |
+| "eight thousand"/"ten thousand" (word amounts) | Extended word patterns (5k-50k) | MT07 |
+| "we own our home" (no "outright") | Added own_outright pattern | common |
+| "self-employed" / "self employed" | Added → self_employed | common |
+| "state pension" / "on a pension" | Added → retired | common |
+| "divorced" / "going through a divorce" | Added → separated | common |
 
 ## Known Remaining Gaps
 
@@ -115,7 +121,7 @@ These gaps were found by writing the replay tests:
 ## CI Integration
 
 ```
-Every push (vitest, 215 tests, ~6s):
+Every push (vitest, 230 tests, ~7s):
   ├── existing unit + persona tests
   ├── conversation-replay.test.ts  (12 replay scenarios)
   ├── system-prompt.test.ts        (20 guardrail tests)

@@ -4,7 +4,7 @@ A conversational web app that helps UK citizens discover what benefits and suppo
 
 **Live:** [checkmybenefits.uk](https://checkmybenefits.uk)
 
-**Status:** V0.9.1 — 52 entitlements, 48 eligibility rules, 215 tests (including 61 single-turn + 8 multi-turn AI evals) at 96%. Auto-updating benefit rates. Bedrock Guardrails for content safety. Partial postcode support. Full England coverage.
+**Status:** V0.9.1 — 52 entitlements, 48 eligibility rules, 230 tests (including 61 single-turn + 8 multi-turn AI evals) at 96%. Auto-updating benefit rates. Bedrock Guardrails for content safety. Partial postcode support. Full England coverage.
 
 ## What It Does
 
@@ -163,7 +163,7 @@ npm run dev:full
 | `npm run dev:full` | Both dev server + API proxy |
 | `npm run build` | TypeScript compile + Vite production build |
 | `npm run preview` | Preview production build locally |
-| `npm test` | Run unit tests (Vitest, 215 tests) |
+| `npm test` | Run unit tests (Vitest, 230 tests) |
 | `npm run test:watch` | Watch mode tests |
 | `npm run eval` | Run 61 single-turn AI eval scenarios (requires Bedrock) |
 | `npm run eval:multi-turn` | Run 8 multi-turn AI eval scenarios (requires Bedrock) |
