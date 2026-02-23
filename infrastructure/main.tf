@@ -508,6 +508,199 @@ resource "aws_cloudfront_distribution" "main" {
 }
 
 # -----------------------------------------------------------------------------
+# SES Email Forwarding — feedback@checkmybenefits.uk → Gmail
+# SES receiving is only available in eu-west-1, not eu-west-2
+# -----------------------------------------------------------------------------
+
+# MX record — tells mail servers to deliver to SES in eu-west-1
+resource "aws_route53_record" "mx" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = var.domain_name
+  type    = "MX"
+  ttl     = 300
+  records = ["10 inbound-smtp.eu-west-1.amazonaws.com"]
+}
+
+# Domain verification for SES
+resource "aws_ses_domain_identity" "main" {
+  provider = aws.eu_west_1
+  domain   = var.domain_name
+}
+
+resource "aws_route53_record" "ses_verification" {
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "_amazonses.${var.domain_name}"
+  type    = "TXT"
+  ttl     = 300
+  records = [aws_ses_domain_identity.main.verification_token]
+}
+
+resource "aws_ses_domain_identity_verification" "main" {
+  provider   = aws.eu_west_1
+  domain     = aws_ses_domain_identity.main.id
+  depends_on = [aws_route53_record.ses_verification]
+}
+
+# DKIM for outbound forwarded mail (prevents Gmail spam filtering)
+resource "aws_ses_domain_dkim" "main" {
+  provider = aws.eu_west_1
+  domain   = var.domain_name
+}
+
+resource "aws_route53_record" "ses_dkim" {
+  count   = 3
+  zone_id = aws_route53_zone.main.zone_id
+  name    = "${aws_ses_domain_dkim.main.dkim_tokens[count.index]}._domainkey.${var.domain_name}"
+  type    = "CNAME"
+  ttl     = 300
+  records = ["${aws_ses_domain_dkim.main.dkim_tokens[count.index]}.dkim.amazonses.com"]
+}
+
+# S3 bucket for temporary email storage (SES writes here, Lambda reads and forwards)
+resource "aws_s3_bucket" "email" {
+  provider = aws.eu_west_1
+  bucket   = "checkmybenefits-email"
+}
+
+resource "aws_s3_bucket_lifecycle_configuration" "email" {
+  provider = aws.eu_west_1
+  bucket   = aws_s3_bucket.email.id
+
+  rule {
+    id     = "delete-old-emails"
+    status = "Enabled"
+    expiration {
+      days = 7
+    }
+  }
+}
+
+resource "aws_s3_bucket_policy" "email" {
+  provider = aws.eu_west_1
+  bucket   = aws_s3_bucket.email.id
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Sid       = "AllowSESPut"
+        Effect    = "Allow"
+        Principal = { Service = "ses.amazonaws.com" }
+        Action    = "s3:PutObject"
+        Resource  = "${aws_s3_bucket.email.arn}/*"
+        Condition = {
+          StringEquals = {
+            "AWS:SourceAccount" = data.aws_caller_identity.current.account_id
+          }
+        }
+      }
+    ]
+  })
+}
+
+data "aws_caller_identity" "current" {}
+
+# Lambda function to forward emails
+resource "aws_iam_role" "email_forwarder" {
+  name = "checkmybenefits-email-forwarder-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
+        Principal = { Service = "lambda.amazonaws.com" }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "email_forwarder" {
+  name = "email-forwarder"
+  role = aws_iam_role.email_forwarder.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Action   = ["s3:GetObject"]
+        Resource = "${aws_s3_bucket.email.arn}/*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["ses:SendRawEmail"]
+        Resource = "*"
+      },
+      {
+        Effect   = "Allow"
+        Action   = ["logs:CreateLogGroup", "logs:CreateLogStream", "logs:PutLogEvents"]
+        Resource = "arn:aws:logs:eu-west-1:${data.aws_caller_identity.current.account_id}:*"
+      }
+    ]
+  })
+}
+
+resource "aws_lambda_function" "email_forwarder" {
+  provider         = aws.eu_west_1
+  filename         = "${path.module}/../lambda/email-forwarder/email-forwarder.zip"
+  function_name    = "checkmybenefits-email-forwarder"
+  role             = aws_iam_role.email_forwarder.arn
+  handler          = "index.handler"
+  runtime          = "nodejs20.x"
+  memory_size      = 128
+  timeout          = 10
+  source_code_hash = filebase64sha256("${path.module}/../lambda/email-forwarder/email-forwarder.zip")
+
+  environment {
+    variables = {
+      FORWARD_TO  = var.alert_email
+      EMAIL_BUCKET = aws_s3_bucket.email.id
+    }
+  }
+}
+
+resource "aws_lambda_permission" "ses_invoke" {
+  provider      = aws.eu_west_1
+  statement_id  = "AllowSESInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.email_forwarder.function_name
+  principal     = "ses.amazonaws.com"
+  source_account = data.aws_caller_identity.current.account_id
+}
+
+# SES receipt rule — catch feedback@ and forward via Lambda
+resource "aws_ses_receipt_rule_set" "main" {
+  provider      = aws.eu_west_1
+  rule_set_name = "checkmybenefits-rules"
+}
+
+resource "aws_ses_active_receipt_rule_set" "main" {
+  provider      = aws.eu_west_1
+  rule_set_name = aws_ses_receipt_rule_set.main.rule_set_name
+}
+
+resource "aws_ses_receipt_rule" "forward" {
+  provider      = aws.eu_west_1
+  name          = "forward-to-gmail"
+  rule_set_name = aws_ses_receipt_rule_set.main.rule_set_name
+  recipients    = ["feedback@${var.domain_name}"]
+  enabled       = true
+  scan_enabled  = true
+
+  s3_action {
+    bucket_name = aws_s3_bucket.email.id
+    position    = 1
+  }
+
+  lambda_action {
+    function_arn    = aws_lambda_function.email_forwarder.arn
+    invocation_type = "Event"
+    position        = 2
+  }
+}
+
+# -----------------------------------------------------------------------------
 # Cost Monitoring — $50/month Bedrock budget with email alerts
 # -----------------------------------------------------------------------------
 

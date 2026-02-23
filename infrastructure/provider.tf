@@ -29,6 +29,19 @@ provider "aws" {
   }
 }
 
+# eu-west-1 provider — required for SES email receiving (not available in eu-west-2)
+provider "aws" {
+  alias  = "eu_west_1"
+  region = "eu-west-1"
+
+  default_tags {
+    tags = {
+      Project   = "CheckMyBenefits"
+      ManagedBy = "Terraform"
+    }
+  }
+}
+
 # us-east-1 provider — required for ACM certificates used by CloudFront
 provider "aws" {
   alias  = "us_east_1"
