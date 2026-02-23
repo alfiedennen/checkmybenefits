@@ -143,8 +143,8 @@ GOV.UK Content API patterns: no auth needed, 10 req/s limit. Uses `cheerio` for 
 # Install dependencies
 npm install
 
-# Create environment file (for local Claude API dev)
-echo 'ANTHROPIC_API_KEY="your-key-here"' > .env.local
+# Ensure AWS credentials are configured (for Bedrock Nova Lite)
+# Uses ~/.aws/credentials or AWS_PROFILE environment variable
 
 # Start development (app + API proxy)
 npm run dev:full

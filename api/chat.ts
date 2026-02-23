@@ -1,28 +1,8 @@
 import type { VercelRequest, VercelResponse } from '@vercel/node'
+import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime'
 
-const ANTHROPIC_API = 'https://api.anthropic.com/v1/messages'
-const MODEL = 'claude-sonnet-4-20250514'
-
-async function callClaude(apiKey: string, system: string, messages: unknown[], maxTokens = 1024) {
-  const response = await fetch(ANTHROPIC_API, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      'x-api-key': apiKey,
-      'anthropic-version': '2023-06-01',
-    },
-    body: JSON.stringify({ model: MODEL, max_tokens: maxTokens, system, messages }),
-  })
-
-  if (!response.ok) {
-    const errorText = await response.text()
-    const isContentFilter = response.status === 400 && errorText.includes('content filtering')
-    return { ok: false, status: response.status, errorText, isContentFilter }
-  }
-
-  const data = await response.json()
-  return { ok: true, data }
-}
+const client = new BedrockRuntimeClient({ region: 'eu-west-2' })
+const MODEL_ID = 'amazon.nova-lite-v1:0'
 
 export default async function handler(req: VercelRequest, res: VercelResponse) {
   if (req.method === 'OPTIONS') {
@@ -36,38 +16,35 @@ export default async function handler(req: VercelRequest, res: VercelResponse) {
     return res.status(405).json({ error: 'Method not allowed' })
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    return res.status(500).json({ error: 'ANTHROPIC_API_KEY not configured' })
-  }
-
   const { messages, system } = req.body
 
   try {
-    const result = await callClaude(apiKey, system, messages)
+    // Bedrock requires conversation to start with a user message.
+    const filtered = messages.filter((m: any) => m.role === 'user' || m.role === 'assistant')
+    const firstUserIdx = filtered.findIndex((m: any) => m.role === 'user')
+    const trimmed = firstUserIdx >= 0 ? filtered.slice(firstUserIdx) : filtered
 
-    if (result.ok) {
-      return res.status(200).json(result.data)
-    }
+    const bedrockMessages = trimmed.map((m: any) => ({
+      role: m.role,
+      content: [{ text: m.content?.trim() || '...' }],
+    }))
 
-    // On content filter block, retry once with a shorter max_tokens to nudge a different response
-    if (result.isContentFilter) {
-      const retry = await callClaude(apiKey, system, messages, 512)
-      if (retry.ok) {
-        return res.status(200).json(retry.data)
-      }
+    const command = new ConverseCommand({
+      modelId: MODEL_ID,
+      system: [{ text: system }],
+      messages: bedrockMessages,
+      inferenceConfig: { maxTokens: 4096, temperature: 0.7 },
+    })
 
-      // If still filtered, return a synthetic response so the frontend doesn't break
-      return res.status(200).json({
-        content: [{
-          type: 'text',
-          text: "I'd like to help you with that. Could you tell me a bit more about your situation so I can check what support might be available?",
-        }],
-      })
-    }
+    const result = await client.send(command)
 
-    return res.status(result.status!).json({ error: result.errorText })
-  } catch (error) {
-    return res.status(500).json({ error: 'Failed to call Claude API' })
+    const text = result.output?.message?.content
+      ?.map((block) => ('text' in block ? block.text : ''))
+      .join('') ?? ''
+
+    return res.status(200).json({ content: [{ type: 'text', text }] })
+  } catch (err) {
+    console.error('Bedrock error:', err)
+    return res.status(500).json({ error: 'Failed to call Bedrock' })
   }
 }

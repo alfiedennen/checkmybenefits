@@ -1,28 +1,13 @@
 /**
  * Local dev server for the /api/chat serverless function.
- * Loads .env.local and proxies Claude API requests.
+ * Uses Amazon Bedrock with Nova Lite to mirror production.
  * Run alongside `npm run dev` (Vite proxies /api to this).
  */
-import { readFileSync } from 'fs'
 import { createServer } from 'http'
+import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime'
 
-// Load .env.local
-try {
-  const envFile = readFileSync('.env.local', 'utf-8')
-  for (const line of envFile.split('\n')) {
-    const trimmed = line.trim()
-    if (!trimmed || trimmed.startsWith('#')) continue
-    const eqIdx = trimmed.indexOf('=')
-    if (eqIdx > 0) {
-      const key = trimmed.slice(0, eqIdx).trim()
-      const value = trimmed.slice(eqIdx + 1).trim().replace(/^["']|["']$/g, '')
-      process.env[key] = value
-    }
-  }
-} catch {
-  console.error('Warning: .env.local not found')
-}
-
+const client = new BedrockRuntimeClient({ region: 'eu-west-2' })
+const MODEL_ID = 'amazon.nova-lite-v1:0'
 const PORT = 3001
 
 const server = createServer(async (req, res) => {
@@ -43,13 +28,6 @@ const server = createServer(async (req, res) => {
     return
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY
-  if (!apiKey) {
-    res.writeHead(500, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ error: 'ANTHROPIC_API_KEY not set in .env.local' }))
-    return
-  }
-
   // Read request body
   let body = ''
   for await (const chunk of req) body += chunk
@@ -57,33 +35,41 @@ const server = createServer(async (req, res) => {
   try {
     const { messages, system } = JSON.parse(body)
 
-    const apiResponse = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-      },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1024,
-        system,
-        messages,
-      }),
+    // Bedrock requires conversation to start with a user message.
+    // The frontend sends the opening assistant greeting — strip leading assistant messages.
+    const filtered = messages.filter((m) => m.role === 'user' || m.role === 'assistant')
+    const firstUserIdx = filtered.findIndex((m) => m.role === 'user')
+    const trimmed = firstUserIdx >= 0 ? filtered.slice(firstUserIdx) : filtered
+
+    const bedrockMessages = trimmed.map((m) => ({
+      role: m.role,
+      content: [{ text: m.content?.trim() || '...' }],
+    }))
+
+    const command = new ConverseCommand({
+      modelId: MODEL_ID,
+      system: [{ text: system }],
+      messages: bedrockMessages,
+      inferenceConfig: { maxTokens: 4096, temperature: 0.7 },
     })
 
-    const data = await apiResponse.json()
+    const result = await client.send(command)
 
-    res.writeHead(apiResponse.ok ? 200 : apiResponse.status, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify(data))
+    const text = result.output?.message?.content
+      ?.map((block) => ('text' in block ? block.text : ''))
+      .join('') ?? ''
+
+    // Return Anthropic-compatible response shape so the frontend works unchanged
+    res.writeHead(200, { 'Content-Type': 'application/json' })
+    res.end(JSON.stringify({ content: [{ type: 'text', text }] }))
   } catch (err) {
-    console.error('API error:', err)
+    console.error('Bedrock error:', err)
     res.writeHead(500, { 'Content-Type': 'application/json' })
-    res.end(JSON.stringify({ error: 'Failed to call Claude API' }))
+    res.end(JSON.stringify({ error: 'Failed to call Bedrock' }))
   }
 })
 
 server.listen(PORT, () => {
   console.log(`API dev server running on http://localhost:${PORT}`)
-  console.log('API key loaded:', process.env.ANTHROPIC_API_KEY ? 'yes' : 'NO - check .env.local')
+  console.log('Using Amazon Bedrock Nova Lite (eu-west-2)')
 })
