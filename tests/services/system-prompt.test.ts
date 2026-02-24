@@ -55,6 +55,12 @@ describe('System Prompt — Scope boundary', () => {
     const prompt = promptFor('intake')
     expect(prompt).not.toMatch(/no scope restrictions/i)
   })
+
+  it('prohibits AI from listing benefit names in messages', () => {
+    const prompt = promptFor('questions')
+    expect(prompt).toMatch(/NEVER.*list.*benefits.*yourself/i)
+    expect(prompt).toMatch(/stage_transition.*complete/i)
+  })
 })
 
 // ── Gate field alignment ────────────────────────────
@@ -289,6 +295,30 @@ describe('looksLikeCompletion — detects AI completion text without XML tag', (
 
   it('detects "your results are below"', () => {
     expect(looksLikeCompletion('Here are your results below.')).toBe(true)
+  })
+
+  it('detects "display it below"', () => {
+    expect(looksLikeCompletion(
+      'I will gather this information and display it below for you to review.',
+    )).toBe(true)
+  })
+
+  it('detects "you may be eligible"', () => {
+    expect(looksLikeCompletion(
+      'It looks like you may be eligible for some additional support.',
+    )).toBe(true)
+  })
+
+  it('detects "here are some potential"', () => {
+    expect(looksLikeCompletion(
+      'Here are some potential supports you may be eligible for.',
+    )).toBe(true)
+  })
+
+  it('detects AI listing specific benefit names', () => {
+    expect(looksLikeCompletion(
+      'Attendance Allowance is something you may be eligible for.',
+    )).toBe(true)
   })
 
   it('does NOT match normal question text', () => {

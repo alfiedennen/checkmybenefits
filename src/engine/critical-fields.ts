@@ -26,6 +26,10 @@ export function looksLikeCompletion(text: string): boolean {
     /here\s+are\s+(?:your|the)\s+results/i,
     /results\s+(?:are\s+)?(?:below|ready)/i,
     /(?:I have|I've)\s+found\s+several/i,
+    /display\s+(?:it\s+)?below/i,
+    /(?:you|it looks like you)\s+may\s+be\s+eligible/i,
+    /here\s+are\s+some\s+(?:potential|possible)/i,
+    /(?:Attendance Allowance|Pension Credit|Universal Credit|Carer's Allowance|Child Benefit|Housing Benefit|PIP).*(?:you|eligible|qualify|entitled)/i,
   ]
   return patterns.some((p) => p.test(text))
 }
