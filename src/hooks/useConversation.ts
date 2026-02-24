@@ -2,7 +2,7 @@ import { useReducer, useCallback, useRef } from 'react'
 import type { QuickReply } from '../types/conversation.ts'
 import { conversationReducer, createInitialState } from '../engine/state-machine.ts'
 import { buildBundle } from '../engine/bundle-builder.ts'
-import { hasCriticalFields, getMissingFields } from '../engine/critical-fields.ts'
+import { hasCriticalFields, getMissingFields, looksLikeCompletion } from '../engine/critical-fields.ts'
 import { sendMessage } from '../services/ai.ts'
 import { extractFromMessage, mergeExtraction } from '../services/message-extractor.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
@@ -183,6 +183,38 @@ export function useConversation() {
 
           // If AI tried to complete but we blocked it, ask for missing info
           if (response.stageTransition === 'complete' && !allowTransition) {
+            const missing = getMissingFields(personSoFar)
+            dispatch({
+              type: 'ADD_ASSISTANT_MESSAGE',
+              content: `I just need a bit more information before I can show your results. Could you tell me ${missing}?`,
+            })
+            dispatch({ type: 'SET_LOADING', isLoading: false })
+            return
+          }
+        }
+
+        // Detect completion text WITHOUT the <stage_transition> tag.
+        // Nova sometimes says "Take a look below" without the XML tag,
+        // so the gate block above is skipped entirely and no bundle builds.
+        if (!response.stageTransition && looksLikeCompletion(response.text)) {
+          const personSoFar = { ...stateRef.current.personData, ...(mergedPersonData ?? {}) }
+          if (hasCriticalFields(personSoFar)) {
+            // Fields are present — build the bundle as if the tag existed
+            dispatch({ type: 'SET_STAGE', stage: 'complete' })
+            try {
+              const allSituations = [
+                ...stateRef.current.situations,
+                ...(response.situations ?? []),
+              ]
+              const bundle = await buildBundle(personSoFar, [...new Set(allSituations)])
+              dispatch({ type: 'SET_BUNDLE', bundle })
+              bundleBuilt = true
+            } catch (err) {
+              console.error('Bundle build error (implicit complete):', err)
+              dispatch({ type: 'ADD_ASSISTANT_MESSAGE', content: BUNDLE_ERROR_MESSAGE })
+            }
+          } else {
+            // Missing fields — show recovery message instead of the AI's premature text
             const missing = getMissingFields(personSoFar)
             dispatch({
               type: 'ADD_ASSISTANT_MESSAGE',

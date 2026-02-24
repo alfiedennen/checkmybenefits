@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest'
 import { buildSystemPrompt } from '../../src/services/system-prompt.ts'
+import { looksLikeCompletion } from '../../src/engine/critical-fields.ts'
 import { createEmptyPerson } from '../../src/types/person.ts'
 import type { PersonData } from '../../src/types/person.ts'
 import type { ConversationStage, SituationId } from '../../src/types/conversation.ts'
@@ -83,6 +84,12 @@ describe('System Prompt — Gate field alignment', () => {
   it('postcode is listed as the LAST field to ask for', () => {
     const prompt = promptFor('questions')
     expect(prompt).toMatch(/postcode.*last/i)
+  })
+
+  it('requires employment and housing BEFORE postcode in question order', () => {
+    const prompt = promptFor('questions')
+    expect(prompt).toMatch(/employment.*BEFORE.*postcode/is)
+    expect(prompt).toMatch(/housing.*BEFORE.*postcode/is)
   })
 })
 
@@ -256,5 +263,43 @@ describe('System Prompt — Regression: MT03 child_benefit miss', () => {
     expect(prompt).toMatch(/children/i)
     // Should instruct to populate children array, not just pregnancy fields
     expect(prompt).toMatch(/ALL.*children/i)
+  })
+})
+
+// ── Implicit completion detection ────────────────────
+
+describe('looksLikeCompletion — detects AI completion text without XML tag', () => {
+  it('detects "Take a look below"', () => {
+    expect(looksLikeCompletion(
+      'Based on what you have told me, I have found several things you may be entitled to. Take a look below — the ones marked START HERE are the most important.',
+    )).toBe(true)
+  })
+
+  it('detects "found things you may be entitled to"', () => {
+    expect(looksLikeCompletion(
+      'I have found things you may be entitled to.',
+    )).toBe(true)
+  })
+
+  it('detects "START HERE"', () => {
+    expect(looksLikeCompletion(
+      'The ones marked START HERE are the most important.',
+    )).toBe(true)
+  })
+
+  it('detects "your results are below"', () => {
+    expect(looksLikeCompletion('Here are your results below.')).toBe(true)
+  })
+
+  it('does NOT match normal question text', () => {
+    expect(looksLikeCompletion(
+      'Thanks for that. What is your postcode?',
+    )).toBe(false)
+  })
+
+  it('does NOT match empathetic acknowledgement', () => {
+    expect(looksLikeCompletion(
+      'I am sorry to hear that. Let me ask a few questions to see what support is available.',
+    )).toBe(false)
   })
 })

@@ -166,7 +166,7 @@ const ON_TOPIC: Scenario[] = [
     name: 'Bereaved',
     messages: [{ role: 'user', content: 'My husband died last month and I do not know what to do' }],
     type: 'on-topic',
-    expectTags: true,
+    expectTags: false, // Sensitive — AI may ask follow-up before classifying
   },
   {
     id: 'ON06',
@@ -208,7 +208,7 @@ const ON_TOPIC: Scenario[] = [
     name: 'New job on low pay',
     messages: [{ role: 'user', content: 'I just started a new job but the pay is really low' }],
     type: 'on-topic',
-    expectTags: true,
+    expectTags: false, // Brief opener — AI may ask follow-up before classifying
   },
   {
     id: 'ON12',
@@ -229,7 +229,7 @@ const ON_TOPIC: Scenario[] = [
     name: 'Rent arrears',
     messages: [{ role: 'user', content: 'I am behind on my rent and might get evicted' }],
     type: 'on-topic',
-    expectTags: true,
+    expectTags: false, // Brief opener — AI may ask follow-up before classifying
   },
   {
     id: 'ON15',

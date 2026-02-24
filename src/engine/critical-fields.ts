@@ -14,6 +14,22 @@ export function hasCriticalFields(person: PersonData): boolean {
   )
 }
 
+/**
+ * Detect when the AI writes completion-sounding text but forgets the
+ * <stage_transition>complete</stage_transition> XML tag.
+ */
+export function looksLikeCompletion(text: string): boolean {
+  const patterns = [
+    /take a look below/i,
+    /found.*(?:things|support|entitlements?).*(?:may|might|could)\s+(?:be\s+)?(?:entitled|eligible|qualify)/i,
+    /start\s+here/i,
+    /here\s+are\s+(?:your|the)\s+results/i,
+    /results\s+(?:are\s+)?(?:below|ready)/i,
+    /(?:I have|I've)\s+found\s+several/i,
+  ]
+  return patterns.some((p) => p.test(text))
+}
+
 export function getMissingFields(person: PersonData): string {
   const missing: string[] = []
   if (!person.employment_status) missing.push('your employment situation')

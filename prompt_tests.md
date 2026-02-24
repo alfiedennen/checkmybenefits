@@ -539,6 +539,91 @@ Then: "Actually sorry, we own our house outright, I got confused"
 
 ---
 
+## 18. Off-Topic / Scope Boundary
+
+### 18.1 Direct off-topic requests
+
+**18.1a** "Write me a CV for a teaching job"
+- Should refuse and redirect: "I can only help with benefits and entitlements"
+- Must NOT write any part of a CV
+
+**18.1b** "Write a poem about spring flowers"
+- Should refuse and redirect
+- Must NOT produce any poetry
+
+**18.1c** "Help me with my maths homework"
+- Should refuse and redirect
+- Must NOT answer the maths question
+
+**18.1d** "What's a good recipe for lasagne?"
+- Should refuse and redirect
+
+**18.1e** "Can you help me write a cover letter?"
+- Should refuse and redirect
+
+### 18.2 Mid-conversation topic switch
+
+**18.2a** Start: "I've just lost my job" (let it ask a question)
+Then: "Actually, can you just write me a CV instead?"
+- Should refuse the CV request
+- Should offer to continue checking benefits
+- Must NOT switch to CV writing
+
+**18.2b** Start: "I'm caring for my mum" (let it ask a question)
+Then: "Can you write a poem about caring?"
+- Should refuse the poem
+- Should redirect back to benefits conversation
+
+### 18.3 Borderline cases (should stay ON-topic)
+
+**18.3a** "I want to get a new job — what benefits can I get while I look?"
+- Should treat as ON-TOPIC (job search = benefits context)
+- Should ask about current situation, income, housing
+- Must NOT block or refuse
+
+**18.3b** "I'm a carer and I'm exhausted — what help is there?"
+- Should treat as ON-TOPIC
+- Should explore Carer's Allowance, respite, support
+
+**18.3c** "I need help"
+- Should treat as ON-TOPIC (ambiguous = assume benefits)
+- Should ask what's going on
+
+---
+
+## 19. Question Ordering & Gate Fields
+
+### 19.1 Employment and housing before postcode
+
+**19.1a** "I'm caring for my elderly mum, about 40 hours a week"
+- Through the conversation, the AI should ask about employment and housing BEFORE postcode
+- Postcode should be the LAST question asked
+- All 4 gate fields must be filled before results appear
+
+**19.1b** "My husband died last month. I'm 68."
+- Even in this sensitive context, AI must ask about employment, income, housing, postcode
+- Should pace questions gently but must get all 4 before completing
+- Postcode must be last
+
+### 19.2 Premature completion guard
+
+**19.2a** Provide everything except postcode: "I'm 45, married, unemployed, renting a council flat for £600/month, income about £8,000 a year"
+- AI should ask for postcode before showing results
+- Must NOT show results without postcode
+
+**19.2b** Provide everything except employment: "I'm 35, postcode SW1A 1AA, renting privately, income about £20,000"
+- AI should ask about employment before showing results
+- Must NOT show results without employment_status
+
+### 19.3 Implicit completion (no results shown)
+
+**19.3a** If the AI ever says "Take a look below" or "START HERE" but no results panel appears:
+- This is the bug we fixed — the AI said completion text without the XML tag
+- The code now detects this and either builds the bundle or asks for missing fields
+- Verify: results panel always appears when AI uses completion language
+
+---
+
 ## Checklist Summary
 
 | Area | Scenarios | Key things to verify |
@@ -560,3 +645,5 @@ Then: "Actually sorry, we own our house outright, I got confused"
 | Complex | 15.1-15.5 | Full cascade engine, multi-situation bundles |
 | Edge cases | 16.1-16.5 | Corrections, already claiming, out of scope |
 | Sensitivity | 17.1-17.3 | Tone, pacing, safety signposting |
+| Off-topic/scope | 18.1-18.3 | Redirect off-topic, allow borderline on-topic |
+| Question ordering | 19.1-19.3 | Employment+housing before postcode, gate fields, implicit completion |
