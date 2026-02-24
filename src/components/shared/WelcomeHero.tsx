@@ -13,7 +13,7 @@ export function WelcomeHero({ onGetStarted }: Props) {
           You could be missing out on thousands of pounds a year
         </h2>
         <p className="welcome-hero-description">
-          Over £15 billion in UK benefits goes unclaimed every year.
+          As much as £23 billion in UK benefits goes unclaimed every year.
           Answer a few questions and we'll show you what you could
           be getting — and exactly how to claim it.
         </p>
