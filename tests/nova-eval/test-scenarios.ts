@@ -21,7 +21,7 @@ export interface Turn {
 export interface TestScenario {
   id: string
   name: string
-  category: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N'
+  category: 'A' | 'B' | 'C' | 'D' | 'E' | 'F' | 'G' | 'H' | 'I' | 'J' | 'K' | 'L' | 'M' | 'N' | 'O' | 'P' | 'Q' | 'R' | 'S' | 'T' | 'U'
   /** Stage the conversation is in when this message is sent */
   stage: ConversationStage
   /** Existing person data context (simulates accumulated state) */
@@ -1307,6 +1307,776 @@ const N3_MUM_DIED_FUNERAL: TestScenario = {
 }
 
 // ──────────────────────────────────────────────
+// Category O: Nation-Specific Scenarios
+// ──────────────────────────────────────────────
+
+const O1_WELSH_PENSIONER_PRESCRIPTIONS: TestScenario = {
+  id: 'O1',
+  name: 'Welsh pensioner — free prescriptions for all (no age limit in Wales)',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I'm 55, living in Cardiff CF10 1EP. I earn £25,000 and pay for prescriptions every month. Is there any help?",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 55,
+      gross_annual_income: 25000,
+      income_band: 'under_25000',
+      postcode: 'CF10 1EP',
+    },
+  },
+}
+
+const O2_SCOTTISH_FAMILY_LOW_INCOME: TestScenario = {
+  id: 'O2',
+  name: 'Scottish family, low income — Scottish Child Payment + Best Start',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I'm 28, I have two kids aged 4 and 2. I'm on Universal Credit, earning about £8,000 part-time. We live in Edinburgh EH1 1YZ.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 28,
+      children: [
+        { age: 4, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 2, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+      gross_annual_income: 8000,
+      income_band: 'under_12570',
+      postcode: 'EH1 1YZ',
+    },
+  },
+}
+
+const O3_WELSH_LOW_INCOME_FAMILY: TestScenario = {
+  id: 'O3',
+  name: 'Welsh low-income family — PDG + school essentials grant',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I'm 35, single mum with a 6 year old in primary school. I'm on Universal Credit, earning £7,000 a year. We rent from the council in Swansea SA1 1NW.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 35,
+      relationship_status: 'single',
+      children: [
+        { age: 6, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+      gross_annual_income: 7000,
+      income_band: 'under_7400',
+      housing_tenure: 'rent_social',
+      postcode: 'SA1 1NW',
+    },
+  },
+}
+
+const O4_SCOTTISH_YOUNG_CARER: TestScenario = {
+  id: 'O4',
+  name: 'Scottish young carer — Young Carer Grant',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I'm 17 and I look after my mum who has MS. I spend about 20 hours a week caring for her. I'm still at school in Glasgow G1 1XQ.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 17,
+      is_carer: true,
+      carer_hours_per_week: 20,
+      postcode: 'G1 1XQ',
+    },
+  },
+}
+
+const O5_QUALITATIVE_AGE_OLD: TestScenario = {
+  id: 'O5',
+  name: 'Qualitative age "I\'m old" — extracts approximate age + retired',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I'm old and struggling to manage on my own. I need help with daily tasks.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      needs_help_with_daily_living: true,
+    },
+  },
+}
+
+const O6_SCOTTISH_PENSIONER_CARE: TestScenario = {
+  id: 'O6',
+  name: 'Scottish pensioner needing care — Pension Age Disability Payment',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I'm 80, retired, living alone in Aberdeen AB10 1AQ. I need help with washing, dressing and cooking. My income is about £10,000 from my pension.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 80,
+      employment_status: 'retired',
+      relationship_status: 'single',
+      needs_help_with_daily_living: true,
+      gross_annual_income: 10000,
+      income_band: 'under_12570',
+      postcode: 'AB10 1AQ',
+    },
+  },
+}
+
+const O7_WELSH_EMERGENCY_HARDSHIP: TestScenario = {
+  id: 'O7',
+  name: 'Welsh resident in financial crisis — Discretionary Assistance Fund',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I've just lost my job, I'm 40, single, and I can't pay my rent this month. I'm in Newport NP20 1PL, renting privately for £650.",
+  expected: {
+    situations: ['lost_job'],
+    stageTransition: 'questions',
+    personData: {
+      age: 40,
+      employment_status: 'unemployed',
+      recently_redundant: true,
+      relationship_status: 'single',
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 650,
+      postcode: 'NP20 1PL',
+    },
+  },
+}
+
+const O8_SCOTTISH_PREGNANT_FIRST_BABY: TestScenario = {
+  id: 'O8',
+  name: 'Scottish pregnant woman — Best Start Grant pregnancy payment',
+  category: 'O',
+  stage: 'intake',
+  userMessage: "I'm 26, pregnant with my first baby. I'm on Universal Credit. We live in Dundee DD1 1DB, renting privately.",
+  expected: {
+    situations: ['new_baby'],
+    stageTransition: 'questions',
+    personData: {
+      age: 26,
+      is_pregnant: true,
+      expecting_first_child: true,
+      postcode: 'DD1 1DB',
+      housing_tenure: 'rent_private',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category P: Colloquial British English
+// ──────────────────────────────────────────────
+
+const P1_ME_MUM: TestScenario = {
+  id: 'P1',
+  name: 'Colloquial: "me mum can\'t cope"',
+  category: 'P',
+  stage: 'intake',
+  userMessage: "Me mum can't cope on her own anymore, she's 81 and needs help with everything",
+  expected: {
+    situations: ['ageing_parent'],
+    stageTransition: 'questions',
+    personData: {
+      cared_for_person: {
+        relationship: 'parent',
+        age: 81,
+        disability_benefit: 'none',
+        needs_help_daily_living: true,
+      },
+    },
+  },
+}
+
+const P2_ON_THE_DOLE: TestScenario = {
+  id: 'P2',
+  name: 'Colloquial: "on the dole, skint"',
+  category: 'P',
+  stage: 'intake',
+  userMessage: "I'm 34, on the dole, absolutely skint. Not a penny to me name. Renting a council gaff for 450 quid a month.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 34,
+      employment_status: 'unemployed',
+      housing_tenure: 'rent_social',
+      monthly_housing_cost: 450,
+    },
+  },
+}
+
+const P3_MISSUS_WORKS: TestScenario = {
+  id: 'P3',
+  name: 'Colloquial: "missus works at Asda"',
+  category: 'P',
+  stage: 'intake',
+  userMessage: "I got made redundant last week. The missus works part-time at Asda, about 12 grand a year. We've got two little ones, 5 and 3.",
+  expected: {
+    situations: ['lost_job'],
+    stageTransition: 'questions',
+    personData: {
+      employment_status: 'unemployed',
+      recently_redundant: true,
+      relationship_status: 'couple_married',
+      gross_annual_income: 12000,
+      income_band: 'under_12570',
+      children: [
+        { age: 5, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 3, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+    },
+  },
+}
+
+const P4_OUR_KID: TestScenario = {
+  id: 'P4',
+  name: 'Colloquial: "our kid\'s got ADHD"',
+  category: 'P',
+  stage: 'intake',
+  userMessage: "Our kid's got ADHD and the school can't deal with him. He's 8. We're on about 15 grand between us.",
+  expected: {
+    situations: ['child_struggling_school'],
+    stageTransition: 'questions',
+    personData: {
+      children: [
+        { age: 8, has_additional_needs: true, disability_benefit: 'none', in_education: true },
+      ],
+      gross_annual_income: 15000,
+      income_band: 'under_16000',
+    },
+  },
+}
+
+const P5_QUID_DOSH: TestScenario = {
+  id: 'P5',
+  name: 'Colloquial: "500 quid a month rent"',
+  category: 'P',
+  stage: 'questions',
+  existingPersonData: {
+    employment_status: 'unemployed',
+    recently_redundant: true,
+    income_band: 'under_7400',
+  },
+  existingSituations: ['lost_job'],
+  previousMessages: [
+    { role: 'user', content: "Lost me job innit" },
+    { role: 'assistant', content: "I'm sorry to hear that. Let's see what support might be available. What's your housing situation?" },
+  ],
+  userMessage: "Renting privately, 500 quid a month. Postcode's BD1 1HU. I'm 29.",
+  expected: {
+    personData: {
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 500,
+      postcode: 'BD1 1HU',
+      age: 29,
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category Q: Vague / Ambiguous Input
+// ──────────────────────────────────────────────
+
+const Q1_STRUGGLING: TestScenario = {
+  id: 'Q1',
+  name: 'Vague: "struggling to get by"',
+  category: 'Q',
+  stage: 'intake',
+  userMessage: "I'm really struggling to get by. Things have been really hard since I lost my job.",
+  expected: {
+    situations: ['lost_job'],
+    stageTransition: 'questions',
+    personData: {
+      employment_status: 'unemployed',
+    },
+  },
+}
+
+const Q2_CANT_MANAGE: TestScenario = {
+  id: 'Q2',
+  name: 'Vague: "I can\'t manage anymore" — health context',
+  category: 'Q',
+  stage: 'intake',
+  userMessage: "I can't manage anymore. I'm 78 and everything is getting harder. I need help with cooking and washing.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 78,
+      needs_help_with_daily_living: true,
+    },
+  },
+}
+
+const Q3_COMPLICATED_SEPARATION: TestScenario = {
+  id: 'Q3',
+  name: 'Vague: "it\'s complicated — separated but living together"',
+  category: 'Q',
+  stage: 'intake',
+  userMessage: "It's complicated — we've separated but we're still living in the same house because neither of us can afford to move out. I've got two kids aged 6 and 9.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'separated',
+      children: [
+        { age: 6, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 9, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+    },
+  },
+}
+
+const Q4_JUST_ABOUT_MANAGING: TestScenario = {
+  id: 'Q4',
+  name: 'Vague: "just about managing on what we\'ve got"',
+  category: 'Q',
+  stage: 'questions',
+  existingSituations: ['new_baby'],
+  existingPersonData: {
+    is_pregnant: true,
+    expecting_first_child: true,
+    relationship_status: 'couple_married',
+  },
+  previousMessages: [
+    { role: 'user', content: "We're expecting our first baby" },
+    { role: 'assistant', content: "Congratulations! What's your household income roughly?" },
+  ],
+  userMessage: "We're just about managing on what we've got. My husband earns about 20 grand and I work part-time, maybe 8 thousand.",
+  expected: {
+    personData: {
+      gross_annual_income: 20000,
+      income_band: 'under_25000',
+    },
+  },
+}
+
+const Q5_EVERYTHING_AT_ONCE: TestScenario = {
+  id: 'Q5',
+  name: 'Vague: "everything is going wrong at once"',
+  category: 'Q',
+  stage: 'intake',
+  userMessage: "Everything's going wrong at once. My dad's ill, I've been sacked, and my wife's pregnant. I'm 38.",
+  expected: {
+    situations: ['ageing_parent', 'lost_job', 'new_baby'],
+    stageTransition: 'questions',
+    personData: {
+      age: 38,
+      employment_status: 'unemployed',
+      is_pregnant: true,
+      relationship_status: 'couple_married',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category R: Complex Financial Situations
+// ──────────────────────────────────────────────
+
+const R1_PENSION_COMPONENTS: TestScenario = {
+  id: 'R1',
+  name: 'Complex financial: state pension + small works pension',
+  category: 'R',
+  stage: 'intake',
+  userMessage: "I'm 72, retired. I get about £11,000 from my state pension and another £3,000 from a small works pension. So about £14,000 altogether. I own my house.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 72,
+      employment_status: 'retired',
+      gross_annual_income: 14000,
+      income_band: 'under_16000',
+      housing_tenure: 'own_outright',
+    },
+  },
+}
+
+const R2_ZERO_HOURS: TestScenario = {
+  id: 'R2',
+  name: 'Complex financial: zero hours contract',
+  category: 'R',
+  stage: 'intake',
+  userMessage: "I'm 25, on a zero hours contract. Some weeks I get 30 hours, some weeks nothing. Maybe £8,000 to £10,000 a year if I'm lucky. I'm single, renting privately.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 25,
+      employment_status: 'employed',
+      relationship_status: 'single',
+      housing_tenure: 'rent_private',
+    },
+  },
+}
+
+const R3_MONTHLY_UC: TestScenario = {
+  id: 'R3',
+  name: 'Complex financial: "about £400 a month UC"',
+  category: 'R',
+  stage: 'intake',
+  userMessage: "I'm 33, single mum with a 4 year old. I get about £400 a month from Universal Credit. Renting from the council, £520 a month. B15 1AA.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 33,
+      relationship_status: 'single',
+      children: [
+        { age: 4, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+      housing_tenure: 'rent_social',
+      monthly_housing_cost: 520,
+      postcode: 'B15 1AA',
+    },
+  },
+}
+
+const R4_REDUNDANCY_PAYOUT: TestScenario = {
+  id: 'R4',
+  name: 'Complex financial: redundancy payout but no income',
+  category: 'R',
+  stage: 'intake',
+  userMessage: "I was made redundant. Got a £20,000 redundancy payout but no job now. I'm 45, married, mortgage of £1,100 a month.",
+  expected: {
+    situations: ['lost_job'],
+    stageTransition: 'questions',
+    personData: {
+      age: 45,
+      employment_status: 'unemployed',
+      recently_redundant: true,
+      relationship_status: 'couple_married',
+      household_capital: 20000,
+      housing_tenure: 'mortgage',
+      monthly_housing_cost: 1100,
+    },
+  },
+}
+
+const R5_SELF_EMPLOYED_VARIABLE: TestScenario = {
+  id: 'R5',
+  name: 'Complex financial: "self-employed, income varies wildly"',
+  category: 'R',
+  stage: 'intake',
+  userMessage: "I'm self-employed, 41. Income varies wildly — some months I earn £2,000, others barely £200. Maybe £15,000 on a good year. Wife doesn't work, two kids aged 7 and 4.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 41,
+      employment_status: 'self_employed',
+      relationship_status: 'couple_married',
+      gross_annual_income: 15000,
+      income_band: 'under_16000',
+      children: [
+        { age: 7, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 4, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category S: Complex Family / Housing
+// ──────────────────────────────────────────────
+
+const S1_SOFA_SURFING: TestScenario = {
+  id: 'S1',
+  name: 'Complex housing: "sofa surfing since I left my ex"',
+  category: 'S',
+  stage: 'intake',
+  userMessage: "I'm 29, I left my ex last month and I've been sofa surfing at friends' places. I have a 3 year old with me. No income at the moment.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 29,
+      relationship_status: 'separated',
+      children: [
+        { age: 3, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+    },
+  },
+}
+
+const S2_BOYFRIEND_MOVED_IN: TestScenario = {
+  id: 'S2',
+  name: 'Complex family: "boyfriend just moved in"',
+  category: 'S',
+  stage: 'intake',
+  userMessage: "My boyfriend just moved in with me last month. I'm 31, I earn about £16,000. He's looking for work. I have a 5 year old from a previous relationship.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 31,
+      relationship_status: 'couple_cohabiting',
+      gross_annual_income: 16000,
+      income_band: 'under_16000',
+      children: [
+        { age: 5, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+    },
+  },
+}
+
+const S3_MULTIGENERATIONAL: TestScenario = {
+  id: 'S3',
+  name: 'Complex family: adult daughter moved back with her baby',
+  category: 'S',
+  stage: 'intake',
+  userMessage: "I'm 55, my adult daughter's moved back home with her baby. She's got no job and no money. I earn about £30,000. We own the house outright.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 55,
+      gross_annual_income: 30000,
+      income_band: 'under_50270',
+      housing_tenure: 'own_outright',
+    },
+  },
+}
+
+const S4_SHARED_CUSTODY: TestScenario = {
+  id: 'S4',
+  name: 'Complex family: "kids are with me half the week"',
+  category: 'S',
+  stage: 'intake',
+  userMessage: "I'm separated, 38. My two kids aged 10 and 7 are with me half the week. I earn £22,000, renting privately for £750 a month. E1 6AN.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 38,
+      relationship_status: 'separated',
+      children: [
+        { age: 10, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+        { age: 7, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+      gross_annual_income: 22000,
+      income_band: 'under_25000',
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 750,
+      postcode: 'E1 6AN',
+    },
+  },
+}
+
+const S5_SHARED_OWNERSHIP: TestScenario = {
+  id: 'S5',
+  name: 'Complex housing: "shared ownership, mortgage on our half"',
+  category: 'S',
+  stage: 'intake',
+  userMessage: "We've got a shared ownership flat — we own half and pay rent on the other half plus our mortgage. It's about £900 a month total. I'm 35, my partner earns £28,000.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 35,
+      relationship_status: 'couple_cohabiting',
+      monthly_housing_cost: 900,
+      gross_annual_income: 28000,
+      income_band: 'under_50270',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category T: Medical / Disability Nuance
+// ──────────────────────────────────────────────
+
+const T1_WAITING_ASSESSMENT: TestScenario = {
+  id: 'T1',
+  name: 'Medical: "waiting for autism assessment for my 6 year old"',
+  category: 'T',
+  stage: 'intake',
+  userMessage: "My 6 year old is waiting for an autism assessment. The school says he needs one-to-one support. I'm a single mum earning about £14,000.",
+  expected: {
+    situations: ['child_struggling_school'],
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'single',
+      children: [
+        { age: 6, has_additional_needs: true, disability_benefit: 'none', in_education: true },
+      ],
+      gross_annual_income: 14000,
+      income_band: 'under_16000',
+    },
+  },
+}
+
+const T2_CANCER_REMISSION: TestScenario = {
+  id: 'T2',
+  name: 'Medical: "cancer in remission but still can\'t work"',
+  category: 'T',
+  stage: 'intake',
+  userMessage: "I had cancer and it's in remission now, but I still can't work. I'm 52, single. I've used up most of my savings. Renting privately for £700.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 52,
+      has_disability_or_health_condition: true,
+      relationship_status: 'single',
+      housing_tenure: 'rent_private',
+      monthly_housing_cost: 700,
+    },
+  },
+}
+
+const T3_LONG_COVID: TestScenario = {
+  id: 'T3',
+  name: 'Medical: "long COVID, off work 18 months"',
+  category: 'T',
+  stage: 'intake',
+  userMessage: "I've had long COVID for about 18 months. I can barely get out of bed most days. I'm 39, was earning £35,000 but haven't worked since. My wife earns £20,000.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 39,
+      has_disability_or_health_condition: true,
+      needs_help_with_daily_living: true,
+      relationship_status: 'couple_married',
+      gross_annual_income: 20000,
+      income_band: 'under_25000',
+    },
+  },
+}
+
+const T4_MENTAL_HEALTH_NO_DIAGNOSIS: TestScenario = {
+  id: 'T4',
+  name: 'Medical: "mental health is really bad, can barely leave the house"',
+  category: 'T',
+  stage: 'intake',
+  userMessage: "My mental health is really bad. I can barely leave the house most days. I've not been able to work for months. I'm 27, living with my parents.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 27,
+      has_disability_or_health_condition: true,
+      needs_help_with_daily_living: true,
+      housing_tenure: 'living_with_family',
+    },
+  },
+}
+
+const T5_VETERAN_PTSD: TestScenario = {
+  id: 'T5',
+  name: 'Medical: "war veteran with PTSD and mobility issues"',
+  category: 'T',
+  stage: 'intake',
+  userMessage: "I'm a war veteran, 48. I have PTSD and mobility issues from my time in service. I can't work. My wife earns about £15,000. We rent privately.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 48,
+      has_disability_or_health_condition: true,
+      mobility_difficulty: true,
+      relationship_status: 'couple_married',
+      gross_annual_income: 15000,
+      income_band: 'under_16000',
+      housing_tenure: 'rent_private',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
+// Category U: Welsh / Scottish Dialect Context
+// ──────────────────────────────────────────────
+
+const U1_WELSH_VALLEYS: TestScenario = {
+  id: 'U1',
+  name: 'Welsh dialect: "live in the valleys, Merthyr"',
+  category: 'U',
+  stage: 'intake',
+  userMessage: "We live in the valleys, Merthyr Tydfil CF47 8EE. I'm 42, my mam's poorly and I look after her most days. I had to give up work.",
+  expected: {
+    situations: ['ageing_parent'],
+    stageTransition: 'questions',
+    personData: {
+      age: 42,
+      is_carer: true,
+      employment_status: 'unemployed',
+      postcode: 'CF47 8EE',
+    },
+  },
+}
+
+const U2_SCOTTISH_BAIRN: TestScenario = {
+  id: 'U2',
+  name: 'Scottish dialect: "bairn\'s just started school"',
+  category: 'U',
+  stage: 'intake',
+  userMessage: "Aye, our bairn's just started school, he's 5. I'm 30, working part-time at Tesco earning about 10 grand. We rent from the council in Glasgow G1 1XQ.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 30,
+      children: [
+        { age: 5, has_additional_needs: false, disability_benefit: 'none', in_education: true },
+      ],
+      employment_status: 'employed',
+      gross_annual_income: 10000,
+      income_band: 'under_12570',
+      housing_tenure: 'rent_social',
+      postcode: 'G1 1XQ',
+    },
+  },
+}
+
+const U3_SCOTTISH_ON_THE_SICK: TestScenario = {
+  id: 'U3',
+  name: 'Scottish dialect: "partner\'s on the sick, we\'re in Dundee"',
+  category: 'U',
+  stage: 'intake',
+  userMessage: "My partner's on the sick with his back, cannae work. I earn about £12,000 part-time. We've got a wee one aged 2. We're in Dundee DD1 1DB, renting privately.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      relationship_status: 'couple_cohabiting',
+      has_disability_or_health_condition: true,
+      gross_annual_income: 12000,
+      income_band: 'under_12570',
+      children: [
+        { age: 2, has_additional_needs: false, disability_benefit: 'none', in_education: false },
+      ],
+      housing_tenure: 'rent_private',
+      postcode: 'DD1 1DB',
+    },
+  },
+}
+
+const U4_WELSH_MAM: TestScenario = {
+  id: 'U4',
+  name: 'Welsh dialect: "my mam needs help, she\'s in Swansea"',
+  category: 'U',
+  stage: 'intake',
+  userMessage: "My mam needs help, she's 83 and can't do anything for herself anymore. I'm 55, living with her in Swansea SA1 1NW. She owns the house.",
+  expected: {
+    situations: ['ageing_parent'],
+    stageTransition: 'questions',
+    personData: {
+      age: 55,
+      is_carer: true,
+      cared_for_person: {
+        relationship: 'parent',
+        age: 83,
+        disability_benefit: 'none',
+        needs_help_daily_living: true,
+      },
+      postcode: 'SA1 1NW',
+      housing_tenure: 'own_outright',
+    },
+  },
+}
+
+const U5_SCOTTISH_RETIRED: TestScenario = {
+  id: 'U5',
+  name: 'Scottish dialect: "aye I\'m retired, Inverness"',
+  category: 'U',
+  stage: 'intake',
+  userMessage: "Aye, I'm retired now. I'm 71, living on my own in Inverness IV1 1AA. Just my state pension, about £11,500 a year. I own my wee house.",
+  expected: {
+    stageTransition: 'questions',
+    personData: {
+      age: 71,
+      employment_status: 'retired',
+      relationship_status: 'single',
+      gross_annual_income: 11500,
+      income_band: 'under_12570',
+      housing_tenure: 'own_outright',
+      postcode: 'IV1 1AA',
+    },
+  },
+}
+
+// ──────────────────────────────────────────────
 // Export all scenarios
 // ──────────────────────────────────────────────
 
@@ -1392,4 +2162,49 @@ export const ALL_SCENARIOS: TestScenario[] = [
   N1_PIP_ENHANCED_MOBILITY_67,
   N2_UC_COURT_CASE,
   N3_MUM_DIED_FUNERAL,
+  // Category O: Nation-Specific
+  O1_WELSH_PENSIONER_PRESCRIPTIONS,
+  O2_SCOTTISH_FAMILY_LOW_INCOME,
+  O3_WELSH_LOW_INCOME_FAMILY,
+  O4_SCOTTISH_YOUNG_CARER,
+  O5_QUALITATIVE_AGE_OLD,
+  O6_SCOTTISH_PENSIONER_CARE,
+  O7_WELSH_EMERGENCY_HARDSHIP,
+  O8_SCOTTISH_PREGNANT_FIRST_BABY,
+  // Category P: Colloquial British English
+  P1_ME_MUM,
+  P2_ON_THE_DOLE,
+  P3_MISSUS_WORKS,
+  P4_OUR_KID,
+  P5_QUID_DOSH,
+  // Category Q: Vague / Ambiguous
+  Q1_STRUGGLING,
+  Q2_CANT_MANAGE,
+  Q3_COMPLICATED_SEPARATION,
+  Q4_JUST_ABOUT_MANAGING,
+  Q5_EVERYTHING_AT_ONCE,
+  // Category R: Complex Financial
+  R1_PENSION_COMPONENTS,
+  R2_ZERO_HOURS,
+  R3_MONTHLY_UC,
+  R4_REDUNDANCY_PAYOUT,
+  R5_SELF_EMPLOYED_VARIABLE,
+  // Category S: Complex Family / Housing
+  S1_SOFA_SURFING,
+  S2_BOYFRIEND_MOVED_IN,
+  S3_MULTIGENERATIONAL,
+  S4_SHARED_CUSTODY,
+  S5_SHARED_OWNERSHIP,
+  // Category T: Medical / Disability Nuance
+  T1_WAITING_ASSESSMENT,
+  T2_CANCER_REMISSION,
+  T3_LONG_COVID,
+  T4_MENTAL_HEALTH_NO_DIAGNOSIS,
+  T5_VETERAN_PTSD,
+  // Category U: Welsh / Scottish Dialect
+  U1_WELSH_VALLEYS,
+  U2_SCOTTISH_BAIRN,
+  U3_SCOTTISH_ON_THE_SICK,
+  U4_WELSH_MAM,
+  U5_SCOTTISH_RETIRED,
 ]

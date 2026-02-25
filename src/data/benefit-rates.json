@@ -106,6 +106,24 @@
     "state_pension_age": 66,
     "personal_allowance": 12570,
     "basic_rate_limit": 50270,
-    "higher_rate_limit": 125140
+    "higher_rate_limit": 125140,
+    "wales_fuel_support": 200,
+    "wales_pupil_development_grant": 225,
+    "wales_school_essentials_grant_primary": 125,
+    "wales_school_essentials_grant_secondary": 225,
+    "wales_daf_individual_max": 120,
+    "wales_daf_emergency_max": 750,
+    "scottish_child_payment_weekly": 26.70,
+    "best_start_grant_pregnancy_first_child": 707.25,
+    "best_start_grant_pregnancy_subsequent": 353.65,
+    "best_start_grant_early_learning": 294.70,
+    "best_start_grant_school_age": 294.70,
+    "best_start_foods_pregnancy_weekly": 4.95,
+    "best_start_foods_under_1_weekly": 9.90,
+    "best_start_foods_1_to_3_weekly": 4.95,
+    "winter_heating_payment": 58.75,
+    "young_carer_grant": 359.65,
+    "school_clothing_grant_scotland_min": 120,
+    "ema_scotland_weekly": 30
   }
 }

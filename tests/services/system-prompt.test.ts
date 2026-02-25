@@ -66,12 +66,13 @@ describe('System Prompt — Scope boundary', () => {
 // ── Gate field alignment ────────────────────────────
 
 describe('System Prompt — Gate field alignment', () => {
-  it('questions stage lists all 4 critical gate fields', () => {
+  it('questions stage lists all 5 critical gate fields', () => {
     const prompt = promptFor('questions')
     expect(prompt).toContain('employment_status')
     expect(prompt).toContain('income_band')
     expect(prompt).toContain('housing_tenure')
     expect(prompt).toContain('postcode')
+    expect(prompt).toMatch(/age.*must not be null/i)
   })
 
   it('questions stage explicitly says do NOT complete if any gate field is missing', () => {

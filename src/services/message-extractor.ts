@@ -149,12 +149,12 @@ function extractPostcode(text: string): string | undefined {
 
 function extractAge(text: string): number | undefined {
   // "I'm 34" / "I am 42" / "aged 34"
-  const patterns = [
+  const numericPatterns = [
     /(?:I'm|I am|i'm|i am)\s+(\d{1,3})\b/,
     /\b(\d{1,3})\s+years?\s+old\b/i,
     /\baged?\s+(\d{1,3})\b/i,
   ]
-  for (const p of patterns) {
+  for (const p of numericPatterns) {
     const match = text.match(p)
     if (match) {
       const age = parseInt(match[1], 10)
@@ -162,6 +162,32 @@ function extractAge(text: string): number | undefined {
       if (age >= 16 && age <= 110) return age
     }
   }
+
+  const lower = text.toLowerCase()
+
+  // Decade ranges: "in my seventies" → 75 (midpoint), "early" → low, "late" → high
+  const decadePatterns: Array<[RegExp, number]> = [
+    [/\bin\s+(?:my|his|her|their)\s+late\s+sixties\b/, 67],
+    [/\bin\s+(?:my|his|her|their)\s+early\s+sixties\b/, 62],
+    [/\bin\s+(?:my|his|her|their)\s+sixties\b/, 65],
+    [/\bin\s+(?:my|his|her|their)\s+late\s+seventies\b/, 77],
+    [/\bin\s+(?:my|his|her|their)\s+early\s+seventies\b/, 72],
+    [/\bin\s+(?:my|his|her|their)\s+seventies\b/, 75],
+    [/\bin\s+(?:my|his|her|their)\s+late\s+eighties\b/, 87],
+    [/\bin\s+(?:my|his|her|their)\s+early\s+eighties\b/, 82],
+    [/\bin\s+(?:my|his|her|their)\s+eighties\b/, 85],
+    [/\bin\s+(?:my|his|her|their)\s+late\s+nineties\b/, 97],
+    [/\bin\s+(?:my|his|her|their)\s+early\s+nineties\b/, 92],
+    [/\bin\s+(?:my|his|her|their)\s+nineties\b/, 95],
+  ]
+  for (const [p, age] of decadePatterns) {
+    if (p.test(lower)) return age
+  }
+
+  // Qualitative age: "old" / "elderly" / "pensioner" / "OAP" → 70
+  if (/\b(?:i'?m|i\s+am)\s+(?:old|elderly)\b/.test(lower)) return 70
+  if (/\b(?:elderly|pensioner|oap)\b/.test(lower) && /\b(?:i'?m|i\s+am|i\b)\b/.test(lower)) return 70
+
   return undefined
 }
 
@@ -329,10 +355,18 @@ function extractEmployment(text: string): EmploymentResult | undefined {
   if (/\bgave?\s+up\s+(?:my\s+)?(?:work|job)\b/.test(lower) || /\bhad\s+to\s+give\s+up\s+work\b/.test(lower)) {
     return { status: 'unemployed' }
   }
-  if (/\b(?:i'm|i am)\s+(?:a\s+)?(?:full[\s-]*time\s+)?student\b/.test(lower)) {
+  if (/\b(?:i'm|i am)\s+(?:\d+[\s,]+)?(?:a\s+)?(?:full[\s-]*time\s+)?student\b/.test(lower) ||
+      /\b(?:full[\s-]*time|part[\s-]*time)?\s*(?:university\s+)?student\b/.test(lower)) {
     return { status: 'student' }
   }
   if (/\bretired\b/.test(lower)) {
+    return { status: 'retired' }
+  }
+  // "I'm old/elderly/pensioner/OAP" → retired
+  if (/\b(?:i'?m|i\s+am)\s+(?:an?\s+)?(?:old|elderly)\b/.test(lower)) {
+    return { status: 'retired' }
+  }
+  if (/\b(?:i'?m|i\s+am)\s+(?:an?\s+)?(?:pensioner|oap)\b/.test(lower)) {
     return { status: 'retired' }
   }
   // "on the state pension" / "just my pension" → retired

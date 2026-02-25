@@ -42,6 +42,36 @@ describe('extractFromMessage', () => {
       const result = extractFromMessage('My son is aged 5')
       expect(result.age).toBeUndefined()
     })
+
+    it('extracts "I\'m old" as age 70', () => {
+      const result = extractFromMessage("I'm old and live alone")
+      expect(result.age).toBe(70)
+    })
+
+    it('extracts "I\'m elderly" as age 70', () => {
+      const result = extractFromMessage("I'm elderly and need help")
+      expect(result.age).toBe(70)
+    })
+
+    it('extracts "I am a pensioner" as age 70', () => {
+      const result = extractFromMessage("I am a pensioner")
+      expect(result.age).toBe(70)
+    })
+
+    it('extracts "in my seventies" as age 75', () => {
+      const result = extractFromMessage("I'm in my seventies")
+      expect(result.age).toBe(75)
+    })
+
+    it('extracts "in my early eighties" as age 82', () => {
+      const result = extractFromMessage("I'm in my early eighties")
+      expect(result.age).toBe(82)
+    })
+
+    it('extracts "in my late sixties" as age 67', () => {
+      const result = extractFromMessage("I'm in my late sixties")
+      expect(result.age).toBe(67)
+    })
   })
 
   // ── Income ──────────────────────────────────────
@@ -209,6 +239,21 @@ describe('extractFromMessage', () => {
 
     it('extracts "on the state pension" as retired', () => {
       const result = extractFromMessage("I'm on the state pension")
+      expect(result.employment_status).toBe('retired')
+    })
+
+    it('extracts "I\'m old" as retired', () => {
+      const result = extractFromMessage("I'm old and live alone")
+      expect(result.employment_status).toBe('retired')
+    })
+
+    it('extracts "I\'m elderly" as retired', () => {
+      const result = extractFromMessage("I'm elderly")
+      expect(result.employment_status).toBe('retired')
+    })
+
+    it('extracts "I\'m a pensioner" as retired', () => {
+      const result = extractFromMessage("I'm a pensioner")
       expect(result.employment_status).toBe('retired')
     })
 

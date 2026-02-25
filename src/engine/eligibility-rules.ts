@@ -297,6 +297,10 @@ const RULE_MAP: Record<string, RuleChecker> = {
   },
 
   free_nhs_prescriptions: (person) => {
+    // Wales: free for everyone since 2007
+    // Scotland: free for everyone since 2011
+    if (person.nation === 'wales' || person.nation === 'scotland')
+      return { id: 'free_nhs_prescriptions', eligible: true, confidence: 'likely' }
     const age = person.age ?? 30
     // Age 60+ = automatic exemption
     if (age >= 60)
@@ -567,9 +571,16 @@ const RULE_MAP: Record<string, RuleChecker> = {
 
   concessionary_bus_travel: (person) => {
     const age = person.age ?? 30
+    // Scotland: free for under-22s and 60+
+    if (person.nation === 'scotland' && (age < 22 || age >= 60))
+      return { id: 'concessionary_bus_travel', eligible: true, confidence: 'likely' }
+    // Wales: free for 60+
+    if (person.nation === 'wales' && age >= 60)
+      return { id: 'concessionary_bus_travel', eligible: true, confidence: 'likely' }
+    // England: free from SPA
     if (age >= SPA)
       return { id: 'concessionary_bus_travel', eligible: true, confidence: 'likely' }
-    // Also available to some disabled people
+    // Also available to some disabled people (all nations)
     if (person.has_disability_or_health_condition && person.mobility_difficulty)
       return { id: 'concessionary_bus_travel', eligible: true, confidence: 'possible' }
     return { id: 'concessionary_bus_travel', eligible: false, confidence: 'likely' }
@@ -693,6 +704,310 @@ const RULE_MAP: Record<string, RuleChecker> = {
     if (age >= 50 && age < SPA)
       return { id: 'ni_voluntary_contributions', eligible: true, confidence: 'worth_checking' }
     return { id: 'ni_voluntary_contributions', eligible: false, confidence: 'likely' }
+  },
+
+  // ── Wales-specific entitlements ──────────────────
+
+  council_tax_reduction_wales: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'council_tax_reduction_wales', eligible: false, confidence: 'likely' }
+    // Low income on qualifying benefit
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'council_tax_reduction_wales', eligible: true, confidence: 'likely' }
+    if (person.income_band === 'under_25000')
+      return { id: 'council_tax_reduction_wales', eligible: true, confidence: 'possible' }
+    return { id: 'council_tax_reduction_wales', eligible: false, confidence: 'likely' }
+  },
+
+  childcare_offer_wales: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'childcare_offer_wales', eligible: false, confidence: 'likely' }
+    const hasChild3to4 = person.children.some((c) => c.age >= 3 && c.age <= 4)
+    if (!hasChild3to4)
+      return { id: 'childcare_offer_wales', eligible: false, confidence: 'likely' }
+    if (
+      person.employment_status === 'employed' ||
+      person.employment_status === 'self_employed'
+    )
+      return { id: 'childcare_offer_wales', eligible: true, confidence: 'possible' }
+    return { id: 'childcare_offer_wales', eligible: false, confidence: 'likely' }
+  },
+
+  flying_start_wales: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'flying_start_wales', eligible: false, confidence: 'likely' }
+    const hasChild2to3 = person.children.some((c) => c.age >= 2 && c.age <= 3)
+    if (!hasChild2to3)
+      return { id: 'flying_start_wales', eligible: false, confidence: 'likely' }
+    // Area-based — can only say worth_checking
+    return { id: 'flying_start_wales', eligible: true, confidence: 'worth_checking' }
+  },
+
+  pupil_development_grant_wales: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'pupil_development_grant_wales', eligible: false, confidence: 'likely' }
+    const hasSchoolAgeChild = person.children.some((c) => c.age >= 4 && c.age <= 16)
+    if (!hasSchoolAgeChild)
+      return { id: 'pupil_development_grant_wales', eligible: false, confidence: 'likely' }
+    // Linked to FSM eligibility
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570'
+    )
+      return { id: 'pupil_development_grant_wales', eligible: true, confidence: 'likely' }
+    return { id: 'pupil_development_grant_wales', eligible: false, confidence: 'likely' }
+  },
+
+  school_essentials_grant_wales: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'school_essentials_grant_wales', eligible: false, confidence: 'likely' }
+    const hasSchoolAgeChild = person.children.some((c) => c.age >= 4 && c.age <= 16)
+    if (!hasSchoolAgeChild)
+      return { id: 'school_essentials_grant_wales', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'school_essentials_grant_wales', eligible: true, confidence: 'possible' }
+    return { id: 'school_essentials_grant_wales', eligible: false, confidence: 'likely' }
+  },
+
+  discretionary_assistance_fund_wales: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'discretionary_assistance_fund_wales', eligible: false, confidence: 'likely' }
+    // Available to people on qualifying benefits or in crisis
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'discretionary_assistance_fund_wales', eligible: true, confidence: 'possible' }
+    return { id: 'discretionary_assistance_fund_wales', eligible: false, confidence: 'likely' }
+  },
+
+  help_to_stay_wales: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'help_to_stay_wales', eligible: false, confidence: 'likely' }
+    // For disabled/older people needing home adaptations
+    const age = person.age ?? 30
+    if (person.has_disability_or_health_condition || person.mobility_difficulty || age >= SPA)
+      return { id: 'help_to_stay_wales', eligible: true, confidence: 'worth_checking' }
+    return { id: 'help_to_stay_wales', eligible: false, confidence: 'likely' }
+  },
+
+  welsh_government_fuel_support: (person) => {
+    if (person.nation !== 'wales')
+      return { id: 'welsh_government_fuel_support', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'welsh_government_fuel_support', eligible: true, confidence: 'possible' }
+    return { id: 'welsh_government_fuel_support', eligible: false, confidence: 'likely' }
+  },
+
+  // ── Scotland-specific entitlements ──────────────────
+
+  scottish_child_payment: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'scottish_child_payment', eligible: false, confidence: 'likely' }
+    const hasChildUnder16 = person.children.some((c) => c.age < 16)
+    if (!hasChildUnder16)
+      return { id: 'scottish_child_payment', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000' ||
+      person.income_band === 'under_25000'
+    )
+      return { id: 'scottish_child_payment', eligible: true, confidence: 'likely' }
+    return { id: 'scottish_child_payment', eligible: false, confidence: 'likely' }
+  },
+
+  best_start_grant: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'best_start_grant', eligible: false, confidence: 'likely' }
+    const hasYoungChild = person.children.some((c) => c.age <= 5)
+    if (!hasYoungChild && !person.is_pregnant)
+      return { id: 'best_start_grant', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'best_start_grant', eligible: true, confidence: 'possible' }
+    return { id: 'best_start_grant', eligible: false, confidence: 'likely' }
+  },
+
+  best_start_foods: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'best_start_foods', eligible: false, confidence: 'likely' }
+    const hasChildUnder3 = person.children.some((c) => c.age < 3)
+    if (!hasChildUnder3 && !person.is_pregnant)
+      return { id: 'best_start_foods', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'best_start_foods', eligible: true, confidence: 'likely' }
+    return { id: 'best_start_foods', eligible: false, confidence: 'likely' }
+  },
+
+  carer_support_payment: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'carer_support_payment', eligible: false, confidence: 'likely' }
+    if (!person.is_carer)
+      return { id: 'carer_support_payment', eligible: false, confidence: 'likely' }
+    const hours = person.carer_hours_per_week ?? 0
+    if (hours >= 35)
+      return { id: 'carer_support_payment', eligible: true, confidence: 'possible' }
+    if (hours >= 20 && person.cared_for_person?.needs_help_daily_living)
+      return { id: 'carer_support_payment', eligible: true, confidence: 'worth_checking' }
+    return { id: 'carer_support_payment', eligible: false, confidence: 'likely' }
+  },
+
+  adult_disability_payment: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'adult_disability_payment', eligible: false, confidence: 'likely' }
+    const age = person.age ?? 30
+    if (age < 16 || age >= SPA)
+      return { id: 'adult_disability_payment', eligible: false, confidence: 'likely' }
+    if (person.has_disability_or_health_condition)
+      return { id: 'adult_disability_payment', eligible: true, confidence: 'possible' }
+    return { id: 'adult_disability_payment', eligible: false, confidence: 'likely' }
+  },
+
+  child_disability_payment: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'child_disability_payment', eligible: false, confidence: 'likely' }
+    const hasChildWithNeeds = person.children.some((c) => c.has_additional_needs && c.age < 16)
+    if (hasChildWithNeeds)
+      return { id: 'child_disability_payment', eligible: true, confidence: 'possible' }
+    return { id: 'child_disability_payment', eligible: false, confidence: 'likely' }
+  },
+
+  pension_age_disability_payment: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'pension_age_disability_payment', eligible: false, confidence: 'likely' }
+    const userAge = person.age ?? 0
+    const caredFor = person.cared_for_person
+    if (caredFor && caredFor.age >= SPA && caredFor.needs_help_daily_living)
+      return { id: 'pension_age_disability_payment', eligible: true, confidence: 'possible' }
+    if (userAge >= SPA && person.needs_help_with_daily_living)
+      return { id: 'pension_age_disability_payment', eligible: true, confidence: 'possible' }
+    return { id: 'pension_age_disability_payment', eligible: false, confidence: 'worth_checking' }
+  },
+
+  winter_heating_payment: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'winter_heating_payment', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570'
+    )
+      return { id: 'winter_heating_payment', eligible: true, confidence: 'likely' }
+    const age = person.age ?? 30
+    if (age >= SPA)
+      return { id: 'winter_heating_payment', eligible: true, confidence: 'possible' }
+    return { id: 'winter_heating_payment', eligible: false, confidence: 'likely' }
+  },
+
+  funeral_support_payment: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'funeral_support_payment', eligible: false, confidence: 'likely' }
+    if (!person.is_bereaved)
+      return { id: 'funeral_support_payment', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'funeral_support_payment', eligible: true, confidence: 'possible' }
+    return { id: 'funeral_support_payment', eligible: false, confidence: 'likely' }
+  },
+
+  young_carer_grant: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'young_carer_grant', eligible: false, confidence: 'likely' }
+    // For young people aged 16-18 who are carers
+    const age = person.age ?? 30
+    if (age >= 16 && age <= 18 && person.is_carer)
+      return { id: 'young_carer_grant', eligible: true, confidence: 'possible' }
+    return { id: 'young_carer_grant', eligible: false, confidence: 'likely' }
+  },
+
+  school_clothing_grant_scotland: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'school_clothing_grant_scotland', eligible: false, confidence: 'likely' }
+    const hasSchoolAgeChild = person.children.some((c) => c.age >= 4 && c.age <= 18)
+    if (!hasSchoolAgeChild)
+      return { id: 'school_clothing_grant_scotland', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570'
+    )
+      return { id: 'school_clothing_grant_scotland', eligible: true, confidence: 'likely' }
+    return { id: 'school_clothing_grant_scotland', eligible: false, confidence: 'likely' }
+  },
+
+  ema_scotland: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'ema_scotland', eligible: false, confidence: 'likely' }
+    const hasChild16to19 = person.children.some((c) => c.age >= 16 && c.age <= 19)
+    if (!hasChild16to19)
+      return { id: 'ema_scotland', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000' ||
+      person.income_band === 'under_25000'
+    )
+      return { id: 'ema_scotland', eligible: true, confidence: 'possible' }
+    return { id: 'ema_scotland', eligible: false, confidence: 'likely' }
+  },
+
+  scottish_welfare_fund: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'scottish_welfare_fund', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'scottish_welfare_fund', eligible: true, confidence: 'possible' }
+    return { id: 'scottish_welfare_fund', eligible: false, confidence: 'likely' }
+  },
+
+  council_tax_reduction_scotland: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'council_tax_reduction_scotland', eligible: false, confidence: 'likely' }
+    if (
+      person.income_band === 'under_7400' ||
+      person.income_band === 'under_12570' ||
+      person.income_band === 'under_16000'
+    )
+      return { id: 'council_tax_reduction_scotland', eligible: true, confidence: 'likely' }
+    if (person.income_band === 'under_25000')
+      return { id: 'council_tax_reduction_scotland', eligible: true, confidence: 'possible' }
+    return { id: 'council_tax_reduction_scotland', eligible: false, confidence: 'likely' }
+  },
+
+  free_bus_travel_scotland: (person) => {
+    if (person.nation !== 'scotland')
+      return { id: 'free_bus_travel_scotland', eligible: false, confidence: 'likely' }
+    const age = person.age ?? 30
+    if (age < 22 || age >= 60)
+      return { id: 'free_bus_travel_scotland', eligible: true, confidence: 'likely' }
+    if (person.has_disability_or_health_condition)
+      return { id: 'free_bus_travel_scotland', eligible: true, confidence: 'possible' }
+    return { id: 'free_bus_travel_scotland', eligible: false, confidence: 'likely' }
   },
 }
 

@@ -746,6 +746,16 @@ a:hover { color: var(--color-primary-light); }
   color: var(--color-text-light);
 }
 
+.bundle-nation-warning {
+  background: #fff3cd;
+  border: 1px solid #ffc107;
+  border-radius: var(--radius-md);
+  padding: 12px 16px;
+  font-size: 0.9rem;
+  color: #664d03;
+  line-height: 1.5;
+}
+
 /* ===== Total Value Banner ===== */
 .total-value-banner {
   background: var(--color-gateway-bg);

@@ -4,7 +4,7 @@ A conversational web app that helps UK citizens discover what benefits and suppo
 
 **Live:** [checkmybenefits.uk](https://checkmybenefits.uk)
 
-**Status:** V0.9.1 — 52 entitlements, 48 eligibility rules, 230 tests (including 61 single-turn + 8 multi-turn AI evals) at 96%. Auto-updating benefit rates. Bedrock Guardrails for content safety. Partial postcode support. Full England coverage.
+**Status:** V1.0 — 75 entitlements across England, Wales and Scotland. 48 eligibility rules. 398 deterministic tests + 105 single-turn + 16 multi-turn AI evals. Auto-updating benefit rates. Bedrock Guardrails for content safety.
 
 ## What It Does
 
@@ -27,7 +27,7 @@ The gateway cascade — "claim X first because it unlocks Y and Z" — is the co
 
 ## Situations Covered
 
-Any life situation is supported. The engine evaluates all 52 entitlements across every major DWP, HMRC, NHS, DfE, DfT, and MoJ scheme based on the user's data. Common situations include:
+Any life situation is supported. The engine evaluates all 75 entitlements across DWP, HMRC, NHS, DfE, DfT, MoJ, and devolved nation schemes (Wales, Scotland) based on the user's data. Common situations include:
 
 | Situation | Example trigger | Key entitlements |
 |-----------|----------------|-----------------|
@@ -115,7 +115,7 @@ Bedrock spend is tracked with a $50/month budget and email alerts:
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
 | `deploy.yml` | Push to `main` | Build site, sync to S3, invalidate CloudFront, deploy Lambda |
-| `eval.yml` | Weekly + manual | Run 61 single-turn + 8 multi-turn AI evals against Bedrock |
+| `eval.yml` | Weekly + manual | Run 105 single-turn + 16 multi-turn AI evals against Bedrock |
 | `update-rates.yml` | Weekly cron | Fetch GOV.UK benefit rates, validate, commit if changed |
 | `check-dwp-feed.yml` | Daily cron | Monitor DWP Atom feed for rate publications, trigger update |
 
@@ -163,10 +163,10 @@ npm run dev:full
 | `npm run dev:full` | Both dev server + API proxy |
 | `npm run build` | TypeScript compile + Vite production build |
 | `npm run preview` | Preview production build locally |
-| `npm test` | Run unit tests (Vitest, 230 tests) |
+| `npm test` | Run unit tests (Vitest, 398 tests) |
 | `npm run test:watch` | Watch mode tests |
-| `npm run eval` | Run 61 single-turn AI eval scenarios (requires Bedrock) |
-| `npm run eval:multi-turn` | Run 8 multi-turn AI eval scenarios (requires Bedrock) |
+| `npm run eval` | Run 105 single-turn AI eval scenarios (requires Bedrock) |
+| `npm run eval:multi-turn` | Run 16 multi-turn AI eval scenarios (requires Bedrock) |
 | `npm run update-rates` | Manually fetch latest GOV.UK benefit rates |
 | `npm run build-imd` | Rebuild IMD deprivation lookup from source data |
 
@@ -209,11 +209,11 @@ src/
 │
 ├── engine/                     # Entitlement engine (deterministic)
 │   ├── bundle-builder.ts       # Orchestrator: eligibility → values → cascade → conflicts → plan
-│   ├── eligibility-rules.ts    # 48 entitlements with field-level checks
+│   ├── eligibility-rules.ts    # 48 rules covering 75 entitlements
 │   ├── cascade-resolver.ts     # Groups entitlements by gateway dependency
 │   ├── conflict-resolver.ts    # Resolves mutually exclusive entitlements
 │   ├── value-estimator.ts      # Calculates estimated annual values from benefit rates
-│   ├── critical-fields.ts      # Gate check: 4 required fields before bundle build
+│   ├── critical-fields.ts      # Gate check: 5 required fields before bundle build
 │   └── state-machine.ts        # Conversation state reducer
 │
 ├── services/
@@ -235,7 +235,7 @@ src/
 │   └── policyengine.ts         # PE API types
 │
 ├── data/
-│   ├── entitlements.json       # 52 entitlements, 45 dependency edges, 5 conflicts
+│   ├── entitlements.json       # 75 entitlements (England/Wales/Scotland), 45 dependency edges, 5 conflicts
 │   ├── benefit-rates.json      # GOV.UK rates for 2025–26 (auto-updated)
 │   ├── imd-lookup.json         # 32K LSOA → deprivation decile (IMD 2019)
 │   └── quick-replies.ts        # Suggested quick reply options
@@ -254,15 +254,16 @@ tests/
 │   ├── postcodes.test.ts           # Full + outcode/partial postcode tests
 │   ├── conversation-replay.test.ts # 12 multi-turn conversation replays (deterministic)
 │   ├── policyengine-integration.test.ts
-│   └── persona-scenarios.test.ts
+│   ├── persona-scenarios.test.ts
+│   └── entitlement-matrix.test.ts  # 134 matrix tests (all 75 entitlements × 3 nations)
 ├── services/
 │   ├── message-extractor.test.ts
-│   └── system-prompt.test.ts       # 20 system prompt guardrail tests
+│   └── system-prompt.test.ts       # 31 system prompt guardrail tests
 ├── nova-eval/                      # LLM evaluation framework
 │   ├── run-eval.ts                 # Single-turn eval runner
 │   ├── run-multi-turn-eval.ts      # Multi-turn eval runner (Bedrock conversations)
-│   ├── test-scenarios.ts           # 61 single-turn scenarios across 14 categories
-│   ├── multi-turn-scenarios.ts     # 8 multi-turn conversation scenarios
+│   ├── test-scenarios.ts           # 105 single-turn scenarios across 21 categories
+│   ├── multi-turn-scenarios.ts     # 16 multi-turn conversation scenarios
 │   ├── bedrock-client.ts
 │   ├── scoring.ts
 │   └── report.ts
@@ -318,7 +319,7 @@ The parser (`ai.ts`) extracts these tags via regex. A code-based fallback (`mess
 
 When the conversation reaches `complete`, `buildBundle()` runs:
 
-1. **Eligibility check** — Run deterministic rules against PersonData for all 52 entitlements
+1. **Eligibility check** — Run deterministic rules against PersonData for all 75 entitlements (filtered by nation)
 2. **Value estimation** — Calculate estimated annual value using GOV.UK benefit rates
 3. **Cascade resolution** — Group entitlements by their gateway (what unlocks what)
 4. **Conflict resolution** — Identify mutually exclusive pairs, recommend the better option
@@ -349,7 +350,7 @@ Claiming Pension Credit first can unlock £3,000–5,000+ in additional entitlem
 
 The master data file defines:
 
-- **52 entitlements** with eligibility rules, application methods, GOV.UK URLs, difficulty ratings
+- **75 entitlements** with eligibility rules, application methods, GOV.UK URLs, difficulty ratings, nation availability
 - **45 dependency edges** — which entitlements unlock which (gateway, strengthens, qualifies)
 - **5 conflict edges** — mutually exclusive pairs with resolution logic
 - **10+ situations** with trigger phrases and primary/secondary entitlements
@@ -357,7 +358,7 @@ The master data file defines:
 
 ### benefit-rates.json
 
-Current GOV.UK rates (auto-updated weekly). Covers 31 rate values across all major benefits.
+Current GOV.UK rates (auto-updated weekly). Covers 31+ rate values across all major benefits including Welsh and Scottish schemes.
 
 ### imd-lookup.json
 
@@ -365,86 +366,41 @@ Current GOV.UK rates (auto-updated weekly). Covers 31 rate values across all maj
 
 ## Testing
 
-### Test Layers
+The project has four test layers providing comprehensive coverage of both the deterministic engine and AI extraction quality. See [`TESTING.md`](TESTING.md) for full methodology, scenario details, and findings.
 
 | Layer | Count | What it tests | Runs |
 |-------|-------|---------------|------|
-| Unit tests (Vitest) | 215 | Engine, extraction, postcodes, system prompt guardrails | Every push |
-| Conversation replays | 12 | Multi-turn extraction → gate → bundle (deterministic, no AI) | Every push |
-| System prompt tests | 20 | Completion gate, premature-complete guards, regression scenarios | Every push |
-| Single-turn AI evals | 61 | LLM extraction quality across 14 categories | Weekly + manual |
-| Multi-turn AI evals | 8 | Full AI conversation management (field collection, gate compliance) | Weekly + manual |
+| Deterministic tests (Vitest) | 398 | Engine, extraction, postcodes, prompt guardrails, entitlement matrix | Every push |
+| Single-turn AI evals | 105 | LLM extraction quality across 21 categories | Weekly + manual |
+| Multi-turn AI evals | 16 | Full AI conversation management (field collection, gate compliance) | Weekly + manual |
+| Guardrail evals | 30 | Off-topic redirection + on-topic engagement (Bedrock) | Manual |
 
-See [`tests/REAL-WORLD-RUBRIC.md`](tests/REAL-WORLD-RUBRIC.md) for detailed scenario documentation.
+### Key Numbers
+
+| Metric | Value |
+|--------|-------|
+| Entitlements tested | 75/75 (all directly tested via matrix) |
+| Nations tested | England, Wales, Scotland (all entitlements × all nations) |
+| Deterministic test runtime | <1s (no API calls) |
+| Single-turn AI eval score | **96.1%** (105/105 pass, model + code fallback) |
+| Multi-turn AI eval score | **96.2%** (16/16 pass) |
+| Avg AI eval latency | 750ms |
+| Est. cost per conversation | ~$0.001 |
 
 ### Completion Gate
 
 The system uses a dual-layer gate to prevent premature results:
 
-1. **AI-level gate** — System prompt contains a "COMPLETION GATE — MANDATORY CHECKLIST" requiring 4 fields (employment_status, income_band, housing_tenure, postcode) before the AI can transition to complete
-2. **Code-level gate** — `critical-fields.ts` blocks the `complete` transition if any of the 4 fields are missing, regardless of what the AI says
+1. **AI-level gate** — System prompt requires 5 fields (age, employment_status, income_band, housing_tenure, postcode) before transitioning to complete
+2. **Code-level gate** — `critical-fields.ts` blocks the `complete` transition if any field is missing, regardless of what the AI says
 
-This catches cases where the AI non-deterministically skips fields, especially in emotional contexts (bereavement, carer scenarios).
-
-### Partial Postcode Support
-
-If a user provides only the first part of their postcode (e.g., "SE1", "M1"), the system:
-- Calls the postcodes.io outcode API for country and local authority
-- Passes the gate (postcode field is populated)
-- Flags results with `postcode_partial: true` so the UI can note reduced precision
-- Still asks for full postcodes by default ("your full postcode helps me check local support")
-
-### Running Evals
+### Running Tests
 
 ```bash
-# Requires AWS credentials with Bedrock access
-npm run eval              # 61 single-turn scenarios
-npm run eval:multi-turn   # 8 multi-turn conversation scenarios
+npm test                  # 398 deterministic tests (Vitest)
+npm run eval              # 105 single-turn AI eval scenarios (requires Bedrock)
+npm run eval:multi-turn   # 16 multi-turn AI eval scenarios (requires Bedrock)
 ```
-
-### Single-Turn Eval Categories (61 scenarios)
-
-| Category | Count | Tests |
-|----------|-------|-------|
-| A: Intake extraction | 6 | Complex multi-situation, single situations, varying detail levels |
-| B: Income band mapping | 5 | "twelve grand", "£25,000", "minimum wage 20hrs", "just JSA" |
-| C: Implicit inference | 6 | "my wife" → married, "mortgage" → housing tenure |
-| D: Multi-turn conversation | 5 | Full 3-turn flows with accumulated state |
-| E: XML format compliance | All | Every scenario validates parseability |
-| F: Edge cases | 4 | Separation, vague input, contradictions, very long messages |
-| G: Health / disability | 6 | MS, wheelchair+PIP, depression, dementia carer, chronic pain |
-| H: Bereavement | 3 | Young widow, elderly widower, carer bereavement |
-| I: Separation | 3 | Divorce with kids, DV + no income, joint mortgage |
-| J: Mixed / novel | 4 | Homeless + addiction, early retirement, student + baby |
-| K: NHS health costs | 6 | PC cascade to NHS, diabetes + LIS, pregnancy exemption |
-| L: Childcare & education | 5 | 2yr UC childcare, working parents 30hrs, student parent |
-| M: Housing & energy | 4 | Pensioner renting, SMI mortgage, WaterSure, ECO4 |
-| N: Transport & legal | 3 | PIP mobility + transport, court fee remission, funeral expenses |
-
-### Multi-Turn Eval Scenarios (8 scenarios)
-
-| ID | Name | Key test |
-|----|------|----------|
-| MT01 | Job loss, evasive income | AI persists when user says "not much honestly" |
-| MT02 | Pensioner, missing housing | AI asks for housing when user skips it |
-| MT03 | Everything in one message | AI handles info-dense single turn |
-| MT04 | No housing → must not complete | Direct reproduction of production bug |
-| MT05 | Carer, gradual reveal | Accumulates carer data across 6 turns |
-| MT06 | Disability, PIP received | AI recognises existing benefit receipt |
-| MT07 | Bereavement, emotional context | AI handles emotion while collecting data |
-| MT08 | Student employment type | AI correctly classifies uncommon status |
-
-### Results (Nova Lite)
-
-| Metric | Model-only | Model + code fallback |
-|--------|-----------|----------------------|
-| Overall score | 85.9% | **96.0%** |
-| Scenarios passed | 61/61 | 61/61 |
-| Avg latency | 810ms | 810ms |
-| Est. cost/conversation | ~$0.002 | ~$0.002 |
-| Conversations per dollar | ~500 | ~500 |
-
-*Note: Originally built on Nova Micro ($0.001/conv) but switched to Nova Lite — Micro couldn't reliably follow the structured XML output format for data extraction.*
 
 ## Deployment
 
@@ -496,7 +452,7 @@ Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claud
 ## Limitations
 
 - **Guidance, not advice** — results are estimates, not formal benefits advice
-- **England only** — Scotland, Wales, Northern Ireland have additional schemes (planned for V1)
+- **England, Wales, Scotland** — Northern Ireland has separate schemes (not yet covered)
 - **Council Tax Support varies** — 300+ local schemes, we can only say "apply to your council"
 - **No application submission** — we show what to claim and link to GOV.UK, but can't submit for you
 

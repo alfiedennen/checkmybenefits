@@ -10,7 +10,8 @@ export function hasCriticalFields(person: PersonData): boolean {
     person.employment_status &&
     person.income_band &&
     person.housing_tenure &&
-    person.postcode
+    person.postcode &&
+    person.age
   )
 }
 
@@ -39,6 +40,7 @@ export function getMissingFields(person: PersonData): string {
   if (!person.employment_status) missing.push('your employment situation')
   if (!person.income_band) missing.push('your approximate household income')
   if (!person.housing_tenure) missing.push('your housing situation (renting, own home, etc.)')
+  if (!person.age) missing.push('your age')
   if (!person.postcode) missing.push('your postcode')
   if (missing.length === 0) return 'a few more details'
   if (missing.length === 1) return missing[0]

@@ -195,7 +195,8 @@
         "the_300_council_problem": "Each billing authority sets its own scheme. Some mirror the old national CTB scheme, others have minimum payments (e.g. 20% of bill regardless), income tapers, capital limits, and band caps. The engine needs to know the specific rules for each council."
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england"]
     },
     {
       "id": "council_tax_reduction_full",
@@ -428,7 +429,8 @@
         "tribunal_success_rate": ">90%"
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england"]
     },
     {
       "id": "warm_home_discount",
@@ -802,7 +804,8 @@
         ]
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england"]
     },
     {
       "id": "free_childcare_15hrs_disadvantaged",
@@ -820,7 +823,8 @@
         ]
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england"]
     },
     {
       "id": "free_childcare_30hrs",
@@ -838,7 +842,8 @@
         ]
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england"]
     },
     {
       "id": "sure_start_maternity_grant",
@@ -911,7 +916,8 @@
         ]
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england"]
     },
     {
       "id": "prescription_prepayment_cert",
@@ -929,7 +935,8 @@
         ]
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england", "northern_ireland"]
     },
     {
       "id": "housing_benefit_legacy",
@@ -1005,7 +1012,8 @@
         ]
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england", "wales"]
     },
     {
       "id": "watersure",
@@ -1118,7 +1126,8 @@
         ]
       },
       "unlocks": [],
-      "conflicts_with": []
+      "conflicts_with": [],
+      "available_in": ["england", "wales"]
     },
     {
       "id": "eco_home_insulation",
@@ -1155,6 +1164,441 @@
       },
       "unlocks": [],
       "conflicts_with": []
+    },
+    {
+      "id": "council_tax_reduction_wales",
+      "name": "Council Tax Reduction (Wales)",
+      "short_description": "National scheme reducing council tax for low-income households. Unlike England's 300+ local schemes, Wales has one national scheme.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "application_url": "https://www.gov.wales/council-tax-reduction",
+      "estimated_annual_value_range": [200, 2000],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Income-based reduction. Single person under SPA on IS/JSA-IR/ESA-IR/UC gets up to 100%. Others assessed on income vs applicable amount." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["council_tax_support_working_age", "council_tax_reduction_full"],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "childcare_offer_wales",
+      "name": "Childcare Offer for Wales (30 hours)",
+      "short_description": "30 hours combined childcare and education for working parents of 3-4 year olds. Includes 20 hours Foundation Phase + 10 hours childcare.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "application_url": "https://www.gov.wales/childcare-3-and-4-year-olds",
+      "estimated_annual_value_range": [3000, 6000],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Both parents working (or single parent working) earning at least equivalent of 16hrs/week at NMW. Neither parent earns above £100,000. Child aged 3-4." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "flying_start_wales",
+      "name": "Flying Start (Wales)",
+      "short_description": "Free part-time childcare for 2-3 year olds in eligible areas, plus health visitor support and parenting programmes.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "application_url": "https://www.gov.wales/flying-start",
+      "estimated_annual_value_range": [2000, 5000],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Must live in a Flying Start area (typically most deprived areas). Child aged 2-3. Provides 12.5 hours/week free childcare." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "pupil_development_grant_wales",
+      "name": "Pupil Development Grant (Wales)",
+      "short_description": "£225 per eligible pupil to help with school costs like uniform, equipment, and trips. Paid to schools to support learners.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "application_url": "https://www.gov.wales/pupil-development-grant",
+      "estimated_annual_value_range": [225, 225],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Child eligible for free school meals, or looked-after, or adopted from care. £225 per pupil per year." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "school_essentials_grant_wales",
+      "name": "School Essentials Grant (Wales)",
+      "short_description": "£225 grant for school essentials when a child enters Reception, Year 3, Year 7, or Year 10. For families on qualifying benefits.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "application_url": "https://www.gov.wales/school-essentials-grant",
+      "estimated_annual_value_range": [125, 225],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Families receiving qualifying benefits (UC, IS, JSA-IR, ESA-IR, PC). £125 for Reception/Year 3, £225 for Year 7/Year 10." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "discretionary_assistance_fund_wales",
+      "name": "Discretionary Assistance Fund (Wales)",
+      "short_description": "Emergency grants for people facing a crisis. Individual Assistance Payments up to £120, Emergency Assistance Payments for essentials.",
+      "admin_body": "welsh_government",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.gov.wales/discretionary-assistance-fund-daf",
+      "estimated_annual_value_range": [120, 750],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Emergency Assistance Payment: facing crisis (fire, flood, domestic abuse). Individual Assistance Payment: need essential items (cooker, bed, washing machine) and on qualifying benefit or low income." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "help_to_stay_wales",
+      "name": "Help to Stay (Wales)",
+      "short_description": "Home adaptation grants for older and disabled people to help them stay independent at home. Up to £36,000.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "phone"],
+      "application_url": "https://www.gov.wales/home-improvements-and-repairs",
+      "estimated_annual_value_range": [500, 36000],
+      "value_note": "One-off grant value varies by adaptation needed",
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Disabled Facilities Grant up to £36,000 for essential adaptations (stairlift, wet room, ramp). Means-tested for adults, not means-tested for children." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "welsh_government_fuel_support",
+      "name": "Welsh Government Fuel Support Scheme",
+      "short_description": "Annual one-off payment to help with energy costs. £200 for qualifying low-income households in Wales.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "phone"],
+      "application_url": "https://www.gov.wales/fuel-support-scheme",
+      "estimated_annual_value_range": [200, 200],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Wales only. Must be on qualifying benefit (UC, PC, IS, JSA, ESA, Working Tax Credit, Child Tax Credit). One payment per household per year." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["wales"]
+    },
+    {
+      "id": "scottish_child_payment",
+      "name": "Scottish Child Payment",
+      "short_description": "£26.70 per week per eligible child under 16. For families on qualifying benefits in Scotland.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/scottish-child-payment",
+      "estimated_annual_value_range": [1388, 6942],
+      "value_note": "£26.70/wk per child (up to 5 children)",
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Child under 16. Must be on qualifying benefit (UC, IS, JSA-IR, ESA-IR, PC, or legacy tax credits)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "best_start_grant",
+      "name": "Best Start Grant",
+      "short_description": "Three payments at key stages: Pregnancy & Baby (£707 first child / £353 subsequent), Early Learning (£294.70), School Age (£294.70).",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/best-start-grant-best-start-foods",
+      "estimated_annual_value_range": [295, 1296],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Must be on qualifying benefit (UC, IS, JSA, ESA, PC, tax credits, HB). Pregnancy & Baby: claim from 24 weeks pregnant to 6 months after birth. Early Learning: child turning 2. School Age: child starting P1." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["sure_start_maternity_grant"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "best_start_foods",
+      "name": "Best Start Foods",
+      "short_description": "Pre-loaded payment card for healthy food and milk. £4.95/week during pregnancy, £9.90/week for children under 1, £4.95/week for ages 1-3.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/best-start-grant-best-start-foods",
+      "estimated_annual_value_range": [257, 515],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Pregnant or child under 3. Must be on qualifying benefit (UC, IS, JSA, ESA, PC, tax credits, HB) or under 18." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["healthy_start"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "carer_support_payment",
+      "name": "Carer Support Payment",
+      "short_description": "£83.30 per week for people caring for someone at least 35 hours a week. Scotland's replacement for Carer's Allowance.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/carer-support-payment",
+      "estimated_annual_value_range": [4332, 4332],
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Caring for someone 35+ hours/week who gets qualifying disability benefit. Earnings limit applies." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["carers_allowance"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "adult_disability_payment",
+      "name": "Adult Disability Payment",
+      "short_description": "Financial support for people with a disability or long-term health condition affecting daily living or mobility. Scotland's replacement for PIP.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/adult-disability-payment",
+      "estimated_annual_value_range": [1518, 9747],
+      "claiming_difficulty": "complex",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Age 16 to SPA. Disability or health condition affecting daily living and/or mobility for 3+ months and expected to last 9+ months." }
+        ]
+      },
+      "unlocks": ["blue_badge", "motability_scheme", "vehicle_excise_duty_exemption"],
+      "conflicts_with": ["pip"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "child_disability_payment",
+      "name": "Child Disability Payment",
+      "short_description": "Financial support for children under 16 with a disability or health condition. Scotland's replacement for DLA (child).",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/child-disability-payment",
+      "estimated_annual_value_range": [1518, 9747],
+      "claiming_difficulty": "complex",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Child under 16. Needs substantially more care or supervision than a child of the same age without a disability, or has difficulty walking." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["dla_child"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "pension_age_disability_payment",
+      "name": "Pension Age Disability Payment",
+      "short_description": "Financial support for people of pension age who need help with daily living. Scotland's replacement for Attendance Allowance.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/pension-age-disability-payment",
+      "estimated_annual_value_range": [3843, 5741],
+      "claiming_difficulty": "complex",
+      "is_gateway": true,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. SPA+. Need help with daily living due to disability or health condition." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["attendance_allowance"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "winter_heating_payment",
+      "name": "Winter Heating Payment",
+      "short_description": "Annual £58.75 payment to help with heating costs. Scotland's replacement for Cold Weather Payment and part of Winter Fuel Payment.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["automatic_if_pension_credit"],
+      "estimated_annual_value_range": [59, 59],
+      "claiming_difficulty": "automatic",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Automatic if on qualifying benefit (PC, UC, IS, JSA-IR, ESA-IR) on qualifying date." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "funeral_support_payment",
+      "name": "Funeral Support Payment",
+      "short_description": "Help with funeral costs for people on qualifying benefits in Scotland. Covers essential costs plus up to £1,215 for other expenses.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/funeral-support-payment",
+      "estimated_annual_value_range": [1215, 5000],
+      "value_note": "One-off payment covering funeral costs",
+      "claiming_difficulty": "moderate",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Responsible for funeral costs. Must be on qualifying benefit (UC, PC, IS, JSA, ESA, HB, tax credits)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["funeral_expenses_payment"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "young_carer_grant",
+      "name": "Young Carer Grant",
+      "short_description": "Annual £359.65 grant for young carers aged 16-18 who care for someone an average of 16+ hours per week.",
+      "admin_body": "social_security_scotland",
+      "application_method": ["online", "phone"],
+      "application_url": "https://www.mygov.scot/young-carer-grant",
+      "estimated_annual_value_range": [360, 360],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Aged 16-18. Caring for someone 16+ hours/week on average who gets qualifying disability benefit. Not in receipt of Carer Support Payment or Carer's Allowance." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "school_clothing_grant_scotland",
+      "name": "School Clothing Grant (Scotland)",
+      "short_description": "Grant to help with school uniform costs. Minimum £120 per eligible child per year.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "estimated_annual_value_range": [120, 200],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Child in P1-S6. Families receiving qualifying benefits (same as free school meals eligibility). £120 minimum per child per year." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "ema_scotland",
+      "name": "Education Maintenance Allowance (Scotland)",
+      "short_description": "£30 per week for 16-19 year olds staying in education. Means-tested on household income.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "estimated_annual_value_range": [1080, 1080],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Aged 16-19 in full-time education at school. Household income under £24,421 (one child) or £26,884 (more than one)." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "scottish_welfare_fund",
+      "name": "Scottish Welfare Fund",
+      "short_description": "Crisis Grants for emergencies (up to 3 per year) and Community Care Grants for essential items when leaving care or staying independent.",
+      "admin_body": "local_council",
+      "application_method": ["online_council", "phone"],
+      "estimated_annual_value_range": [100, 1500],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Crisis Grant: facing emergency (fire, flood, benefit delay). Community Care Grant: leaving care/hospital, staying independent, or supporting a family under exceptional pressure." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "council_tax_reduction_scotland",
+      "name": "Council Tax Reduction (Scotland)",
+      "short_description": "National scheme reducing council tax for low-income households in Scotland. Can reduce your bill by up to 100%.",
+      "admin_body": "local_council",
+      "application_method": ["online_council"],
+      "estimated_annual_value_range": [200, 2500],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. National scheme (unlike England's 300+ local schemes). Income-based. On qualifying benefit = likely high reduction." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": ["council_tax_support_working_age", "council_tax_reduction_full"],
+      "available_in": ["scotland"]
+    },
+    {
+      "id": "free_bus_travel_scotland",
+      "name": "Free Bus Travel (Scotland)",
+      "short_description": "Free bus travel for everyone under 22 and everyone aged 60+. Also available to people with certain disabilities.",
+      "admin_body": "transport_scotland",
+      "application_method": ["online"],
+      "application_url": "https://www.mygov.scot/free-bus-travel",
+      "estimated_annual_value_range": [500, 1500],
+      "claiming_difficulty": "easy",
+      "is_gateway": false,
+      "eligibility": {
+        "rules": [
+          { "note": "Scotland only. Under 22 or aged 60+. Also qualifying disabilities. Apply for NEC card." }
+        ]
+      },
+      "unlocks": [],
+      "conflicts_with": [],
+      "available_in": ["scotland"]
     }
   ],
 

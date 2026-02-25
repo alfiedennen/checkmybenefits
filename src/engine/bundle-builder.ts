@@ -57,8 +57,12 @@ export async function buildBundle(
 ): Promise<EntitlementBundle> {
   const person = preprocessPersonData(personData)
 
-  // 1. Check eligibility of ALL entitlements against PersonData
-  const eligibilityResults = checkEligibility(allEntitlements, person, situationIds)
+  // 1. Filter by nation availability, then check eligibility
+  const nation = person.nation ?? 'england'
+  const nationFiltered = allEntitlements.filter(
+    (e) => !e.available_in || e.available_in.includes(nation),
+  )
+  const eligibilityResults = checkEligibility(nationFiltered, person, situationIds)
   const eligibleIds = new Set(eligibilityResults.map((r) => r.id))
 
   // 2. Build EntitlementResult objects with values
@@ -100,6 +104,7 @@ export async function buildBundle(
 
   return {
     total_estimated_annual_value: { low: totalLow, high: totalHigh },
+    nation: person.nation,
     ...cascade,
     conflicts,
     action_plan: actionPlan,

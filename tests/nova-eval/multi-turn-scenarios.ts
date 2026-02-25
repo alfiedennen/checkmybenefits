@@ -40,7 +40,7 @@ const MT01: MultiTurnScenario = {
   id: 'MT01',
   name: 'Job loss, evasive income — AI should persist',
   turns: [
-    "I've just lost my job",
+    "I'm 35 and I've just lost my job",
     'not much honestly',
     'nothing, zero income',
     'renting privately, £800 a month',
@@ -48,6 +48,7 @@ const MT01: MultiTurnScenario = {
   ],
   expectedSituations: ['lost_job'],
   expectedPersonData: {
+    age: 35,
     employment_status: 'unemployed',
     income_band: 'under_7400',
     housing_tenure: 'rent_private',
@@ -88,10 +89,11 @@ const MT03: MultiTurnScenario = {
   id: 'MT03',
   name: 'Everything in one message — AI handles dense input',
   turns: [
-    "My wife and I just had a baby, I work part time earning about £14,000, we live in a council flat in LS1 1BA",
+    "I'm 30 and my wife and I just had a baby, I work part time earning about £14,000, we live in a council flat in LS1 1BA",
   ],
   expectedSituations: ['new_baby'],
   expectedPersonData: {
+    age: 30,
     relationship_status: 'couple_married',
     income_band: 'under_16000',
     housing_tenure: 'rent_social',
@@ -108,13 +110,14 @@ const MT04: MultiTurnScenario = {
   id: 'MT04',
   name: 'No housing provided — AI must NOT complete early',
   turns: [
-    "I've lost my job",
+    "I'm 28 and I've lost my job",
     'nothing, no income',
     'E1 6AN',
     'renting privately',
   ],
   expectedSituations: ['lost_job'],
   expectedPersonData: {
+    age: 28,
     employment_status: 'unemployed',
     income_band: 'under_7400',
     housing_tenure: 'rent_private',
@@ -132,7 +135,7 @@ const MT05: MultiTurnScenario = {
   name: 'Carer, gradual reveal across 6 turns',
   turns: [
     "My mum can't cope on her own anymore",
-    "She's 82, I go over every day",
+    "She's 82, I go over every day. I'm 48.",
     'About 40 hours a week looking after her',
     'I had to give up work, no income now',
     'Council house, £400 a month',
@@ -140,6 +143,7 @@ const MT05: MultiTurnScenario = {
   ],
   expectedSituations: ['ageing_parent'],
   expectedPersonData: {
+    age: 48,
     is_carer: true,
     carer_hours_per_week: 40,
     employment_status: 'unemployed',
@@ -158,7 +162,7 @@ const MT06: MultiTurnScenario = {
   id: 'MT06',
   name: 'Disability with PIP — AI recognises existing benefit',
   turns: [
-    "I have MS and can't work",
+    "I'm 42 and I have MS and can't work",
     "I'm on PIP enhanced rate mobility",
     'no income at all',
     "I'm single, renting privately, £700 a month",
@@ -166,6 +170,7 @@ const MT06: MultiTurnScenario = {
   ],
   expectedSituations: ['health_condition'],
   expectedPersonData: {
+    age: 42,
     has_disability_or_health_condition: true,
     disability_benefit_received: 'pip_mobility_enhanced',
     employment_status: 'unemployed',
@@ -211,13 +216,14 @@ const MT08: MultiTurnScenario = {
   id: 'MT08',
   name: 'Student — AI correctly classifies uncommon status',
   turns: [
-    "I'm a full time student and I'm pregnant with our first baby",
+    "I'm 22, a full time student and I'm pregnant with our first baby",
     'My partner works, earning about £18,000',
     "We're renting privately, £600 a month",
     'LE1 1WB',
   ],
   expectedSituations: ['new_baby'],
   expectedPersonData: {
+    age: 22,
     employment_status: 'student',
     is_pregnant: true,
     expecting_first_child: true,
@@ -230,6 +236,208 @@ const MT08: MultiTurnScenario = {
   earliestCompleteTurn: 3,
 }
 
+// ── MT09: Welsh pensioner — nation-specific entitlements ──
+
+const MT09: MultiTurnScenario = {
+  id: 'MT09',
+  name: 'Welsh pensioner — nation-specific entitlements',
+  turns: [
+    "I'm 75 and retired, living on my own",
+    'about £9,000 a year from my pension',
+    'I own my house outright',
+    'CF10 1EP',
+  ],
+  expectedSituations: [],
+  expectedPersonData: {
+    age: 75,
+    employment_status: 'retired',
+    income_band: 'under_12570',
+    housing_tenure: 'own_outright',
+    postcode: 'CF10 1EP',
+    nation: 'wales',
+  },
+  expectedEntitlements: ['pension_credit', 'attendance_allowance', 'free_nhs_prescriptions', 'council_tax_reduction_wales'],
+  minBundleSize: 4,
+  earliestCompleteTurn: 3,
+}
+
+// ── MT10: Scottish family with children ──────────────
+
+const MT10: MultiTurnScenario = {
+  id: 'MT10',
+  name: 'Scottish family — Scottish Child Payment + Best Start',
+  turns: [
+    "I'm 32, I've just had a baby boy, he's 2 months old. I'm not working at the moment.",
+    'My partner works part-time, about £10,000 a year',
+    'We rent from the council, £450 a month',
+    'EH1 1YZ',
+  ],
+  expectedSituations: ['new_baby'],
+  expectedPersonData: {
+    age: 32,
+    employment_status: 'unemployed',
+    income_band: 'under_12570',
+    housing_tenure: 'rent_social',
+    postcode: 'EH1 1YZ',
+    nation: 'scotland',
+  },
+  expectedEntitlements: ['child_benefit', 'scottish_child_payment', 'best_start_grant'],
+  minBundleSize: 4,
+  earliestCompleteTurn: 3,
+}
+
+// ── MT11: Qualitative age — "I'm old" ───────────────
+
+const MT11: MultiTurnScenario = {
+  id: 'MT11',
+  name: 'Qualitative age "I\'m old" — must ask for numeric age',
+  turns: [
+    "I'm old and I need help, I can't manage on my own",
+    "I'm 79",
+    'just my state pension, about £11,000',
+    'I rent from the council, £500 a month',
+    'B15 1TJ',
+  ],
+  expectedSituations: [],
+  expectedPersonData: {
+    age: 79,
+    employment_status: 'retired',
+    income_band: 'under_12570',
+    housing_tenure: 'rent_social',
+    postcode: 'B15 1TJ',
+  },
+  expectedEntitlements: ['pension_credit', 'attendance_allowance'],
+  minBundleSize: 4,
+  earliestCompleteTurn: 4,
+}
+
+// ── MT12: Colloquial gradual reveal ──────────────────
+
+const MT12: MultiTurnScenario = {
+  id: 'MT12',
+  name: 'Colloquial gradual reveal — slang extraction',
+  turns: [
+    "me and the missus just had a baby, I'm 29 and not working",
+    'she works at Tesco, about 12 grand a year',
+    'council gaff, 500 quid a month',
+    'BD1 1HU',
+  ],
+  expectedSituations: ['new_baby'],
+  expectedPersonData: {
+    age: 29,
+    employment_status: 'unemployed',
+    relationship_status: 'couple_cohabiting',
+    income_band: 'under_16000',
+    housing_tenure: 'rent_social',
+    postcode: 'BD1 1HU',
+  },
+  expectedEntitlements: ['child_benefit', 'universal_credit'],
+  minBundleSize: 4,
+  earliestCompleteTurn: 3,
+}
+
+// ── MT13: Vague-to-specific funnel ───────────────────
+
+const MT13: MultiTurnScenario = {
+  id: 'MT13',
+  name: 'Vague-to-specific funnel — AI must probe',
+  turns: [
+    'I need help, things are really bad right now',
+    "I lost my job 3 weeks ago, I'm 45",
+    'renting privately, £800 a month',
+    'no savings, no partner, no income',
+    'LS1 1BA',
+  ],
+  expectedSituations: ['lost_job'],
+  expectedPersonData: {
+    age: 45,
+    employment_status: 'unemployed',
+    income_band: 'under_7400',
+    housing_tenure: 'rent_private',
+    postcode: 'LS1 1BA',
+  },
+  expectedEntitlements: ['universal_credit', 'council_tax_support_working_age'],
+  minBundleSize: 6,
+  earliestCompleteTurn: 4,
+}
+
+// ── MT14: Complex financial (pension components) ─────
+
+const MT14: MultiTurnScenario = {
+  id: 'MT14',
+  name: 'Complex financial — pension components summed',
+  turns: [
+    "I'm 72 and retired, getting state pension plus a small works pension",
+    'about £14,000 between them both',
+    'I own my house outright',
+    'NE1 7RU',
+  ],
+  expectedSituations: [],
+  expectedPersonData: {
+    age: 72,
+    employment_status: 'retired',
+    income_band: 'under_16000',
+    housing_tenure: 'own_outright',
+    postcode: 'NE1 7RU',
+  },
+  expectedEntitlements: ['winter_fuel_payment'],
+  minBundleSize: 3,
+  earliestCompleteTurn: 3,
+}
+
+// ── MT15: Welsh carer with dialect ───────────────────
+
+const MT15: MultiTurnScenario = {
+  id: 'MT15',
+  name: 'Welsh carer with dialect — mam, valleys',
+  turns: [
+    "my mam can't manage on her own anymore, she's 83 and lives in Swansea",
+    "I'm 50, I go over every day, about 40 hours a week looking after her",
+    'I had to give up work, no income now',
+    'renting privately, £550 a month',
+    'SA1 1NW',
+  ],
+  expectedSituations: ['ageing_parent'],
+  expectedPersonData: {
+    age: 50,
+    is_carer: true,
+    carer_hours_per_week: 40,
+    employment_status: 'unemployed',
+    income_band: 'under_7400',
+    housing_tenure: 'rent_private',
+    postcode: 'SA1 1NW',
+    nation: 'wales',
+  },
+  expectedEntitlements: ['carers_allowance', 'universal_credit'],
+  minBundleSize: 6,
+  earliestCompleteTurn: 4,
+}
+
+// ── MT16: Scottish family, complex ───────────────────
+
+const MT16: MultiTurnScenario = {
+  id: 'MT16',
+  name: 'Scottish family — second bairn, partner redundant',
+  turns: [
+    "just had our second bairn, I'm 30. My partner's been made redundant last month.",
+    'I work part-time, about £10,000 a year',
+    'council house, £400 a month',
+    'EH1 1YZ',
+  ],
+  expectedSituations: ['new_baby', 'lost_job'],
+  expectedPersonData: {
+    age: 30,
+    income_band: 'under_12570',
+    housing_tenure: 'rent_social',
+    postcode: 'EH1 1YZ',
+    nation: 'scotland',
+  },
+  expectedEntitlements: ['child_benefit', 'scottish_child_payment', 'universal_credit'],
+  minBundleSize: 4,
+  earliestCompleteTurn: 3,
+}
+
 export const ALL_MULTI_TURN_SCENARIOS: MultiTurnScenario[] = [
-  MT01, MT02, MT03, MT04, MT05, MT06, MT07, MT08,
+  MT01, MT02, MT03, MT04, MT05, MT06, MT07, MT08, MT09, MT10, MT11,
+  MT12, MT13, MT14, MT15, MT16,
 ]

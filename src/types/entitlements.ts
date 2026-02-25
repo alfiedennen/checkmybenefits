@@ -48,6 +48,7 @@ export interface ActionItem {
 
 export interface EntitlementBundle {
   total_estimated_annual_value: { low: number; high: number }
+  nation?: 'england' | 'scotland' | 'wales' | 'northern_ireland'
   gateway_entitlements: EntitlementResult[]
   cascaded_entitlements: CascadedGroup[]
   independent_entitlements: EntitlementResult[]
@@ -73,6 +74,7 @@ export interface EntitlementDefinition {
   conflicts_with: string[]
   critical_note?: string
   conflict_note?: string
+  available_in?: Array<'england' | 'scotland' | 'wales' | 'northern_ireland'>
 }
 
 export interface DependencyEdge {

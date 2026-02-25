@@ -108,7 +108,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R01',
       name: 'Job loss, single, renting',
       messages: [
-        "I've just lost my job",
+        "I've just lost my job, I'm 35",
         'None I lost my job',
         'Renting privately, £850 a month',
         'E1 6AN',
@@ -133,7 +133,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R02',
       name: 'Job loss, couple with kids, mortgage',
       messages: [
-        "I've been made redundant, my wife works part time",
+        "I'm 40, I've been made redundant, my wife works part time",
         'She earns about 12 grand',
         'Mortgage, 2 kids aged 9 and 11',
         'S11 8YA',
@@ -181,7 +181,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R04',
       name: 'Young family, new baby expected',
       messages: [
-        "We're expecting our first baby",
+        "I'm 28, we're expecting our first baby",
         'I work part time, about 15k',
         'Council flat',
         'LS1 1BA',
@@ -204,7 +204,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R05',
       name: 'Carer for parent',
       messages: [
-        "My mum is 82 and can't cope on her own",
+        "I'm 45, my mum is 82 and can't cope on her own",
         'I look after her about 40 hours a week',
         'Nothing, I had to give up work',
         'Renting from the council, £450 a month',
@@ -230,7 +230,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R06',
       name: 'Disability (MS, on PIP)',
       messages: [
-        "I have MS and can't work anymore",
+        "I'm 50 and have MS and can't work anymore",
         "I'm on PIP enhanced rate mobility",
         'Zero income since I was let go',
         "Renting privately, £700 a month, I'm single",
@@ -280,7 +280,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R08',
       name: 'Separated with kids',
       messages: [
-        "We've recently separated",
+        "I'm 32, we've recently separated",
         'I work part-time, about fifteen grand',
         '2 kids aged 8 and 5, renting privately £700 a month',
         'CF10 1BH',
@@ -302,7 +302,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R09',
       name: 'Student with baby expected',
       messages: [
-        "I'm a student and I'm pregnant with our first baby",
+        "I'm 22 and I'm a student and I'm pregnant with our first baby",
         'My partner works, earning about £18,000 per annum',
         "We're renting privately, £600 a month",
         'LE1 1WB',
@@ -325,7 +325,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R10',
       name: 'Complex multi-situation',
       messages: [
-        "I've just lost my job and my mum's 79, she can't cope",
+        "I'm 42, I've just lost my job and my mum's 79, she can't cope",
         'I look after her about 40 hours a week',
         'My wife earns about 12 grand, mortgage is £2000',
         '3 kids aged 14, 9, and 5. The youngest has autism',
@@ -352,7 +352,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
       id: 'R11',
       name: 'Zero income edge case',
       messages: [
-        "I've just lost my job",
+        "I'm 30, I've just lost my job",
         '£0',
         'Renting, £500 a month',
         'E1 6AN',
@@ -372,7 +372,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
   // R12: Typos and lowercase — documents known limitations
   it('R12: Typos and lowercase — documents housing typo gap', async () => {
     const person = replayConversation([
-      'lost my job last month',
+      "I'm 35, lost my job last month",
       'nothing at the moment',
       'morgage, paying about 1000 a month',
       'tn34 3jn',
@@ -391,7 +391,7 @@ describe('Conversation Replay — Real-World Rubric', () => {
 
     // With corrected spelling, full pipeline works
     const corrected = replayConversation([
-      'lost my job last month',
+      "I'm 35, lost my job last month",
       'nothing at the moment',
       'mortgage, paying about 1000 a month',
       'tn34 3jn',

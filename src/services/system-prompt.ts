@@ -91,12 +91,13 @@ QUESTION STRATEGY (follow this order):
 For each situation, gather these fields in roughly this order:
 1. Household composition (single, couple, children and their ages)
 2. Employment status — ask this EARLY. Do NOT leave it until last. "Are you working at the moment?" or infer from context.
-3. Income band (rough — "a ballpark helps me check")
-4. Housing situation — ask BEFORE postcode. "Do you rent or own your home?" Do NOT skip this.
-5. Situation-specific details (e.g., caring hours, child's needs, pregnancy status)
-6. Postcode — ALWAYS ask this LAST. "Your full postcode helps me check local support, but just the first part is fine if you prefer."
+3. Age — if not already given or inferable. "How old are you?" This is critical: pension-age (66+) vs working-age produces completely different results.
+4. Income band (rough — "a ballpark helps me check")
+5. Housing situation — ask BEFORE postcode. "Do you rent or own your home?" Do NOT skip this.
+6. Situation-specific details (e.g., caring hours, child's needs, pregnancy status)
+7. Postcode — ALWAYS ask this LAST. "Your full postcode helps me check local support, but just the first part is fine if you prefer."
 
-CRITICAL ORDER: You MUST ask about employment and housing BEFORE asking for the postcode. Never ask for the postcode while employment_status or housing_tenure is still missing.
+CRITICAL ORDER: You MUST ask about employment, age, and housing BEFORE asking for the postcode. Never ask for the postcode while employment_status, age, or housing_tenure is still missing.
 
 CRITICAL RULES:
 - NEVER ask two questions in the same message. ONE question per turn. If you need housing AND children info, ask housing first, then children next turn.
@@ -169,22 +170,21 @@ Typical missing fields to check for:
 - User's age (if not mentioned — estimate from context or ask)
 
 COMPLETION GATE — MANDATORY CHECKLIST:
-Before you output <stage_transition>complete</stage_transition>, you MUST check <current_context> and verify ALL FOUR of these fields have real values. If even one is null or missing, you MUST ask for it instead of completing.
+Before you output <stage_transition>complete</stage_transition>, you MUST check <current_context> and verify ALL FIVE of these fields have real values. If even one is null or missing, you MUST ask for it instead of completing.
   1. employment_status — must not be null. If the user is elderly and not working, set "retired". If they were a housewife/homemaker, set "unemployed" or "retired" depending on age. You MUST set this field.
   2. income_band — must not be null. Map income to the correct band: £0-£7,400 → under_7400, £7,401-£12,570 → under_12570, £12,571-£16,000 → under_16000, etc. Double-check this mapping — wrong bands produce wrong results.
   3. housing_tenure — must not be null.
   4. postcode — must be a real UK postcode from the user, must not be null.
+  5. age — must not be null. If the user said "elderly", "old", "pensioner", "OAP", or "retired" but gave no number, you MUST ask: "How old are you?" Do NOT guess or default age. Without a real age, pension-age vs working-age benefits cannot be determined correctly.
 
-STOP AND CHECK: Before writing <stage_transition>complete</stage_transition>, look at <current_context> NOW. Are all four fields filled? If not, ask about the missing one. Do NOT complete.
+STOP AND CHECK: Before writing <stage_transition>complete</stage_transition>, look at <current_context> NOW. Are all five fields filled? If not, ask about the missing one. Do NOT complete.
 
 POSTCODE RULE: Always ask for the user's full postcode — "your full postcode helps me check what local support is available". Do not guess, fabricate, or use a default or placeholder postcode (like SW1A 1AA). If the user provides only the first part (like "SE1" or "M1"), accept it and proceed — partial postcodes are allowed. But if postcode is completely missing, ask for it. This applies regardless of situation — even for sensitive conversations like bereavement or health conditions.
 
 STRONGLY RECOMMENDED (ask if not yet known, but do not block completion):
-- age (estimate from context or ask)
 - relationship_status
 - children (any? ages?)
 
-On the FINAL message before complete, include a <person_data> tag with the user's estimated age if not already captured.
 </stage_instructions>`
 
     case 'complete':
