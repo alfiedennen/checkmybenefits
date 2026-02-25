@@ -30,12 +30,6 @@ export function BundleView({ bundle }: Props) {
     )
   }
 
-  const nationLabel: Record<string, string> = {
-    wales: 'Wales',
-    scotland: 'Scotland',
-    northern_ireland: 'Northern Ireland',
-  }
-
   return (
     <div className="bundle-view" aria-label="Your entitlements bundle">
       <div className="bundle-header-row">
@@ -45,9 +39,9 @@ export function BundleView({ bundle }: Props) {
         </button>
       </div>
 
-      {bundle.nation && bundle.nation !== 'england' && (
+      {bundle.nation === 'northern_ireland' && (
         <div className="bundle-nation-warning" role="alert">
-          <strong>Important:</strong> You gave a {nationLabel[bundle.nation]} postcode. Our results currently focus on England. Some benefits shown may differ in {nationLabel[bundle.nation]}, and some {nationLabel[bundle.nation]}-specific support is not yet included.
+          <strong>Important:</strong> You gave a Northern Ireland postcode. Our results currently cover England, Wales and Scotland. Some benefits shown may differ in Northern Ireland, and some Northern Ireland-specific support is not yet included.
         </div>
       )}
 

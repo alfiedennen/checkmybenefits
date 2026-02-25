@@ -39,8 +39,8 @@ export function AboutPanel({ isOpen, onClose }: Props) {
           <div className="about-panel-section">
             <h3>Data sources</h3>
             <p>
-              All eligibility rules are based on published GOV.UK criteria and official benefit
-              rates for 2025-26.
+              All eligibility rules are based on published GOV.UK, Welsh Government and Scottish Government
+              criteria and official benefit rates for 2025-26.
             </p>
           </div>
 
@@ -59,7 +59,7 @@ export function AboutPanel({ isOpen, onClose }: Props) {
               <li>This is guidance, not formal benefits advice</li>
               <li>Results will contain errors — benefits eligibility is complex and our rules are simplified</li>
               <li>We can't guarantee eligibility — always check with the official scheme</li>
-              <li>Covers 52 UK entitlements across any life situation</li>
+              <li>Covers 75 entitlements across England, Wales and Scotland</li>
               <li>Does not replace Citizens Advice or professional advisers</li>
             </ul>
           </div>

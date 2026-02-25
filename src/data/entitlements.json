@@ -1,9 +1,6 @@
 {
-  "$schema": "entitlement-engine/v0.1",
-  "description": "Structured data model for the UK Entitlement Engine. Each entitlement has computable eligibility rules, dependency edges (gateway/cascade), conflict edges (mutual exclusions), and metadata for prioritisation.",
-
-  "v01_situations": ["ageing_parent", "new_baby", "child_struggling_school", "lost_job"],
-  "v01_note": "Only these four situations are implemented in V0.1. Other situations in the 'situations' array are documented for V0.2+ and should trigger graceful fallback with signposting.",
+  "$schema": "entitlement-engine/v1.0",
+  "description": "Structured data model for the UK Entitlement Engine. 75 entitlements across England, Wales and Scotland. Each entitlement has computable eligibility rules, dependency edges (gateway/cascade), conflict edges (mutual exclusions), and metadata for prioritisation.",
 
   "enums": {
     "nation": ["england", "scotland", "wales", "northern_ireland"],

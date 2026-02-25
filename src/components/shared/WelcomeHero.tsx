@@ -40,7 +40,7 @@ export function WelcomeHero({ onGetStarted }: Props) {
             <li className="welcome-hero-step">
               <span className="welcome-hero-step-number">2</span>
               <div>
-                <strong>We check 52 entitlements</strong>
+                <strong>We check 75 entitlements</strong>
                 <p>Your answers are compared against official eligibility rules.</p>
               </div>
             </li>
