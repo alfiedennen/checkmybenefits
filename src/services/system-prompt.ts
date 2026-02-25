@@ -60,7 +60,7 @@ ${JSON.stringify(
   2,
 )}
 
-MULTIPLE SITUATIONS: When someone describes overlapping situations (e.g., "My mum needs care and I've lost my job and my child has autism"), output ALL matching IDs: <situation>ageing_parent, lost_job, child_struggling_school</situation>
+MULTIPLE SITUATIONS: When someone describes overlapping situations (e.g., "My mum needs care and I have lost my job"), output ALL matching IDs: <situation>ageing_parent, lost_job</situation>
 
 If no predefined situation fits exactly, still proceed — extract PersonData and ask follow-up questions. The entitlement engine checks ALL benefits based on the user's data, regardless of situation classification. You can use a descriptive ID like "disability", "housing_crisis", "domestic_abuse", etc.
 </situations>`
@@ -118,10 +118,12 @@ ANTI-PATTERN — DO NOT do this:
 - User says "my wife earns £12k". You ask "what's your household income?" ← WRONG. Extract it and move on.
 - User says "renting a council flat for £600". You ask "what's your housing situation?" ← WRONG. Extract housing_tenure and monthly_housing_cost.
 - User mentions their child's age and ADHD. You ask "how many children?" ← WRONG. Extract the child array first.
+- User says "single parent, autism and adhd". You ask "how old is your child with autism?" ← WRONG. Do NOT assume conditions belong to the child. Ask "Is it you or your child who has autism and ADHD?" if unclear.
+- User says "I have autism". You ask about their child's autism. ← WRONG. "I have" means the USER has the condition. Set has_disability_or_health_condition: true.
 If the user has ALREADY stated a piece of information, extract it in <person_data> and ask about something ELSE.
 
 SITUATION-SPECIFIC QUESTIONS:
-- For health_condition/disability: Ask about daily living impact, mobility difficulties, whether they receive disability benefits (PIP/DLA/AA), employment status. Set has_disability_or_health_condition: true.
+- For health_condition/disability: Ask about daily living impact, mobility difficulties, whether they receive disability benefits (PIP/DLA/AA), employment status. Set has_disability_or_health_condition: true. This includes autism, ADHD, mental health conditions, and chronic conditions — these are the USER's own conditions, not their children's.
 - For bereavement: Ask about relationship to deceased (partner/parent), when it happened, current living situation, income. Set is_bereaved: true, deceased_relationship: "partner" or "parent".
 - For separation/divorce: Ask about children, housing situation (who stays in the home), income change. Set relationship_status: "separated".
 - For disability benefits: If they mention PIP, DLA, or Attendance Allowance, extract disability_benefit_received with the specific level.
@@ -248,7 +250,8 @@ IMPORTANT RULES:
   * £25,001-£50,270 → "under_50270"
 - For children: ALWAYS include ALL children in the array, not just the ones being discussed. Each child needs all four fields.
 - in_education: true for children aged 4-18
-- has_additional_needs: true if any mention of autism, ADHD, learning difficulties, SEN, EHCP, behavioural issues, developmental delay, or "school keeps calling us in"
+- has_additional_needs: true if any mention of a CHILD having autism, ADHD, learning difficulties, SEN, EHCP, behavioural issues, developmental delay, or "school keeps calling us in"
+- IMPORTANT: Autism, ADHD, and other conditions can belong to the USER, not just their children. If someone says "I have autism" or "autism and adhd" about THEMSELVES, set has_disability_or_health_condition: true on the user — do NOT assume it belongs to a child. If ambiguous (e.g., "single parent, autism"), ask who has the condition rather than assuming.
 </person_data_format>`
 
 const OUTPUT_FORMAT = `<output_format>
