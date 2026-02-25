@@ -243,12 +243,6 @@ resource "aws_bedrock_guardrail" "chat" {
       type       = "DENY"
     }
     topics_config {
-      name       = "medical_diagnosis"
-      definition = "Diagnosing medical conditions or prescribing treatments"
-      examples   = []
-      type       = "DENY"
-    }
-    topics_config {
       name       = "legal_advice"
       definition = "Specific legal advice on cases, litigation, or legal strategy"
       examples   = []
