@@ -1,0 +1,16 @@
+{
+  "name": "Check My Benefits",
+  "short_name": "CheckMyBenefits",
+  "description": "Free UK benefits checker — covers 75 entitlements across England, Wales and Scotland",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#1a6b3c",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
