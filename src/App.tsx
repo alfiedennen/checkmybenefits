@@ -39,9 +39,9 @@ export function App() {
   return (
     <div className="app">
       <a href="#main-content" className="skip-link">Skip to content</a>
-      <div className="warning-banner" role="region" aria-label="Important notice">
+      <div className="info-banner" role="region" aria-label="Important notice">
         <span>
-          This is an experiment, NOT an official GOV.UK website. Results may be wrong.{' '}
+          Free, independent benefits checker — not affiliated with GOV.UK. Estimates only.{' '}
           <a href="mailto:feedback@checkmybenefits.uk">Give feedback</a>
         </span>
       </div>

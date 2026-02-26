@@ -125,6 +125,16 @@ function formatApplicationMethod(methods: string[]): string {
     online_provider: 'Online via your provider',
     phone_provider: 'By phone to your provider',
     online_operator_website: 'Online via train operator',
+    automatic_if_qualifying: 'Automatic if qualifying',
+    exemption_certificate: 'Exemption certificate',
+    automatic_at_optician: 'Automatic at optician',
+    claim_form_at_hospital: 'Claim form at hospital',
+    gp_or_midwife: 'Via your GP or midwife',
+    apply_to_school_college: 'Apply to school or college',
+    automatic_if_state_pension: 'Automatic with State Pension',
+    automatic: 'Automatic',
+    apply_to_water_company: 'Apply to your water company',
+    apply_via_supplier_or_council: 'Apply via your supplier or council',
   }
   return methods.map((m) => labels[m] || m).join(' / ')
 }

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import type { EntitlementBundle } from '../../types/entitlements.ts'
 import { TotalValueBanner } from './TotalValueBanner.tsx'
 import { GatewayCard } from './GatewayCard.tsx'
@@ -10,6 +11,8 @@ interface Props {
 }
 
 export function BundleView({ bundle }: Props) {
+  const [showIndependent, setShowIndependent] = useState(false)
+
   const hasResults =
     bundle.gateway_entitlements.length > 0 ||
     bundle.independent_entitlements.length > 0 ||
@@ -29,6 +32,8 @@ export function BundleView({ bundle }: Props) {
       </div>
     )
   }
+
+  const independentCount = bundle.independent_entitlements.length
 
   return (
     <div className="bundle-view" aria-label="Your entitlements bundle">
@@ -65,10 +70,18 @@ export function BundleView({ bundle }: Props) {
         </section>
       )}
 
-      {bundle.independent_entitlements.length > 0 && (
+      {independentCount > 0 && (
         <section className="bundle-section" aria-label="Additional entitlements">
-          <h3 className="bundle-section-heading">Also worth claiming</h3>
-          {bundle.independent_entitlements.map((ent) => (
+          <button
+            className="section-toggle"
+            onClick={() => setShowIndependent(!showIndependent)}
+            aria-expanded={showIndependent}
+          >
+            <h3 className="bundle-section-heading">Also worth claiming</h3>
+            <span className="section-toggle-count">{independentCount} benefit{independentCount !== 1 ? 's' : ''}</span>
+            <span className="section-toggle-icon" aria-hidden="true">{showIndependent ? '−' : '+'}</span>
+          </button>
+          {showIndependent && bundle.independent_entitlements.map((ent) => (
             <EntitlementCard key={ent.id} entitlement={ent} />
           ))}
         </section>

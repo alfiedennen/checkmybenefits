@@ -2,7 +2,7 @@ import { useReducer, useCallback, useRef } from 'react'
 import type { QuickReply } from '../types/conversation.ts'
 import { conversationReducer, createInitialState } from '../engine/state-machine.ts'
 import { buildBundle } from '../engine/bundle-builder.ts'
-import { hasCriticalFields, getMissingFields, looksLikeCompletion } from '../engine/critical-fields.ts'
+import { hasCriticalFields, getMissingFields, looksLikeCompletion, applyHomelessDefaults } from '../engine/critical-fields.ts'
 import { sendMessage } from '../services/ai.ts'
 import { extractFromMessage, mergeExtraction } from '../services/message-extractor.ts'
 import { lookupPostcode, countryToNation } from '../services/postcodes.ts'
@@ -151,7 +151,7 @@ export function useConversation() {
         let bundleBuilt = false
         if (response.stageTransition) {
           // Gate: don't allow complete transition if critical fields are missing
-          const personSoFar = { ...stateRef.current.personData, ...(mergedPersonData ?? {}) }
+          const personSoFar = applyHomelessDefaults({ ...stateRef.current.personData, ...(mergedPersonData ?? {}) })
           const allowTransition =
             response.stageTransition !== 'complete' || hasCriticalFields(personSoFar)
 
@@ -161,10 +161,12 @@ export function useConversation() {
 
           // If transitioning to complete, build the bundle
           if (response.stageTransition === 'complete' && allowTransition) {
-            const updatedPerson = {
+            const updatedPerson = applyHomelessDefaults({
               ...stateRef.current.personData,
               ...(mergedPersonData ?? {}),
-            }
+            })
+            // Default nation for homeless users without postcode
+            if (!updatedPerson.nation) updatedPerson.nation = 'england'
             const allSituations = [
               ...stateRef.current.situations,
               ...(response.situations ?? []),
@@ -197,7 +199,7 @@ export function useConversation() {
         // Nova sometimes says "Take a look below" without the XML tag,
         // so the gate block above is skipped entirely and no bundle builds.
         if (!response.stageTransition && looksLikeCompletion(response.text)) {
-          const personSoFar = { ...stateRef.current.personData, ...(mergedPersonData ?? {}) }
+          const personSoFar = applyHomelessDefaults({ ...stateRef.current.personData, ...(mergedPersonData ?? {}) })
           if (hasCriticalFields(personSoFar)) {
             // Fields are present — build the bundle as if the tag existed
             dispatch({ type: 'SET_STAGE', stage: 'complete' })

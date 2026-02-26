@@ -327,7 +327,20 @@ function extractHousingTenure(text: string): PersonData['housing_tenure'] | unde
   if (/\brent\s+private(?:ly)?\b/.test(lower)) return 'rent_private'
   if (/\bprivate(?:ly)?\s+rent(?:ing|ed)?\b/.test(lower)) return 'rent_private'
   if (/\brent(?:ing)?\b/.test(lower) && !/council|social/.test(lower)) return 'rent_private'
-  if (/\bliving\s+with\s+(?:my\s+)?(?:parents?|family|mum|dad)\b/.test(lower))
+  if (/\bcouncil\s+gaff\b/.test(lower)) return 'rent_social'
+  if (/\bhousing\s+association\b/.test(lower)) return 'rent_social'
+  if (/\b(?:sleeping|sleep)\s+rough\b/.test(lower)) return 'homeless'
+  if (/\bsofa\s+surf(?:ing)?\b/.test(lower)) return 'homeless'
+  if (/\brough\s+sleep(?:ing|er)?\b/.test(lower)) return 'homeless'
+  if (/\bhomeless\b/.test(lower)) return 'homeless'
+  if (/\bnowhere\s+to\s+(?:go|live|stay)\b/.test(lower)) return 'homeless'
+  if (/\bon\s+the\s+streets?\b/.test(lower)) return 'homeless'
+  if (/\bno\s+(?:fixed\s+)?(?:address|home)\b/.test(lower)) return 'homeless'
+  if (/\b(?:staying|stay)\s+(?:at|with)\s+(?:my\s+)?(?:a\s+)?(?:mum|dad|parent|family|mam)\b/.test(lower))
+    return 'living_with_family'
+  if (/\b(?:staying|stay)\s+(?:at|with)\s+(?:my\s+)?(?:a\s+)?(?:mate|friend)\b/.test(lower))
+    return 'homeless'
+  if (/\bliving\s+with\s+(?:my\s+)?(?:parents?|family|mum|dad|mam)\b/.test(lower))
     return 'living_with_family'
   if (/\bown\s+(?:our\s+)?(?:house|home|flat|property)\s+outright\b/.test(lower)) return 'own_outright'
   if (/\bown\s+outright\b/.test(lower)) return 'own_outright'
@@ -373,6 +386,13 @@ function extractEmployment(text: string): EmploymentResult | undefined {
   if (/\b(?:state\s+pension|my\s+pension|on\s+(?:a\s+)?pension)\b/.test(lower)) {
     return { status: 'retired' }
   }
+  // "not working" / "no job" / "never worked" / "no work" → unemployed
+  if (/\bnot\s+work(?:ing)?\b/.test(lower)) return { status: 'unemployed' }
+  if (/\bno\s+job\b/.test(lower)) return { status: 'unemployed' }
+  if (/\bnever\s+worked\b/.test(lower)) return { status: 'unemployed' }
+  if (/\bno\s+work\b/.test(lower)) return { status: 'unemployed' }
+  if (/\bunemployed\b/.test(lower)) return { status: 'unemployed' }
+  if (/\bon\s+the\s+(?:dole|streets)\b/.test(lower)) return { status: 'unemployed' }
   // "housewife" / "homemaker" / "stay at home mum/dad" → unemployed
   // (useConversation or AI may upgrade to 'retired' if age >= 66)
   if (/\b(?:housewife|homemaker|stay[\s-]*at[\s-]*home\s+(?:mum|mom|dad|parent))\b/.test(lower)) {

@@ -550,7 +550,7 @@ const MT21: MultiTurnScenario = {
     'I am sleeping rough and have nowhere to go',
     "I'm 40, been on the streets about 3 months",
     'not working, no income',
-    'I was in Birmingham before, near B5 area',
+    "I'm in Birmingham, around B5",
   ],
   expectedSituations: [],
   expectedPersonData: {
