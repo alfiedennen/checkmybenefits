@@ -256,6 +256,22 @@ function extractIncome(text: string): number | undefined {
     if (p.test(text)) return val
   }
 
+  // "about £11,000" / "around £14,000" / "roughly £9,000" (standalone with qualifier)
+  const standaloneQualifiedMatch = text.match(
+    /(?:about|around|roughly|approximately)\s*£([\d,]+)/i,
+  )
+  if (standaloneQualifiedMatch) {
+    const amount = parseAmount(standaloneQualifiedMatch[1])
+    if (amount && amount >= 3000) return amount // ≥£3k is likely annual income
+  }
+
+  // "£14,000 between them" / "£11,000" standalone (large amounts likely income)
+  const standaloneMatch = text.match(/£([\d,]+)/)
+  if (standaloneMatch) {
+    const amount = parseAmount(standaloneMatch[1])
+    if (amount && amount >= 3000 && amount <= 200000) return amount
+  }
+
   // Monthly → annual: "£1200 a month" (only in income context)
   const monthlyMatch = text.match(
     /(?:earn|earning|earns|income|salary|paid|get|gets)\s*(?:about|around|roughly)?\s*£([\d,]+)\s*(?:a\s*month|monthly|per\s*month)/i,
@@ -483,6 +499,20 @@ function extractChildren(text: string): ChildData[] {
       if (age >= 0 && age <= 18) {
         children.push(makeChild(age, false))
       }
+    }
+  }
+
+  // Pattern 4: "X months old" → age 0
+  if (children.length === 0) {
+    if (/\b\d{1,2}\s*months?\s*old\b/i.test(text)) {
+      children.push(makeChild(0, false))
+    }
+  }
+
+  // Pattern 5: "just had a baby" / "new baby" / "newborn" → age 0
+  if (children.length === 0) {
+    if (/\b(?:just\s+had\s+a\s+baby|new\s*born|new\s+baby|baby\s+(?:boy|girl|daughter|son))\b/i.test(lower)) {
+      children.push(makeChild(0, false))
     }
   }
 

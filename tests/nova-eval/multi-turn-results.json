@@ -15,7 +15,7 @@
         "prematureComplete": false,
         "inputTokens": 7121,
         "outputTokens": 179,
-        "latencyMs": 908
+        "latencyMs": 885
       },
       {
         "turnIndex": 1,
@@ -25,7 +25,7 @@
         "prematureComplete": false,
         "inputTokens": 7618,
         "outputTokens": 54,
-        "latencyMs": 482
+        "latencyMs": 586
       },
       {
         "turnIndex": 2,
@@ -38,20 +38,20 @@
         "prematureComplete": false,
         "inputTokens": 7680,
         "outputTokens": 53,
-        "latencyMs": 673
+        "latencyMs": 502
       },
       {
         "turnIndex": 3,
         "userMessage": "renting privately, £800 a month",
-        "assistantResponse": "Thank you for sharing that information. Knowing your housing situation helps us understand more about your needs.\n\nLastly, could you please tell me your full postcode? This will help us check what local support is available to you.",
+        "assistantResponse": "Thank you for sharing that information. Knowing your housing situation helps us understand more about your needs.\n\nSince you're renting privately and pay £800 a month, could you please tell me your full postcode? This will help me check what local support is available to you.",
         "extractedFields": {
           "monthly_housing_cost": 800,
           "housing_tenure": "rent_private"
         },
         "prematureComplete": false,
         "inputTokens": 7771,
-        "outputTokens": 45,
-        "latencyMs": 504
+        "outputTokens": 88,
+        "latencyMs": 785
       },
       {
         "turnIndex": 4,
@@ -69,9 +69,9 @@
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7850,
+        "inputTokens": 7862,
         "outputTokens": 155,
-        "latencyMs": 765
+        "latencyMs": 716
       }
     ],
     "finalPersonData": {
@@ -137,7 +137,7 @@
         "prematureComplete": false,
         "inputTokens": 7115,
         "outputTokens": 191,
-        "latencyMs": 734
+        "latencyMs": 770
       },
       {
         "turnIndex": 1,
@@ -150,7 +150,7 @@
         "prematureComplete": false,
         "inputTokens": 7630,
         "outputTokens": 47,
-        "latencyMs": 489
+        "latencyMs": 519
       },
       {
         "turnIndex": 2,
@@ -179,7 +179,7 @@
         "prematureComplete": false,
         "inputTokens": 7806,
         "outputTokens": 67,
-        "latencyMs": 554
+        "latencyMs": 714
       }
     ],
     "finalPersonData": {
@@ -237,7 +237,7 @@
       {
         "turnIndex": 0,
         "userMessage": "I'm 30 and my wife and I just had a baby, I work part time earning about £14,000, we live in a council flat in LS1 1BA",
-        "assistantResponse": "I'm really happy to hear about your new baby! It's a big step, and I'm here to help you figure out what support you might be able to get.\n\nLet's start by gathering some more details. First, how many children do you have, and what are their ages?",
+        "assistantResponse": "I'm really happy to hear about your new baby! It's a big step, and I'm here to help you find out what support might be available for you and your family.\n\nLet's start by gathering some more details. First, how many children do you have, and what are their ages?",
         "extractedFields": {
           "postcode": "LS1 1BA",
           "age": 30,
@@ -245,17 +245,32 @@
           "income_band": "under_16000",
           "relationship_status": "couple_married",
           "housing_tenure": "rent_social",
-          "employment_status": "employed"
+          "employment_status": "employed",
+          "children": [
+            {
+              "age": 0,
+              "has_additional_needs": false,
+              "disability_benefit": "none",
+              "in_education": false
+            }
+          ]
         },
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7149,
-        "outputTokens": 224,
-        "latencyMs": 845
+        "outputTokens": 152,
+        "latencyMs": 705
       }
     ],
     "finalPersonData": {
-      "children": [],
+      "children": [
+        {
+          "age": 0,
+          "has_additional_needs": false,
+          "disability_benefit": "none",
+          "in_education": false
+        }
+      ],
       "postcode": "LS1 1BA",
       "age": 30,
       "gross_annual_income": 14000,
@@ -273,13 +288,17 @@
     "bundleEntitlements": [
       "universal_credit",
       "nhs_low_income_scheme",
+      "free_childcare_30hrs",
+      "tax_free_childcare",
       "marriage_allowance",
+      "child_benefit",
       "warm_home_discount",
       "eco_home_insulation",
       "council_tax_support_working_age",
       "court_fee_remission",
       "free_nhs_dental",
       "social_tariff_broadband",
+      "healthy_start",
       "free_nhs_prescriptions",
       "free_nhs_sight_tests",
       "nhs_travel_costs",
@@ -288,17 +307,15 @@
     "expectedEntitlements": [
       "child_benefit"
     ],
-    "entitlementHits": 0,
-    "entitlementMisses": [
-      "child_benefit"
-    ],
+    "entitlementHits": 1,
+    "entitlementMisses": [],
     "bundleSizePass": true,
     "scores": {
       "completeness": 1,
       "gatePass": 1,
       "noPrematureComplete": 1,
-      "bundleCorrectness": 0,
-      "overall": 0.8
+      "bundleCorrectness": 1,
+      "overall": 1
     },
     "pass": true
   },
@@ -309,7 +326,7 @@
       {
         "turnIndex": 0,
         "userMessage": "I'm 28 and I've lost my job",
-        "assistantResponse": "I'm really sorry to hear that you've lost your job. It can be a very stressful time. Let's see if there's any support you might be able to get.\n\nFirst, could you tell me if you have any children? If so, how old they are.",
+        "assistantResponse": "I'm really sorry to hear that you've lost your job. It can be a tough time. Let's see what support might be available to you.\n\nFirst, could you tell me if you have anyone else in your household who is working? This helps me understand your situation better.",
         "extractedFields": {
           "age": 28,
           "employment_status": "unemployed"
@@ -317,45 +334,45 @@
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7120,
-        "outputTokens": 147,
-        "latencyMs": 649
+        "outputTokens": 135,
+        "latencyMs": 657
       },
       {
         "turnIndex": 1,
         "userMessage": "nothing, no income",
-        "assistantResponse": "Thank you for sharing that. Losing a job can be tough, especially when there's no income coming in. Let's gather some more details to see what support might be available to you.\n\nNext, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact—just a ballpark figure will help.",
+        "assistantResponse": "Thank you for sharing that. It sounds like a challenging time. To help you find the right support, could you tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will do.",
         "extractedFields": {
           "gross_annual_income": 0,
           "income_band": "under_7400"
         },
         "prematureComplete": false,
         "inputTokens": 7610,
-        "outputTokens": 175,
-        "latencyMs": 841
+        "outputTokens": 49,
+        "latencyMs": 588
       },
       {
         "turnIndex": 2,
         "userMessage": "E1 6AN",
-        "assistantResponse": "Thank you for sharing your postcode. It helps us check what local support might be available to you.\n\nTo continue, could you tell me about your housing situation? Do you rent or own your home? This will help us understand more about your situation.",
+        "assistantResponse": "Thank you for providing your postcode. It helps me check what local support is available. \n\nTo continue, could you tell me about your housing situation? Do you rent or own your home? This information is important for understanding what benefits you might be eligible for.",
         "extractedFields": {
           "postcode": "E1 6AN"
         },
         "prematureComplete": false,
-        "inputTokens": 7719,
-        "outputTokens": 51,
-        "latencyMs": 522
+        "inputTokens": 7693,
+        "outputTokens": 53,
+        "latencyMs": 629
       },
       {
         "turnIndex": 3,
         "userMessage": "renting privately",
-        "assistantResponse": "Thank you for letting me know. Renting privately is a good detail to have.\n\nLastly, could you share the monthly cost of your rent? This will help us complete our information. \n\nRemember, I'm here to help you find out what support might be available.",
+        "assistantResponse": "Thank you for letting me know. Renting privately is important to know.\n\nLastly, could you share the monthly cost of your rent? This helps me understand your financial situation better.",
         "extractedFields": {
           "housing_tenure": "rent_private"
         },
         "prematureComplete": false,
-        "inputTokens": 7788,
-        "outputTokens": 56,
-        "latencyMs": 510
+        "inputTokens": 7764,
+        "outputTokens": 37,
+        "latencyMs": 409
       }
     ],
     "finalPersonData": {
@@ -422,7 +439,7 @@
         "prematureComplete": false,
         "inputTokens": 7117,
         "outputTokens": 134,
-        "latencyMs": 523
+        "latencyMs": 580
       },
       {
         "turnIndex": 1,
@@ -435,82 +452,76 @@
         "prematureComplete": false,
         "inputTokens": 7641,
         "outputTokens": 59,
-        "latencyMs": 507
+        "latencyMs": 531
       },
       {
         "turnIndex": 2,
         "userMessage": "About 40 hours a week looking after her",
-        "assistantResponse": "Thank you for that information. You are clearly doing an incredible amount to help your mum. \n\nNow, let's move on to your own situation. How old are you? And what is your relationship status? Are you single, married, or something else? This helps us understand your situation better.",
+        "assistantResponse": "Thank you for that information. You are doing an incredible amount. \n\nNow, let's talk about your employment. Are you currently working? If so, what is your job? If not, what is your employment status?",
         "extractedFields": {
           "is_carer": true,
           "carer_hours_per_week": 40
         },
         "prematureComplete": false,
         "inputTokens": 7731,
-        "outputTokens": 62,
-        "latencyMs": 507
+        "outputTokens": 47,
+        "latencyMs": 513
       },
       {
         "turnIndex": 3,
         "userMessage": "I had to give up work, no income now",
-        "assistantResponse": "I'm really sorry to hear that you had to give up work. Losing a job can be very tough. \n\nLet's gather some more details to see what support might be available for you. What is your current housing situation? Do you rent or own your home? And roughly, what is your household income? It doesn't need to be exact — a ballpark figure helps me check what you might qualify for.",
+        "assistantResponse": "I'm sorry to hear that you had to give up work. It sounds like you're focusing all your time on caring for your mum. \n\nNext, could you tell me roughly what your household income is? It doesn't need to be exact — a ballpark figure will help me check what you might qualify for.",
         "extractedFields": {
           "gross_annual_income": 0,
           "income_band": "under_7400",
           "employment_status": "unemployed"
         },
         "prematureComplete": false,
-        "inputTokens": 7822,
-        "outputTokens": 87,
-        "latencyMs": 544
+        "inputTokens": 7807,
+        "outputTokens": 67,
+        "latencyMs": 519
       },
       {
         "turnIndex": 4,
         "userMessage": "Council house, £400 a month",
-        "assistantResponse": "Thank you for sharing that information. It helps us understand your situation better.\n\nNow, let's finish gathering some details. What is your full postcode? This helps me check what is available in your local area.",
+        "assistantResponse": "Thank you for sharing that. It's good to know about your housing situation.\n\nNow, could you please tell me your full postcode? This helps me check what is available in your local area.",
         "extractedFields": {
           "monthly_housing_cost": 400,
           "housing_tenure": "rent_social"
         },
         "prematureComplete": false,
-        "inputTokens": 7957,
-        "outputTokens": 44,
-        "latencyMs": 424
+        "inputTokens": 7922,
+        "outputTokens": 41,
+        "latencyMs": 414
       },
       {
         "turnIndex": 5,
         "userMessage": "NE1 7RU",
-        "assistantResponse": "Thank you for providing your postcode. Based on what you have told me, I have found several things you and your family may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
+        "assistantResponse": "Thank you for providing all this information. Based on what you have told me, I have found several things you and your family may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
         "extractedFields": {
           "postcode": "NE1 7RU",
           "relationship_status": "single",
-          "employment_status": "unemployed",
-          "housing_tenure": "rent_social",
-          "monthly_housing_cost": 400,
           "age": 48,
+          "employment_status": "unemployed",
           "gross_annual_income": 0,
           "income_band": "under_7400",
-          "is_carer": true,
-          "carer_hours_per_week": 40,
-          "cared_for_person": {
-            "relationship": "parent",
-            "age": 82,
-            "disability_benefit": "none",
-            "needs_help_daily_living": true
-          }
+          "housing_tenure": "rent_social",
+          "monthly_housing_cost": 400,
+          "nation": "england",
+          "carer_hours_per_week": 40
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 8035,
-        "outputTokens": 221,
-        "latencyMs": 794
+        "inputTokens": 7997,
+        "outputTokens": 179,
+        "latencyMs": 678
       }
     ],
     "finalPersonData": {
       "children": [],
       "cared_for_person": {
         "relationship": "parent",
-        "age": 82,
+        "age": 0,
         "disability_benefit": "none",
         "needs_help_daily_living": true
       },
@@ -523,7 +534,8 @@
       "monthly_housing_cost": 400,
       "housing_tenure": "rent_social",
       "postcode": "NE1 7RU",
-      "relationship_status": "single"
+      "relationship_status": "single",
+      "nation": "england"
     },
     "finalSituations": [
       "ageing_parent"
@@ -532,22 +544,20 @@
     "prematureCompletes": 0,
     "bundleBuilt": true,
     "bundleEntitlements": [
-      "pension_credit",
       "universal_credit",
-      "attendance_allowance",
+      "carers_allowance",
       "council_tax_single_person_discount",
-      "nhs_optical_vouchers",
-      "eco_home_insulation",
-      "court_fee_remission",
       "nhs_travel_costs",
+      "nhs_optical_vouchers",
+      "warm_home_discount",
+      "eco_home_insulation",
+      "council_tax_support_working_age",
+      "court_fee_remission",
       "free_nhs_dental",
       "social_tariff_broadband",
-      "warm_home_discount",
       "cold_weather_payment",
       "free_nhs_prescriptions",
       "free_nhs_sight_tests",
-      "council_tax_support_working_age",
-      "carers_allowance",
       "carers_credit"
     ],
     "expectedEntitlements": [
@@ -573,7 +583,7 @@
       {
         "turnIndex": 0,
         "userMessage": "I'm 42 and I have MS and can't work",
-        "assistantResponse": "I'm really sorry to hear that you're going through this. It's important to know what support might be available to you. Let's start by gathering some basic information to see what you might be entitled to.\n\nFirst, could you tell me about your current living situation? Do you rent or own your home?",
+        "assistantResponse": "I'm really sorry to hear that you're dealing with this. Multiple Sclerosis (MS) can be very challenging, and it's great that you're seeking support. Let's see what benefits you might be able to get help with.\n\nFirst, let's gather some information to see what you might qualify for. \n\nCan you tell me roughly what your household income is? It doesn't need to be exact — just a ballpark figure will help.",
         "extractedFields": {
           "age": 42,
           "employment_status": "unemployed",
@@ -582,65 +592,63 @@
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7122,
-        "outputTokens": 124,
-        "latencyMs": 604
+        "outputTokens": 207,
+        "latencyMs": 901
       },
       {
         "turnIndex": 1,
         "userMessage": "I'm on PIP enhanced rate mobility",
-        "assistantResponse": "Thank you for sharing that information. It's good to know you're already receiving support for your mobility needs. To help me check what else you might be entitled to, could you tell me about your housing situation? Do you rent or own your home? This will help us understand more about your situation.",
+        "assistantResponse": "Thank you for sharing that information. It sounds like you're already receiving some support through Personal Independence Payment (PIP). That's a big help.\n\nTo continue finding out what else you might be entitled to, could you tell me about your housing situation? Do you rent or own your home? And if you rent, what is your monthly rent or housing cost?\n\nThis will help us see what other support might be available for you.",
         "extractedFields": {
           "disability_benefit_received": "pip_mobility_enhanced"
         },
         "prematureComplete": false,
-        "inputTokens": 7638,
-        "outputTokens": 64,
-        "latencyMs": 540
+        "inputTokens": 7667,
+        "outputTokens": 89,
+        "latencyMs": 628
       },
       {
         "turnIndex": 2,
         "userMessage": "no income at all",
-        "assistantResponse": "Thank you for letting me know. Since you mentioned you have no income at all, it's important to know if anyone else in your household is earning money. This will help us determine your eligibility for various benefits. Could you tell me if anyone else in your household is working or earning an income?",
+        "assistantResponse": "Thank you for letting me know. It's really important to know that you're currently unemployed. When you have no income, it opens up more possibilities for support.\n\nNext, could you please share your full postcode? This will help me check what local support is available to you.\n\nYour postcode is important for finding out what benefits you might be eligible for in your area.",
         "extractedFields": {
           "gross_annual_income": 0,
           "income_band": "under_7400"
         },
         "prematureComplete": false,
-        "inputTokens": 7726,
-        "outputTokens": 62,
-        "latencyMs": 471
+        "inputTokens": 7780,
+        "outputTokens": 77,
+        "latencyMs": 576
       },
       {
         "turnIndex": 3,
         "userMessage": "I'm single, renting privately, £700 a month",
-        "assistantResponse": "Thank you for sharing that information. It's really helpful. To complete our check, could you please tell me your full postcode? This will help me see what local support is available to you.",
+        "assistantResponse": "Thank you for sharing all that information. It's really helpful and means we can look into what support might be available to you.\n\nHere's what we have so far:\n- You're single.\n- You rent your home.\n- Your monthly rent is £700.\n\nLastly, could you please tell me your full postcode? This will help me check what local support is available to you.\n\nYour postcode is important for finding out what benefits you might be eligible for in your area.",
         "extractedFields": {
           "monthly_housing_cost": 700,
           "relationship_status": "single",
           "housing_tenure": "rent_private"
         },
         "prematureComplete": false,
-        "inputTokens": 7831,
-        "outputTokens": 41,
-        "latencyMs": 423
+        "inputTokens": 7900,
+        "outputTokens": 102,
+        "latencyMs": 654
       },
       {
         "turnIndex": 4,
         "userMessage": "M1 1AD",
-        "assistantResponse": "Thank you for providing your postcode. Based on what you've told me, I have found several things you may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
+        "assistantResponse": "Thank you very much for sharing your postcode. Now we have all the information we need to see what support might be available to you.\n\n\n\nBased on what you've told me, I have found several things you and your family may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
         "extractedFields": {
           "postcode": "M1 1AD",
           "relationship_status": "single",
           "housing_tenure": "rent_private",
-          "monthly_housing_cost": 700,
-          "nation": "england",
-          "age": 42
+          "monthly_housing_cost": 700
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7915,
-        "outputTokens": 130,
-        "latencyMs": 586
+        "inputTokens": 8045,
+        "outputTokens": 141,
+        "latencyMs": 671
       }
     ],
     "finalPersonData": {
@@ -654,8 +662,7 @@
       "monthly_housing_cost": 700,
       "relationship_status": "single",
       "housing_tenure": "rent_private",
-      "postcode": "M1 1AD",
-      "nation": "england"
+      "postcode": "M1 1AD"
     },
     "finalSituations": [
       "health_condition"
@@ -707,7 +714,7 @@
       {
         "turnIndex": 0,
         "userMessage": "My husband died last month, I don't know what to do",
-        "assistantResponse": "I'm really sorry to hear about your loss. Losing a partner is incredibly tough, and it's completely normal to feel overwhelmed. I'm here to help you find out what support might be available for you during this difficult time.\n\nLet's start with some basic questions to understand your situation better. First, could you tell me about your current living situation? Do you live alone, or is there someone else with you?",
+        "assistantResponse": "I'm really sorry to hear about your loss. Losing a partner is incredibly tough, and it's completely normal to feel overwhelmed. I'm here to help you find out what support might be available for you during this difficult time.\n\nLet's start with some basic questions to understand your situation better. First, could you tell me about your current living situation? Do you live alone, or are you with family or friends?",
         "extractedFields": {
           "relationship_status": "couple_married",
           "is_bereaved": true,
@@ -716,46 +723,46 @@
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7121,
-        "outputTokens": 170,
-        "latencyMs": 743
+        "outputTokens": 168,
+        "latencyMs": 730
       },
       {
         "turnIndex": 1,
         "userMessage": "I'm 68, I was a housewife",
-        "assistantResponse": "Thank you for sharing that with me. It's important to know your age and your previous role as a housewife. Given your age and the fact that you were a housewife, there might be some benefits you could be entitled to.\n\nNext, could you tell me about your current income? Roughly, what do you earn now? This helps me check what you might qualify for.",
+        "assistantResponse": "Thank you for sharing that with me. It's important to know your age and your previous role as a housewife. Given this, let's focus on what support might be available to you now.\n\nNext, could you tell me about your current income? Roughly, what do you earn now? This helps me check what you might qualify for.",
         "extractedFields": {
           "age": 68,
           "employment_status": "unemployed"
         },
         "prematureComplete": false,
         "inputTokens": 7656,
-        "outputTokens": 77,
-        "latencyMs": 504
+        "outputTokens": 161,
+        "latencyMs": 730
       },
       {
         "turnIndex": 2,
         "userMessage": "just his pension, about eight thousand a year",
-        "assistantResponse": "Thank you for sharing that information. Knowing your income helps us understand what support might be available to you. With a pension of about £8,000 a year, there are some benefits you might be eligible for.\n\nNow, could you tell me about your housing situation? Do you rent or own your home? This information is important to check what local support is available to you.",
+        "assistantResponse": "Thank you for letting me know. With your pension being around £8,000 a year, we can see what benefits you might be entitled to.\n\nNow, could you tell me about your housing situation? Do you rent or own your home? This helps me understand more about your living arrangements.",
         "extractedFields": {
           "gross_annual_income": 8000,
           "income_band": "under_12570"
         },
         "prematureComplete": false,
-        "inputTokens": 7764,
-        "outputTokens": 79,
-        "latencyMs": 591
+        "inputTokens": 7758,
+        "outputTokens": 83,
+        "latencyMs": 682
       },
       {
         "turnIndex": 3,
         "userMessage": "we own our home",
-        "assistantResponse": "Thank you for letting me know that you own your home. Owning a property is a good thing to know. \n\nNext, could you tell me your full postcode? This helps me check what is available in your local area. If you prefer, you can just give me the first part if you're comfortable with that.",
+        "assistantResponse": "Thank you for sharing that. Owning your home is a good thing to know. \n\nLastly, could you please provide your full postcode? This helps me check what local support is available to you. If you prefer, just the first part is fine if you're not comfortable sharing the full one.",
         "extractedFields": {
           "housing_tenure": "own_outright"
         },
         "prematureComplete": false,
-        "inputTokens": 7880,
-        "outputTokens": 66,
-        "latencyMs": 491
+        "inputTokens": 7857,
+        "outputTokens": 62,
+        "latencyMs": 544
       },
       {
         "turnIndex": 4,
@@ -763,10 +770,10 @@
         "assistantResponse": "Thank you for sharing your postcode. Based on what you've told me, I have found several things you may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
         "extractedFields": {
           "postcode": "NE1 7RU",
-          "age": 68,
           "relationship_status": "couple_married",
           "is_bereaved": true,
           "deceased_relationship": "partner",
+          "age": 68,
           "employment_status": "unemployed",
           "gross_annual_income": 8000,
           "income_band": "under_12570",
@@ -775,9 +782,9 @@
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7968,
+        "inputTokens": 7941,
         "outputTokens": 175,
-        "latencyMs": 711
+        "latencyMs": 826
       }
     ],
     "finalPersonData": {
@@ -853,7 +860,7 @@
         "prematureComplete": false,
         "inputTokens": 7127,
         "outputTokens": 131,
-        "latencyMs": 720
+        "latencyMs": 699
       },
       {
         "turnIndex": 1,
@@ -868,7 +875,7 @@
         "prematureComplete": false,
         "inputTokens": 7647,
         "outputTokens": 76,
-        "latencyMs": 566
+        "latencyMs": 553
       },
       {
         "turnIndex": 2,
@@ -881,7 +888,7 @@
         "prematureComplete": false,
         "inputTokens": 7775,
         "outputTokens": 68,
-        "latencyMs": 486
+        "latencyMs": 524
       },
       {
         "turnIndex": 3,
@@ -905,7 +912,7 @@
         "prematureComplete": false,
         "inputTokens": 7846,
         "outputTokens": 215,
-        "latencyMs": 725
+        "latencyMs": 708
       }
     ],
     "finalPersonData": {
@@ -977,7 +984,7 @@
         "prematureComplete": false,
         "inputTokens": 7120,
         "outputTokens": 188,
-        "latencyMs": 795
+        "latencyMs": 762
       },
       {
         "turnIndex": 1,
@@ -991,7 +998,7 @@
         "prematureComplete": false,
         "inputTokens": 7643,
         "outputTokens": 40,
-        "latencyMs": 513
+        "latencyMs": 465
       },
       {
         "turnIndex": 2,
@@ -1003,7 +1010,7 @@
         "prematureComplete": false,
         "inputTokens": 7721,
         "outputTokens": 33,
-        "latencyMs": 447
+        "latencyMs": 487
       },
       {
         "turnIndex": 3,
@@ -1017,7 +1024,7 @@
         "prematureComplete": false,
         "inputTokens": 7777,
         "outputTokens": 94,
-        "latencyMs": 667
+        "latencyMs": 660
       }
     ],
     "finalPersonData": {
@@ -1080,72 +1087,103 @@
       {
         "turnIndex": 0,
         "userMessage": "I'm 32, I've just had a baby boy, he's 2 months old. I'm not working at the moment.",
-        "assistantResponse": "Hello! Congratulations on your new baby boy. It's a big change, isn't it? I'm here to help you find out what support you might be entitled to.\n\nLet's start with a few questions to get a better picture of your situation. \n\nFirst, could you tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help.",
+        "assistantResponse": "Hello! Congratulations on your new baby. It's a big change, isn't it? I'm here to help you find out what support you might be entitled to.\n\nLet's start with a few questions to help me understand your situation better:\n\n1. How old is your partner, if they live with you?\n2. Do you rent or own your home?\n3. Roughly, what is your household income?\n\nThis will help me check what benefits you might be eligible for.",
         "extractedFields": {
           "age": 32,
-          "employment_status": "unemployed"
+          "employment_status": "unemployed",
+          "children": [
+            {
+              "age": 0,
+              "has_additional_needs": false,
+              "disability_benefit": "none",
+              "in_education": false
+            }
+          ]
         },
-        "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7140,
-        "outputTokens": 196,
-        "latencyMs": 798
+        "outputTokens": 101,
+        "latencyMs": 614
       },
       {
         "turnIndex": 1,
         "userMessage": "My partner works part-time, about £10,000 a year",
-        "assistantResponse": "Thank you for sharing that information. It helps a lot in understanding your situation better.\n\n\n\nNext, could you tell me if you rent or own your home? This will help in checking what local support might be available for you.",
+        "assistantResponse": "Thank you for sharing that information. It helps me understand your situation better.\n\nTo continue, could you please tell me:\n\n1. Do you rent or own your home?\n2. What is your full postcode? This helps me check what is available in your local area.\n\nThis will help me find out what support you might be entitled to.",
         "extractedFields": {
           "gross_annual_income": 10000,
           "income_band": "under_12570",
-          "relationship_status": "couple_cohabiting",
-          "partner_employment_status": "part_time",
-          "partner_gross_annual_income": 10000
+          "relationship_status": "couple_cohabiting"
         },
         "prematureComplete": false,
-        "inputTokens": 7668,
-        "outputTokens": 82,
-        "latencyMs": 541
+        "inputTokens": 7388,
+        "outputTokens": 69,
+        "latencyMs": 539
       },
       {
         "turnIndex": 2,
         "userMessage": "We rent from the council, £450 a month",
-        "assistantResponse": "Thank you for letting me know about your housing situation. It's good to have that information.\n\n\n\nNow, could you please tell me your full postcode? This will help me check what support is available in your local area.",
+        "assistantResponse": "Thank you for providing that information. It helps me understand your situation better.\n\nTo continue, could you please tell me:\n\n1. What is your full postcode? This helps me check what is available in your local area.\n\nThis will help me find out what support you might be entitled to.",
         "extractedFields": {
           "monthly_housing_cost": 450,
           "housing_tenure": "rent_social"
         },
         "prematureComplete": false,
-        "inputTokens": 7803,
-        "outputTokens": 46,
-        "latencyMs": 408
+        "inputTokens": 7516,
+        "outputTokens": 59,
+        "latencyMs": 557
       },
       {
         "turnIndex": 3,
         "userMessage": "EH1 1YZ",
-        "assistantResponse": "Thank you for providing your postcode. Now, I have enough information to see what benefits you might be entitled to. \n\nJust a moment while I check this for you.",
+        "assistantResponse": "Thank you for sharing your postcode. Based on what you've told me, I have found several things you and your family may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
         "extractedFields": {
-          "postcode": "EH1 1YZ"
+          "postcode": "EH1 1YZ",
+          "age": 32,
+          "employment_status": "unemployed",
+          "gross_annual_income": 10000,
+          "income_band": "under_12570",
+          "relationship_status": "couple_cohabiting",
+          "monthly_housing_cost": 450,
+          "housing_tenure": "rent_social",
+          "is_pregnant": false,
+          "expecting_first_child": false,
+          "children": [
+            {
+              "age": 2,
+              "has_additional_needs": false,
+              "disability_benefit": "none",
+              "in_education": false
+            }
+          ],
+          "nation": "scotland"
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7883,
-        "outputTokens": 47,
-        "latencyMs": 472
+        "inputTokens": 7609,
+        "outputTokens": 236,
+        "latencyMs": 813
       }
     ],
     "finalPersonData": {
-      "children": [],
+      "children": [
+        {
+          "age": 2,
+          "has_additional_needs": false,
+          "disability_benefit": "none",
+          "in_education": false
+        }
+      ],
       "age": 32,
       "employment_status": "unemployed",
       "gross_annual_income": 10000,
       "income_band": "under_12570",
       "relationship_status": "couple_cohabiting",
-      "partner_employment_status": "part_time",
-      "partner_gross_annual_income": 10000,
       "monthly_housing_cost": 450,
       "housing_tenure": "rent_social",
-      "postcode": "EH1 1YZ"
+      "postcode": "EH1 1YZ",
+      "is_pregnant": false,
+      "expecting_first_child": false,
+      "nation": "scotland"
     },
     "finalSituations": [
       "new_baby"
@@ -1156,13 +1194,19 @@
     "bundleEntitlements": [
       "universal_credit",
       "nhs_low_income_scheme",
+      "scottish_child_payment",
+      "council_tax_reduction_scotland",
+      "scottish_welfare_fund",
+      "child_benefit",
+      "best_start_grant",
+      "best_start_foods",
       "warm_home_discount",
+      "winter_heating_payment",
       "eco_home_insulation",
-      "council_tax_support_working_age",
       "court_fee_remission",
       "free_nhs_dental",
       "social_tariff_broadband",
-      "cold_weather_payment",
+      "healthy_start",
       "free_nhs_prescriptions",
       "free_nhs_sight_tests",
       "nhs_travel_costs",
@@ -1173,21 +1217,17 @@
       "scottish_child_payment",
       "best_start_grant"
     ],
-    "entitlementHits": 0,
-    "entitlementMisses": [
-      "child_benefit",
-      "scottish_child_payment",
-      "best_start_grant"
-    ],
+    "entitlementHits": 3,
+    "entitlementMisses": [],
     "bundleSizePass": true,
     "scores": {
-      "completeness": 0.8333333333333334,
+      "completeness": 1,
       "gatePass": 1,
       "noPrematureComplete": 1,
-      "bundleCorrectness": 0,
-      "overall": 0.7333333333333334
+      "bundleCorrectness": 1,
+      "overall": 1
     },
-    "pass": false
+    "pass": true
   },
   {
     "id": "MT11",
@@ -1206,7 +1246,7 @@
         "prematureComplete": false,
         "inputTokens": 7124,
         "outputTokens": 114,
-        "latencyMs": 602
+        "latencyMs": 662
       },
       {
         "turnIndex": 1,
@@ -1218,44 +1258,46 @@
         "prematureComplete": false,
         "inputTokens": 7355,
         "outputTokens": 64,
-        "latencyMs": 487
+        "latencyMs": 551
       },
       {
         "turnIndex": 2,
         "userMessage": "just my state pension, about £11,000",
         "assistantResponse": "Thank you for sharing that information. It sounds like you're relying on your state pension, which is a big part of your income. \n\nTo get a clearer picture of what support you might be eligible for, could you tell me if you own your home or if you're renting?\n\nThis will help me understand your housing situation better.",
         "extractedFields": {
+          "gross_annual_income": 11000,
+          "income_band": "under_12570",
           "employment_status": "retired"
         },
         "prematureComplete": false,
         "inputTokens": 7436,
         "outputTokens": 70,
-        "latencyMs": 559
+        "latencyMs": 558
       },
       {
         "turnIndex": 3,
         "userMessage": "I rent from the council, £500 a month",
-        "assistantResponse": "Thank you for letting me know. Renting from the council and paying £500 a month helps me understand your housing situation better.\n\nTo continue helping you find out what support might be available, could you tell me if you have any children living with you or nearby?\n\nThis will help me understand your family situation better.",
+        "assistantResponse": "Thank you for sharing that information. Renting from the council and paying £500 a month gives us a clearer picture of your housing situation.\n\nTo help me check what support you might be eligible for, could you tell me if you need help with daily tasks like washing, dressing, or remembering to take your medication?\n\nThis will help me understand your needs better.",
         "extractedFields": {
           "monthly_housing_cost": 500,
           "housing_tenure": "rent_social"
         },
         "prematureComplete": false,
-        "inputTokens": 7522,
-        "outputTokens": 65,
-        "latencyMs": 492
+        "inputTokens": 7552,
+        "outputTokens": 74,
+        "latencyMs": 587
       },
       {
         "turnIndex": 4,
         "userMessage": "B15 1TJ",
-        "assistantResponse": "Thank you for sharing your postcode, B15 1TJ. This will help me check what local support is available for you.\n\nBased on what you've told me so far, it looks like you might be eligible for several benefits. To make sure we cover everything, could you tell me if you have any savings or other sources of income besides your state pension?\n\nThis will help me understand your financial situation better.",
+        "assistantResponse": "Thank you for sharing your postcode. It helps me check what local support might be available to you.\n\nBased on what you've told me, it sounds like you might be eligible for several benefits. To find out more, I'll need to ask a few more questions:\n\n1. Do you need help with daily tasks like washing, dressing, or taking your medication?\n2. Are you currently working or retired?\n\nThis will help me understand your situation better and see what support you might qualify for.",
         "extractedFields": {
           "postcode": "B15 1TJ"
         },
         "prematureComplete": false,
-        "inputTokens": 7623,
-        "outputTokens": 87,
-        "latencyMs": 642
+        "inputTokens": 7662,
+        "outputTokens": 102,
+        "latencyMs": 639
       }
     ],
     "finalPersonData": {
@@ -1264,28 +1306,35 @@
       "relationship_status": "single",
       "employment_status": "retired",
       "needs_help_with_daily_living": true,
+      "gross_annual_income": 11000,
+      "income_band": "under_12570",
       "monthly_housing_cost": 500,
       "housing_tenure": "rent_social",
       "postcode": "B15 1TJ"
     },
     "finalSituations": [],
-    "gatePass": false,
+    "gatePass": true,
     "prematureCompletes": 0,
     "bundleBuilt": true,
     "bundleEntitlements": [
-      "pension_credit",
       "attendance_allowance",
+      "nhs_low_income_scheme",
       "council_tax_single_person_discount",
       "concessionary_bus_travel",
       "winter_fuel_payment",
+      "pension_credit",
+      "eco_home_insulation",
       "housing_benefit_legacy",
       "council_tax_reduction_full",
+      "court_fee_remission",
       "nhs_travel_costs",
       "free_nhs_dental",
+      "social_tariff_broadband",
       "warm_home_discount",
       "cold_weather_payment",
       "free_nhs_prescriptions",
-      "free_nhs_sight_tests"
+      "free_nhs_sight_tests",
+      "nhs_optical_vouchers"
     ],
     "expectedEntitlements": [
       "pension_credit",
@@ -1295,13 +1344,13 @@
     "entitlementMisses": [],
     "bundleSizePass": true,
     "scores": {
-      "completeness": 0.8,
-      "gatePass": 0,
+      "completeness": 1,
+      "gatePass": 1,
       "noPrematureComplete": 1,
       "bundleCorrectness": 1,
-      "overall": 0.72
+      "overall": 1
     },
-    "pass": false
+    "pass": true
   },
   {
     "id": "MT12",
@@ -1310,74 +1359,90 @@
       {
         "turnIndex": 0,
         "userMessage": "me and the missus just had a baby, I'm 29 and not working",
-        "assistantResponse": "I'm really happy to hear about your new baby! It's a big step, and I'm here to help you figure out what support you might be able to get.\n\nLet's start with a few questions to gather some information. First, how old is your partner? And do you rent or own your home?",
+        "assistantResponse": "I'm really happy to hear about your new baby! It's a big step, and I'm here to help you figure out what support you might be able to get.\n\nLet's start with a few questions to help me understand your situation better.\n\nFirst, can you tell me about your wife's job situation? Is she working or not?",
         "extractedFields": {
           "age": 29,
-          "employment_status": "unemployed"
+          "employment_status": "unemployed",
+          "children": [
+            {
+              "age": 0,
+              "has_additional_needs": false,
+              "disability_benefit": "none",
+              "in_education": false
+            }
+          ]
         },
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7126,
-        "outputTokens": 125,
-        "latencyMs": 715
+        "outputTokens": 145,
+        "latencyMs": 683
       },
       {
         "turnIndex": 1,
         "userMessage": "she works at Tesco, about 12 grand a year",
-        "assistantResponse": "Thank you for sharing that. It sounds like your partner has a steady job. To help me check what support you might be able to get, could you tell me if you rent or own your home? And when you say she earns \"about 12 grand a year,\" that means £12,000, right?",
+        "assistantResponse": "Thank you for sharing that information. It's good to know that your wife has a job.\n\nNext, could you tell me roughly what your household spends on rent or mortgage each month? This helps me check what support might be available.",
         "extractedFields": {
-          "gross_annual_income": 12000,
-          "income_band": "under_12570",
-          "relationship_status": "couple_married"
-        },
-        "prematureComplete": false,
-        "inputTokens": 7632,
-        "outputTokens": 116,
-        "latencyMs": 759
-      },
-      {
-        "turnIndex": 2,
-        "userMessage": "council gaff, 500 quid a month",
-        "assistantResponse": "Thank you for letting me know. So, you live in a council flat and pay £500 a month for rent. Just to confirm, your partner earns £12,000 a year. \n\nLastly, could you please share your full postcode? This helps me check what local support is available for you.",
-        "extractedFields": {
-          "housing_tenure": "rent_social",
-          "monthly_housing_cost": 500,
           "gross_annual_income": 12000,
           "income_band": "under_12570"
         },
         "prematureComplete": false,
-        "inputTokens": 7757,
-        "outputTokens": 128,
-        "latencyMs": 587
+        "inputTokens": 7679,
+        "outputTokens": 49,
+        "latencyMs": 501
+      },
+      {
+        "turnIndex": 2,
+        "userMessage": "council gaff, 500 quid a month",
+        "assistantResponse": "Thank you for letting me know. You live in social housing and pay about £500 a month for rent.\n\nLastly, could you please share your full postcode? This helps me check what local support is available for you.",
+        "extractedFields": {
+          "housing_tenure": "rent_social"
+        },
+        "prematureComplete": false,
+        "inputTokens": 7773,
+        "outputTokens": 48,
+        "latencyMs": 410
       },
       {
         "turnIndex": 3,
         "userMessage": "BD1 1HU",
-        "assistantResponse": "Thank you for sharing your postcode. Based on what you've told me, here's what I've gathered:\n\n\n\nI'll now check what benefits you and your family might be entitled to. Please give me a moment.",
+        "assistantResponse": "Thank you very much for all the details. Based on what you've told me, I have found several things you and your family may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
         "extractedFields": {
           "postcode": "BD1 1HU",
-          "partner_gross_annual_income": 12000,
+          "relationship_status": "couple_married",
+          "employment_status": "unemployed",
+          "gross_annual_income": 12000,
+          "income_band": "under_12570",
           "housing_tenure": "rent_social",
-          "monthly_housing_cost": 500
+          "monthly_housing_cost": 500,
+          "nation": "england",
+          "age": 29
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7859,
-        "outputTokens": 118,
-        "latencyMs": 591
+        "inputTokens": 7842,
+        "outputTokens": 174,
+        "latencyMs": 716
       }
     ],
     "finalPersonData": {
-      "children": [],
+      "children": [
+        {
+          "age": 0,
+          "has_additional_needs": false,
+          "disability_benefit": "none",
+          "in_education": false
+        }
+      ],
       "age": 29,
       "employment_status": "unemployed",
       "gross_annual_income": 12000,
       "income_band": "under_12570",
-      "relationship_status": "couple_married",
       "housing_tenure": "rent_social",
-      "monthly_housing_cost": 500,
       "postcode": "BD1 1HU",
-      "partner_gross_annual_income": 12000
+      "relationship_status": "couple_married",
+      "monthly_housing_cost": 500,
+      "nation": "england"
     },
     "finalSituations": [
       "new_baby"
@@ -1389,12 +1454,14 @@
       "universal_credit",
       "nhs_low_income_scheme",
       "marriage_allowance",
+      "child_benefit",
       "warm_home_discount",
       "eco_home_insulation",
       "council_tax_support_working_age",
       "court_fee_remission",
       "free_nhs_dental",
       "social_tariff_broadband",
+      "healthy_start",
       "cold_weather_payment",
       "free_nhs_prescriptions",
       "free_nhs_sight_tests",
@@ -1405,17 +1472,15 @@
       "child_benefit",
       "universal_credit"
     ],
-    "entitlementHits": 1,
-    "entitlementMisses": [
-      "child_benefit"
-    ],
+    "entitlementHits": 2,
+    "entitlementMisses": [],
     "bundleSizePass": true,
     "scores": {
       "completeness": 0.7999999999999999,
       "gatePass": 1,
       "noPrematureComplete": 1,
-      "bundleCorrectness": 0.5,
-      "overall": 0.82
+      "bundleCorrectness": 1,
+      "overall": 0.9199999999999999
     },
     "pass": true
   },
@@ -1426,56 +1491,56 @@
       {
         "turnIndex": 0,
         "userMessage": "I need help, things are really bad right now",
-        "assistantResponse": "I'm really sorry to hear that you're going through a tough time. It's important to know that you might be able to get some support. Let's start by understanding your situation a bit better. \n\nFirst, could you tell me if you're currently working or looking for work? This will help us figure out what support might be available to you.",
+        "assistantResponse": "I'm really sorry to hear that things are tough for you right now. It's important to know that support is available. To help you find the right assistance, could you tell me a bit more about your situation? For example, are you dealing with a health issue, job loss, or something else? This will help me guide you better.",
         "extractedFields": {},
         "prematureComplete": false,
         "inputTokens": 7117,
-        "outputTokens": 78,
-        "latencyMs": 522
+        "outputTokens": 73,
+        "latencyMs": 538
       },
       {
         "turnIndex": 1,
         "userMessage": "I lost my job 3 weeks ago, I'm 45",
-        "assistantResponse": "Thank you for sharing that with me. Losing a job can be really tough, and it's completely understandable to feel stressed right now. \n\nSince you've lost your job, it's important to know that there are benefits you might be able to claim. To get a better idea of what you might be entitled to, could you tell me roughly what your household income was before you lost your job? It doesn't need to be exact—just a ballpark figure will do.",
+        "assistantResponse": "Thank you for sharing that with me. Losing a job can be really tough, especially at any age. To start helping you find the right support, could you tell me a bit more about your situation? For example:\n\n- Are you currently living alone or with someone?\n- Do you have any children?\n- What is your current income situation? Even a rough estimate is fine.\n- Do you own your home or are you renting?\n\nThis information will help us figure out what support might be available for you.",
         "extractedFields": {
           "age": 45,
           "employment_status": "unemployed"
         },
         "prematureComplete": false,
-        "inputTokens": 7214,
-        "outputTokens": 100,
-        "latencyMs": 651
+        "inputTokens": 7209,
+        "outputTokens": 103,
+        "latencyMs": 636
       },
       {
         "turnIndex": 2,
         "userMessage": "renting privately, £800 a month",
-        "assistantResponse": "Thank you for sharing that information. Knowing your housing situation and monthly costs helps us understand more about your situation.\n\nSince you've lost your job, it's important to know that there are benefits you might be able to claim. To get a better idea of what you might be entitled to, could you tell me if you own any savings or other assets? This will help us understand your overall financial situation.",
+        "assistantResponse": "Thank you for sharing that information. It sounds like you're in a challenging situation right now. To help you find the right support, here are a few more questions:\n\n- Are you living alone or with someone else?\n- Do you have any children?\n- What is your current employment status? Are you looking for a new job or still unemployed?\n- Do you have any savings or other sources of income?\n\nThis will help us determine what benefits and support might be available to you.",
         "extractedFields": {
           "monthly_housing_cost": 800,
           "housing_tenure": "rent_private"
         },
         "prematureComplete": false,
-        "inputTokens": 7412,
-        "outputTokens": 84,
-        "latencyMs": 619
+        "inputTokens": 7410,
+        "outputTokens": 99,
+        "latencyMs": 569
       },
       {
         "turnIndex": 3,
         "userMessage": "no savings, no partner, no income",
-        "assistantResponse": "Thank you for being so open with me. It's really important to know that there are benefits available to help you through this time. Since you have no savings, no partner, and no income, it's likely that you might qualify for some support.\n\nTo get a better idea of what you might be entitled to, could you tell me your postcode? This will help us check what is available in your local area.",
+        "assistantResponse": "Thank you for sharing that with me. It's important to know that there are resources available to help you through this difficult time. Here are a few more questions to help us figure out what support might be available:\n\n- Are you currently living alone?\n- Do you have any children?\n- Have you applied for any benefits or support since losing your job?\n\nThis information will help us identify what benefits and support you might be eligible for.",
         "extractedFields": {
           "gross_annual_income": 0,
           "income_band": "under_7400"
         },
         "prematureComplete": false,
-        "inputTokens": 7533,
-        "outputTokens": 87,
-        "latencyMs": 566
+        "inputTokens": 7546,
+        "outputTokens": 89,
+        "latencyMs": 872
       },
       {
         "turnIndex": 4,
         "userMessage": "LS1 1BA",
-        "assistantResponse": "Thank you for sharing your postcode. Based on what you've told me, I have found several things you and your family may be entitled to. Take a look below—the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
+        "assistantResponse": "Thank you for providing your postcode. Based on what you've shared, I've gathered some important information about your situation. Here’s what we have so far:\n\n\n\n\n\nI'm here to help you find the right support. With the information we have, I can now check what benefits and support might be available to you. Please hold on just a moment while I do that.",
         "extractedFields": {
           "postcode": "LS1 1BA",
           "age": 45,
@@ -1483,15 +1548,13 @@
           "housing_tenure": "rent_private",
           "monthly_housing_cost": 800,
           "gross_annual_income": 0,
-          "income_band": "under_7400",
-          "nation": "england",
-          "household_capital": 0
+          "income_band": "under_7400"
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7654,
-        "outputTokens": 174,
-        "latencyMs": 727
+        "inputTokens": 7669,
+        "outputTokens": 191,
+        "latencyMs": 866
       }
     ],
     "finalPersonData": {
@@ -1502,9 +1565,7 @@
       "housing_tenure": "rent_private",
       "gross_annual_income": 0,
       "income_band": "under_7400",
-      "postcode": "LS1 1BA",
-      "nation": "england",
-      "household_capital": 0
+      "postcode": "LS1 1BA"
     },
     "finalSituations": [
       "lost_job"
@@ -1558,59 +1619,62 @@
         "prematureComplete": false,
         "inputTokens": 7124,
         "outputTokens": 193,
-        "latencyMs": 708
+        "latencyMs": 778
       },
       {
         "turnIndex": 1,
         "userMessage": "about £14,000 between them both",
         "assistantResponse": "Thank you for sharing that. Knowing your income helps a lot. \n\nNext, could you tell me if you own your home or if you rent? This will help us understand your housing situation better.",
-        "extractedFields": {},
+        "extractedFields": {
+          "gross_annual_income": 14000,
+          "income_band": "under_16000"
+        },
         "prematureComplete": false,
         "inputTokens": 7642,
         "outputTokens": 41,
-        "latencyMs": 466
+        "latencyMs": 485
       },
       {
         "turnIndex": 2,
         "userMessage": "I own my house outright",
-        "assistantResponse": "Thank you for letting me know. \n\nNow, could you tell me your full postcode? This helps me check what local support is available to you.",
+        "assistantResponse": "That's good to know. Owning your home is a great thing. \n\nNow, could you tell me your full postcode? This helps me check what local support is available to you.",
         "extractedFields": {
           "housing_tenure": "own_outright"
         },
         "prematureComplete": false,
-        "inputTokens": 7692,
-        "outputTokens": 31,
-        "latencyMs": 368
+        "inputTokens": 7722,
+        "outputTokens": 39,
+        "latencyMs": 459
       },
       {
         "turnIndex": 3,
         "userMessage": "NE1 7RU",
-        "assistantResponse": "Thank you very much for all the information. \n\nBased on what you've told me, I have found several things you may be entitled to. Let's take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
+        "assistantResponse": "Thank you for providing your postcode. Based on what you've told me, I'll check what benefits you might be entitled to. \n\nJust a moment while I gather this information.",
         "extractedFields": {
           "postcode": "NE1 7RU",
           "age": 72,
           "employment_status": "retired",
-          "housing_tenure": "own_outright",
           "gross_annual_income": 14000,
-          "nation": "england",
-          "income_band": "under_16000"
+          "income_band": "under_16000",
+          "housing_tenure": "own_outright",
+          "nation": "england"
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7745,
-        "outputTokens": 140,
-        "latencyMs": 589
+        "inputTokens": 7783,
+        "outputTokens": 131,
+        "latencyMs": 627
       }
     ],
     "finalPersonData": {
       "children": [],
       "age": 72,
       "employment_status": "retired",
+      "gross_annual_income": 14000,
+      "income_band": "under_16000",
       "housing_tenure": "own_outright",
       "postcode": "NE1 7RU",
-      "gross_annual_income": 14000,
-      "nation": "england",
-      "income_band": "under_16000"
+      "nation": "england"
     },
     "finalSituations": [
       "retirement_low_income"
@@ -1657,7 +1721,7 @@
       {
         "turnIndex": 0,
         "userMessage": "my mam can't manage on her own anymore, she's 83 and lives in Swansea",
-        "assistantResponse": "I'm really sorry to hear that your mum is struggling. It's understandable to be worried about someone you care about. Let's see what support might be available for both of you.\n\nFirst, who lives in your household?",
+        "assistantResponse": "I'm really sorry to hear that your mum is having a tough time. It's understandable to be worried about her. Let's see what support might be available for both of you.\n\nFirst, who lives in your household?",
         "extractedFields": {
           "needs_help_with_daily_living": true
         },
@@ -1665,59 +1729,48 @@
         "prematureComplete": false,
         "inputTokens": 7128,
         "outputTokens": 134,
-        "latencyMs": 578
+        "latencyMs": 654
       },
       {
         "turnIndex": 1,
         "userMessage": "I'm 50, I go over every day, about 40 hours a week looking after her",
-        "assistantResponse": "Thank you for sharing that. It sounds like you're doing an incredible amount to help your mum. To get a better picture, could you tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help.",
+        "assistantResponse": "Thank you for sharing that. It sounds like you're doing an incredible amount to help your mum. To better understand your situation, could you tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help.",
         "extractedFields": {
           "age": 50,
           "is_carer": true,
-          "carer_hours_per_week": 40,
-          "relationship_status": "single",
-          "cared_for_person": {
-            "relationship": "parent",
-            "age": 83,
-            "needs_help_daily_living": true
-          }
+          "carer_hours_per_week": 40
         },
-        "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7621,
-        "outputTokens": 146,
-        "latencyMs": 698
+        "outputTokens": 155,
+        "latencyMs": 661
       },
       {
         "turnIndex": 2,
         "userMessage": "I had to give up work, no income now",
-        "assistantResponse": "I'm sorry to hear that you had to give up work. It's important to know that you might be entitled to some support. Since you're not working now, your current income is £0. This is very important for checking what benefits you might qualify for. \n\nWhat is your full postcode? This helps me check what is available in your local area.",
+        "assistantResponse": "I'm really sorry to hear that you had to give up work. It sounds like you're both in a challenging situation. To help us find what support might be available, could you please tell me your postcode? This will help us check what is available in your local area.",
         "extractedFields": {
           "gross_annual_income": 0,
           "income_band": "under_7400",
           "employment_status": "unemployed"
         },
         "prematureComplete": false,
-        "inputTokens": 7770,
-        "outputTokens": 77,
-        "latencyMs": 533
+        "inputTokens": 7722,
+        "outputTokens": 59,
+        "latencyMs": 521
       },
       {
         "turnIndex": 3,
         "userMessage": "renting privately, £550 a month",
-        "assistantResponse": "Thank you for sharing that. Since you're renting privately and your monthly rent is £550, we can update that information. \n\nYou've told me a lot already, and I'm grateful for your honesty. To finish up, could you please tell me your full postcode? This will help me check what local support is available for you.",
+        "assistantResponse": "Thank you for sharing that information. To make sure we have all the details we need, could you please tell me your full postcode? This will help us check what local support is available for you.",
         "extractedFields": {
           "monthly_housing_cost": 550,
-          "housing_tenure": "rent_private",
-          "gross_annual_income": 0,
-          "income_band": "under_7400",
-          "employment_status": "unemployed",
-          "postcode": "your full postcode"
+          "housing_tenure": "rent_private"
         },
         "prematureComplete": false,
-        "inputTokens": 7895,
-        "outputTokens": 147,
-        "latencyMs": 802
+        "inputTokens": 7829,
+        "outputTokens": 41,
+        "latencyMs": 495
       },
       {
         "turnIndex": 4,
@@ -1727,25 +1780,25 @@
           "postcode": "SA1 1NW",
           "relationship_status": "single",
           "employment_status": "unemployed",
+          "recently_redundant": true,
           "gross_annual_income": 0,
           "income_band": "under_7400",
           "housing_tenure": "rent_private",
           "monthly_housing_cost": 550,
-          "nation": "wales",
-          "age": 50,
-          "is_carer": true,
-          "carer_hours_per_week": 40,
           "cared_for_person": {
             "relationship": "parent",
             "age": 83,
+            "disability_benefit": "none",
             "needs_help_daily_living": true
-          }
+          },
+          "nation": "wales",
+          "age": 50
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 8013,
-        "outputTokens": 229,
-        "latencyMs": 803
+        "inputTokens": 7904,
+        "outputTokens": 216,
+        "latencyMs": 718
       }
     ],
     "finalPersonData": {
@@ -1754,18 +1807,20 @@
       "age": 50,
       "is_carer": true,
       "carer_hours_per_week": 40,
-      "relationship_status": "single",
-      "cared_for_person": {
-        "relationship": "parent",
-        "age": 83,
-        "needs_help_daily_living": true
-      },
       "gross_annual_income": 0,
       "income_band": "under_7400",
       "employment_status": "unemployed",
       "monthly_housing_cost": 550,
       "housing_tenure": "rent_private",
       "postcode": "SA1 1NW",
+      "relationship_status": "single",
+      "recently_redundant": true,
+      "cared_for_person": {
+        "relationship": "parent",
+        "age": 83,
+        "disability_benefit": "none",
+        "needs_help_daily_living": true
+      },
       "nation": "wales"
     },
     "finalSituations": [
@@ -1830,7 +1885,7 @@
         "prematureComplete": false,
         "inputTokens": 7132,
         "outputTokens": 135,
-        "latencyMs": 645
+        "latencyMs": 739
       },
       {
         "turnIndex": 1,
@@ -1844,7 +1899,7 @@
         "prematureComplete": false,
         "inputTokens": 7654,
         "outputTokens": 55,
-        "latencyMs": 493
+        "latencyMs": 473
       },
       {
         "turnIndex": 2,
@@ -1857,7 +1912,7 @@
         "prematureComplete": false,
         "inputTokens": 7751,
         "outputTokens": 48,
-        "latencyMs": 423
+        "latencyMs": 422
       },
       {
         "turnIndex": 3,
@@ -1877,7 +1932,7 @@
         "prematureComplete": false,
         "inputTokens": 7833,
         "outputTokens": 126,
-        "latencyMs": 542
+        "latencyMs": 651
       }
     ],
     "finalPersonData": {
@@ -1941,7 +1996,7 @@
       {
         "turnIndex": 0,
         "userMessage": "i'm self employed, single parent, autism and adhd",
-        "assistantResponse": "I'm really sorry to hear that you're going through this. It sounds like you're managing a lot. Let's see what support might be available for you.\n\nFirst, can you tell me a little more about your situation? Specifically, how old are you? This helps us understand what benefits you might be able to get.",
+        "assistantResponse": "I'm really sorry to hear that you're going through this. It sounds like you're managing a lot. Let's see what support might be available for you.\n\nFirst, let's talk about your employment. Are you currently working as a self-employed person?",
         "extractedFields": {
           "relationship_status": "single",
           "employment_status": "self_employed"
@@ -1949,23 +2004,25 @@
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7120,
-        "outputTokens": 166,
-        "latencyMs": 740
+        "outputTokens": 122,
+        "latencyMs": 635
       },
       {
         "turnIndex": 1,
         "userMessage": "it's me who has autism and adhd, not my child",
-        "assistantResponse": "Thank you for letting me know. It's really important to understand who has these conditions. Now, can you tell me how old you are? This helps us see what benefits you might be able to get.",
-        "extractedFields": {},
+        "assistantResponse": "Thank you for letting me know. It's important to be clear about who has the conditions. You're managing a lot on your own. Let's keep going. Could you tell me roughly what your household income is? It doesn't need to be exact—just a ballpark figure will help.",
+        "extractedFields": {
+          "has_disability_or_health_condition": true
+        },
         "prematureComplete": false,
-        "inputTokens": 7639,
-        "outputTokens": 44,
-        "latencyMs": 438
+        "inputTokens": 7627,
+        "outputTokens": 86,
+        "latencyMs": 589
       },
       {
         "turnIndex": 2,
         "userMessage": "i'm 34, my daughter is 6",
-        "assistantResponse": "Thank you for sharing that. It's great that you're open to finding out what support is available. Now, can you tell me a bit more about your employment? Are you still working as a self-employed person? This helps us understand your situation better.",
+        "assistantResponse": "Thank you for sharing that. It's great to know your ages. Now, let's talk about where you live. What's your full postcode? This helps me check what local support is available for you.",
         "extractedFields": {
           "age": 34,
           "children": [
@@ -1975,57 +2032,66 @@
               "disability_benefit": "none",
               "in_education": true
             }
-          ]
+          ],
+          "has_disability_or_health_condition": true
         },
         "prematureComplete": false,
-        "inputTokens": 7699,
-        "outputTokens": 56,
-        "latencyMs": 507
+        "inputTokens": 7722,
+        "outputTokens": 109,
+        "latencyMs": 624
       },
       {
         "turnIndex": 3,
         "userMessage": "about 8 thousand a year",
-        "assistantResponse": "Thank you for that information. Knowing your income helps us see what benefits you might be able to get. Now, can you tell me about your housing situation? Do you rent or own your home? This helps us understand your overall situation.",
+        "assistantResponse": "Thank you for sharing your income. Now, let's make sure we have everything we need. Could you tell me your full postcode? This helps me check what is available in your local area.",
         "extractedFields": {},
         "prematureComplete": false,
-        "inputTokens": 7814,
-        "outputTokens": 49,
-        "latencyMs": 448
+        "inputTokens": 7827,
+        "outputTokens": 41,
+        "latencyMs": 438
       },
       {
         "turnIndex": 4,
         "userMessage": "renting privately, £650 a month",
-        "assistantResponse": "Thank you for sharing that. Knowing your housing costs helps us see what support might be available. Lastly, can you tell me your full postcode? This helps us check what is available in your local area.",
+        "assistantResponse": "Thank you for sharing that. Now, let's make sure we have everything we need. Could you tell me your full postcode? This helps me check what is available in your local area.",
         "extractedFields": {
           "monthly_housing_cost": 650,
           "housing_tenure": "rent_private"
         },
         "prematureComplete": false,
-        "inputTokens": 7876,
-        "outputTokens": 42,
-        "latencyMs": 399
+        "inputTokens": 7881,
+        "outputTokens": 40,
+        "latencyMs": 387
       },
       {
         "turnIndex": 5,
         "userMessage": "LS9 8AG",
-        "assistantResponse": "Thank you for providing your postcode. Based on what you've told me, I have found several things you and your family may be entitled to. Take a look below — the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
+        "assistantResponse": "Thank you for sharing your postcode. Based on what you've told me, I have found several things you may be entitled to. Take a look below—the ones marked \"START HERE\" are the most important to apply for first, because they can unlock other support.",
         "extractedFields": {
           "postcode": "LS9 8AG",
-          "age": 34,
-          "nation": "england",
           "relationship_status": "single",
           "employment_status": "self_employed",
+          "has_disability_or_health_condition": true,
+          "age": 34,
           "monthly_housing_cost": 650,
           "housing_tenure": "rent_private",
-          "has_disability_or_health_condition": true,
-          "income_band": "under_12570",
+          "children": [
+            {
+              "age": 6,
+              "has_additional_needs": false,
+              "disability_benefit": "none",
+              "in_education": true
+            }
+          ],
+          "nation": "england",
+          "income_band": "under_10000",
           "gross_annual_income": 8000
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7952,
-        "outputTokens": 184,
-        "latencyMs": 736
+        "inputTokens": 7955,
+        "outputTokens": 215,
+        "latencyMs": 793
       }
     ],
     "finalPersonData": {
@@ -2039,13 +2105,13 @@
       ],
       "relationship_status": "single",
       "employment_status": "self_employed",
+      "has_disability_or_health_condition": true,
       "age": 34,
       "monthly_housing_cost": 650,
       "housing_tenure": "rent_private",
       "postcode": "LS9 8AG",
       "nation": "england",
-      "has_disability_or_health_condition": true,
-      "income_band": "under_12570",
+      "income_band": "under_10000",
       "gross_annual_income": 8000
     },
     "finalSituations": [
@@ -2057,38 +2123,29 @@
     "bundleBuilt": true,
     "bundleEntitlements": [
       "pip",
-      "universal_credit",
-      "nhs_low_income_scheme",
+      "council_tax_support_working_age",
       "tax_free_childcare",
       "child_benefit",
       "council_tax_single_person_discount",
-      "warm_home_discount",
-      "council_tax_disability_reduction",
-      "eco_home_insulation",
-      "council_tax_support_working_age",
-      "court_fee_remission",
       "free_school_meals",
-      "free_nhs_dental",
-      "social_tariff_broadband",
-      "cold_weather_payment",
-      "free_nhs_prescriptions",
-      "free_nhs_sight_tests",
-      "nhs_travel_costs",
-      "nhs_optical_vouchers"
+      "prescription_prepayment_cert",
+      "council_tax_disability_reduction"
     ],
     "expectedEntitlements": [
       "universal_credit",
       "child_benefit"
     ],
-    "entitlementHits": 2,
-    "entitlementMisses": [],
+    "entitlementHits": 1,
+    "entitlementMisses": [
+      "universal_credit"
+    ],
     "bundleSizePass": true,
     "scores": {
-      "completeness": 1,
+      "completeness": 0.8571428571428571,
       "gatePass": 1,
       "noPrematureComplete": 1,
-      "bundleCorrectness": 1,
-      "overall": 1
+      "bundleCorrectness": 0.5,
+      "overall": 0.8428571428571429
     },
     "pass": true
   },
@@ -2099,7 +2156,7 @@
       {
         "turnIndex": 0,
         "userMessage": "I need to leave my partner, he is abusive. I have two kids aged 3 and 7.",
-        "assistantResponse": "I'm really sorry to hear that you're going through such a tough time. Leaving an abusive relationship is incredibly brave and important for your safety and well-being. \n\nLet me ask a few questions to help you find the support you might need:\n\n1. Who lives with you right now? Are you living alone or with someone else?",
+        "assistantResponse": "I'm really sorry to hear that you're going through such a tough time. It's important to prioritize your safety and the well-being of your children. Let's take this one step at a time.\n\nFirst, could you tell me a bit more about your current living situation? Are you living with your partner now, or somewhere else?",
         "extractedFields": {
           "relationship_status": "couple_cohabiting",
           "children": [
@@ -2120,58 +2177,58 @@
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7129,
-        "outputTokens": 151,
-        "latencyMs": 669
+        "outputTokens": 140,
+        "latencyMs": 788
       },
       {
         "turnIndex": 1,
         "userMessage": "I'm 31, I've never worked, he controlled everything",
-        "assistantResponse": "Thank you for sharing that. It's important to know your age and employment status. \n\nSince you mentioned that you've never worked and have been controlled by your partner, it's crucial to know if anyone else in your household is working. This can help determine what support might be available to you.\n\n2. Is anyone else in your household working right now?",
+        "assistantResponse": "Thank you for sharing that. It's brave of you to open up about this. At 31, you're at an age where you can start building a new life for yourself and your children. \n\nCould you tell me a bit more about your housing situation? Are you currently living somewhere safe? And what is your postcode? This helps me check what local support is available.",
         "extractedFields": {
           "age": 31,
           "employment_status": "unemployed"
         },
         "prematureComplete": false,
-        "inputTokens": 7718,
-        "outputTokens": 76,
-        "latencyMs": 673
+        "inputTokens": 7721,
+        "outputTokens": 80,
+        "latencyMs": 578
       },
       {
         "turnIndex": 2,
         "userMessage": "we're staying at my mum's house for now",
-        "assistantResponse": "Thank you for letting me know. It's good to know you're staying with your mum for now. \n\nNext, it's important to understand your housing situation and living arrangements. \n\n3. Do you rent or own your home, or are you currently living with family?",
+        "assistantResponse": "Thank you for letting me know. Staying with family can be a great place to start while you figure things out. \n\nCould you also share your postcode? This will help me check what local support might be available to you and your children. Your full postcode is needed for the best results.",
         "extractedFields": {
           "housing_tenure": "living_with_family"
         },
         "prematureComplete": false,
-        "inputTokens": 7828,
+        "inputTokens": 7835,
         "outputTokens": 59,
-        "latencyMs": 488
+        "latencyMs": 547
       },
       {
         "turnIndex": 3,
         "userMessage": "no income at all, he kept all the money",
-        "assistantResponse": "It's really important to know your income situation, especially since you mentioned that your partner controlled all the money. \n\n4. Roughly, what is your household income? It doesn't need to be exact—a ballpark figure will help me check what you might qualify for.",
+        "assistantResponse": "It's really tough when someone controls all the money. But you're taking a big step by reaching out for help. \n\nFor now, let's focus on what we can do to support you and your children. Could you please share your full postcode? This will help me check what local support might be available in your area.",
         "extractedFields": {
           "gross_annual_income": 0,
           "income_band": "under_7400"
         },
         "prematureComplete": false,
-        "inputTokens": 7915,
-        "outputTokens": 57,
-        "latencyMs": 502
+        "inputTokens": 7922,
+        "outputTokens": 70,
+        "latencyMs": 623
       },
       {
         "turnIndex": 4,
         "userMessage": "M14 5RQ",
-        "assistantResponse": "Thank you for sharing your postcode. This will help me check what local support is available to you.\n\nTo make sure we have all the information we need, I just need to confirm a few more details:\n\n5. What is your monthly housing cost if you rent, or can you tell me more about your housing situation if you live with family?\n\nOnce we have this information, we'll be able to see what benefits and support you might be entitled to.",
+        "assistantResponse": "Thank you for sharing your postcode. With that, I can start looking into what support might be available to you and your children.\n\nTo make sure we cover everything, could you tell me your age again? Knowing your exact age helps us understand what benefits you might be eligible for. \n\nAlso, are you planning to look for work or would you like help finding support for someone who has never worked before?",
         "extractedFields": {
           "postcode": "M14 5RQ"
         },
         "prematureComplete": false,
-        "inputTokens": 8007,
-        "outputTokens": 93,
-        "latencyMs": 731
+        "inputTokens": 8027,
+        "outputTokens": 82,
+        "latencyMs": 685
       }
     ],
     "finalPersonData": {
@@ -2245,7 +2302,7 @@
       {
         "turnIndex": 0,
         "userMessage": "We're both working but we can't make ends meet. Two kids aged 4 and 10.",
-        "assistantResponse": "I'm sorry to hear that you're finding it hard to make ends meet. It sounds like a lot to manage. Let's see what support might be available for your family.\n\nFirst, could you tell me how much you and your partner earn together? It doesn't need to be exact—just a ballpark figure will help.",
+        "assistantResponse": "I'm sorry to hear that you're finding it hard to make ends meet. It sounds like a lot to manage. Let's see if we can find some support that might help.\n\nFirst, could you tell me how much you and your partner earn together? It doesn't need to be exact—just a ballpark figure will do.",
         "extractedFields": {
           "children": [
             {
@@ -2265,45 +2322,45 @@
         "stageTransition": "questions",
         "prematureComplete": false,
         "inputTokens": 7131,
-        "outputTokens": 196,
-        "latencyMs": 774
+        "outputTokens": 197,
+        "latencyMs": 873
       },
       {
         "turnIndex": 1,
         "userMessage": "I'm 35, I work full time on minimum wage, my wife does 16 hours at Asda",
-        "assistantResponse": "Thank you for sharing that information. It's great that you're both working to support your family. \n\nNext, could you tell me if you own your home or if you rent? This will help us understand your housing situation better.",
+        "assistantResponse": "Thank you for sharing that information. It's great to know that you both are working. Now, let's make sure we have all the details we need.\n\nDo you own your home or do you rent? This will help us understand your housing situation better.",
         "extractedFields": {
           "age": 35,
           "relationship_status": "couple_married",
           "employment_status": "employed"
         },
         "prematureComplete": false,
-        "inputTokens": 7716,
-        "outputTokens": 50,
-        "latencyMs": 556
+        "inputTokens": 7717,
+        "outputTokens": 55,
+        "latencyMs": 462
       },
       {
         "turnIndex": 2,
         "userMessage": "about 28 thousand between us",
-        "assistantResponse": "Thank you for sharing that. Knowing your combined income helps a lot.\n\nNow, let's talk about your housing. Do you own your home or do you rent? This will help us understand your housing situation better.",
+        "assistantResponse": "Thank you for sharing that. It's important to know your combined income to see what support might be available.\n\nNow, could you tell me if you own your home or if you rent? This will help us understand your housing situation better.",
         "extractedFields": {},
         "prematureComplete": false,
-        "inputTokens": 7805,
-        "outputTokens": 45,
-        "latencyMs": 450
+        "inputTokens": 7811,
+        "outputTokens": 50,
+        "latencyMs": 478
       },
       {
         "turnIndex": 3,
         "userMessage": "renting privately, £900 a month",
-        "assistantResponse": "Thank you for letting me know. It's important to know your housing costs.\n\nLastly, could you please share your full postcode? This will help me check what local support is available for you.",
+        "assistantResponse": "Thank you for letting me know. Knowing your housing situation and costs is very helpful.\n\nLastly, could you please share your full postcode? This will help me check what local support is available to you.",
         "extractedFields": {
           "monthly_housing_cost": 900,
           "housing_tenure": "rent_private"
         },
         "prematureComplete": false,
-        "inputTokens": 7863,
+        "inputTokens": 7874,
         "outputTokens": 42,
-        "latencyMs": 390
+        "latencyMs": 533
       },
       {
         "turnIndex": 4,
@@ -2336,9 +2393,9 @@
         },
         "stageTransition": "complete",
         "prematureComplete": false,
-        "inputTokens": 7939,
+        "inputTokens": 7950,
         "outputTokens": 226,
-        "latencyMs": 832
+        "latencyMs": 796
       }
     ],
     "finalPersonData": {
@@ -2414,7 +2471,7 @@
         "prematureComplete": false,
         "inputTokens": 7125,
         "outputTokens": 150,
-        "latencyMs": 727
+        "latencyMs": 682
       },
       {
         "turnIndex": 1,
@@ -2426,7 +2483,7 @@
         "prematureComplete": false,
         "inputTokens": 7634,
         "outputTokens": 147,
-        "latencyMs": 632
+        "latencyMs": 767
       },
       {
         "turnIndex": 2,
@@ -2439,7 +2496,7 @@
         "prematureComplete": false,
         "inputTokens": 7711,
         "outputTokens": 63,
-        "latencyMs": 475
+        "latencyMs": 546
       },
       {
         "turnIndex": 3,
@@ -2451,7 +2508,7 @@
         "prematureComplete": false,
         "inputTokens": 7809,
         "outputTokens": 52,
-        "latencyMs": 522
+        "latencyMs": 459
       }
     ],
     "finalPersonData": {
@@ -2513,7 +2570,7 @@
         "prematureComplete": false,
         "inputTokens": 7116,
         "outputTokens": 191,
-        "latencyMs": 751
+        "latencyMs": 798
       },
       {
         "turnIndex": 1,
@@ -2527,7 +2584,7 @@
         "prematureComplete": false,
         "inputTokens": 7629,
         "outputTokens": 66,
-        "latencyMs": 523
+        "latencyMs": 471
       },
       {
         "turnIndex": 2,
@@ -2541,7 +2598,7 @@
         "prematureComplete": false,
         "inputTokens": 7722,
         "outputTokens": 55,
-        "latencyMs": 530
+        "latencyMs": 537
       },
       {
         "turnIndex": 3,
@@ -2551,7 +2608,7 @@
         "prematureComplete": false,
         "inputTokens": 7815,
         "outputTokens": 72,
-        "latencyMs": 531
+        "latencyMs": 544
       }
     ],
     "finalPersonData": {
