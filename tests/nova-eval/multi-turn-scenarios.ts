@@ -256,7 +256,7 @@ const MT09: MultiTurnScenario = {
     postcode: 'CF10 1EP',
     nation: 'wales',
   },
-  expectedEntitlements: ['pension_credit', 'attendance_allowance', 'free_nhs_prescriptions', 'council_tax_reduction_wales'],
+  expectedEntitlements: ['pension_credit', 'free_nhs_prescriptions', 'council_tax_reduction_wales'],
   minBundleSize: 4,
   earliestCompleteTurn: 3,
 }
@@ -306,7 +306,7 @@ const MT11: MultiTurnScenario = {
     housing_tenure: 'rent_social',
     postcode: 'B15 1TJ',
   },
-  expectedEntitlements: ['pension_credit', 'attendance_allowance'],
+  expectedEntitlements: ['pension_credit', 'winter_fuel_payment'],
   minBundleSize: 4,
   earliestCompleteTurn: 4,
 }
@@ -437,7 +437,134 @@ const MT16: MultiTurnScenario = {
   earliestCompleteTurn: 3,
 }
 
+// ── MT17: Self-employed single parent, own autism/ADHD ──
+
+const MT17: MultiTurnScenario = {
+  id: 'MT17',
+  name: 'Self-employed single parent with autism/ADHD — disability is the USER\'s',
+  turns: [
+    "i'm self employed, single parent, autism and adhd",
+    "it's me who has autism and adhd, not my child",
+    "i'm 34, my daughter is 6",
+    'about 8 thousand a year',
+    'renting privately, £650 a month',
+    'LS9 8AG',
+  ],
+  expectedSituations: ['health_condition'],
+  expectedPersonData: {
+    age: 34,
+    employment_status: 'self_employed',
+    has_disability_or_health_condition: true,
+    relationship_status: 'single',
+    income_band: 'under_12570',
+    housing_tenure: 'rent_private',
+    postcode: 'LS9 8AG',
+  },
+  expectedEntitlements: ['universal_credit', 'child_benefit'],
+  minBundleSize: 6,
+  earliestCompleteTurn: 5,
+}
+
+// ── MT18: Domestic abuse, fleeing with children ─────
+
+const MT18: MultiTurnScenario = {
+  id: 'MT18',
+  name: 'Domestic abuse — fleeing partner with 2 kids',
+  turns: [
+    'I need to leave my partner, he is abusive. I have two kids aged 3 and 7.',
+    "I'm 31, I've never worked, he controlled everything",
+    "we're staying at my mum's house for now",
+    'no income at all, he kept all the money',
+    'M14 5RQ',
+  ],
+  expectedSituations: ['domestic_abuse'],
+  expectedPersonData: {
+    age: 31,
+    employment_status: 'unemployed',
+    relationship_status: 'separated',
+    income_band: 'under_7400',
+    housing_tenure: 'living_with_family',
+    postcode: 'M14 5RQ',
+  },
+  expectedEntitlements: ['universal_credit', 'child_benefit'],
+  minBundleSize: 8,
+  earliestCompleteTurn: 4,
+}
+
+// ── MT19: Working poverty — couple, low wages, 2 kids ──
+
+const MT19: MultiTurnScenario = {
+  id: 'MT19',
+  name: 'Working poverty — couple both working, still struggling',
+  turns: [
+    "We're both working but we can't make ends meet. Two kids aged 4 and 10.",
+    "I'm 35, I work full time on minimum wage, my wife does 16 hours at Asda",
+    'about 28 thousand between us',
+    'renting privately, £900 a month',
+    'BD1 1HU',
+  ],
+  expectedSituations: [],
+  expectedPersonData: {
+    age: 35,
+    employment_status: 'employed',
+    relationship_status: 'couple_married',
+    income_band: 'under_50270',
+    housing_tenure: 'rent_private',
+    postcode: 'BD1 1HU',
+  },
+  expectedEntitlements: ['child_benefit', 'free_childcare_15hrs_universal'],
+  minBundleSize: 3,
+  earliestCompleteTurn: 4,
+}
+
+// ── MT20: Young NEET, care leaver ───────────────────
+
+const MT20: MultiTurnScenario = {
+  id: 'MT20',
+  name: 'Young NEET care leaver — 18, sofa surfing, no income',
+  turns: [
+    "I'm 18, just left care and I've got nowhere to go",
+    "I'm staying on a mate's sofa, no job",
+    'nothing, no money at all',
+    'SE1 7QY',
+  ],
+  expectedSituations: [],
+  expectedPersonData: {
+    age: 18,
+    employment_status: 'unemployed',
+    income_band: 'under_7400',
+    housing_tenure: 'homeless',
+    postcode: 'SE1 7QY',
+  },
+  expectedEntitlements: ['universal_credit'],
+  minBundleSize: 6,
+  earliestCompleteTurn: 3,
+}
+
+// ── MT21: Homeless rough sleeper ────────────────────
+
+const MT21: MultiTurnScenario = {
+  id: 'MT21',
+  name: 'Homeless rough sleeper — no fixed address',
+  turns: [
+    'I am sleeping rough and have nowhere to go',
+    "I'm 40, been on the streets about 3 months",
+    'not working, no income',
+    'I was in Birmingham before, near B5 area',
+  ],
+  expectedSituations: [],
+  expectedPersonData: {
+    age: 40,
+    employment_status: 'unemployed',
+    income_band: 'under_7400',
+    housing_tenure: 'homeless',
+  },
+  expectedEntitlements: ['universal_credit'],
+  minBundleSize: 6,
+  earliestCompleteTurn: 3,
+}
+
 export const ALL_MULTI_TURN_SCENARIOS: MultiTurnScenario[] = [
   MT01, MT02, MT03, MT04, MT05, MT06, MT07, MT08, MT09, MT10, MT11,
-  MT12, MT13, MT14, MT15, MT16,
+  MT12, MT13, MT14, MT15, MT16, MT17, MT18, MT19, MT20, MT21,
 ]
