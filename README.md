@@ -4,7 +4,7 @@ A conversational web app that helps UK citizens discover what benefits and suppo
 
 **Live:** [checkmybenefits.uk](https://checkmybenefits.uk)
 
-**Status:** V1.0 — 75 entitlements across England, Wales and Scotland. 48 eligibility rules. 398 deterministic tests + 105 single-turn + 16 multi-turn AI evals. Auto-updating benefit rates. Bedrock Guardrails for content safety.
+**Status:** V1.0 — 75 entitlements across England, Wales and Scotland. 48 eligibility rules. 411 deterministic tests + 105 single-turn + 16 multi-turn AI evals. Auto-updating benefit rates. Bedrock Guardrails for content safety.
 
 ## What It Does
 
@@ -163,7 +163,7 @@ npm run dev:full
 | `npm run dev:full` | Both dev server + API proxy |
 | `npm run build` | TypeScript compile + Vite production build |
 | `npm run preview` | Preview production build locally |
-| `npm test` | Run unit tests (Vitest, 398 tests) |
+| `npm test` | Run unit tests (Vitest, 411 tests) |
 | `npm run test:watch` | Watch mode tests |
 | `npm run eval` | Run 105 single-turn AI eval scenarios (requires Bedrock) |
 | `npm run eval:multi-turn` | Run 16 multi-turn AI eval scenarios (requires Bedrock) |
@@ -370,7 +370,7 @@ The project has four test layers providing comprehensive coverage of both the de
 
 | Layer | Count | What it tests | Runs |
 |-------|-------|---------------|------|
-| Deterministic tests (Vitest) | 398 | Engine, extraction, postcodes, prompt guardrails, entitlement matrix | Every push |
+| Deterministic tests (Vitest) | 411 | Engine, extraction, postcodes, prompt guardrails, entitlement matrix | Every push |
 | Single-turn AI evals | 105 | LLM extraction quality across 21 categories | Weekly + manual |
 | Multi-turn AI evals | 16 | Full AI conversation management (field collection, gate compliance) | Weekly + manual |
 | Guardrail evals | 30 | Off-topic redirection + on-topic engagement (Bedrock) | Manual |
@@ -397,7 +397,7 @@ The system uses a dual-layer gate to prevent premature results:
 ### Running Tests
 
 ```bash
-npm test                  # 398 deterministic tests (Vitest)
+npm test                  # 411 deterministic tests (Vitest)
 npm run eval              # 105 single-turn AI eval scenarios (requires Bedrock)
 npm run eval:multi-turn   # 16 multi-turn AI eval scenarios (requires Bedrock)
 ```
