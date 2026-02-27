@@ -168,7 +168,7 @@ npm run dev:full
 | `npm run eval` | Run 105 single-turn AI eval scenarios (requires Bedrock) |
 | `npm run eval:multi-turn` | Run 16 multi-turn AI eval scenarios (requires Bedrock) |
 | `npm run update-rates` | Manually fetch latest GOV.UK benefit rates |
-| `npm run build-imd` | Rebuild IMD deprivation lookup from source data |
+| `npm run build-imd` | Rebuild tri-nation deprivation lookup (England/Wales/Scotland) |
 
 ## Project Structure
 
@@ -221,7 +221,7 @@ src/
 │   ├── system-prompt.ts        # System prompt builder (completion gate, stage instructions)
 │   ├── message-extractor.ts    # Code-based fallback extraction (regex/keywords)
 │   ├── postcodes.ts            # postcodes.io lookup (full + outcode/partial postcodes)
-│   ├── deprivation.ts          # IMD deprivation decile from LSOA
+│   ├── deprivation.ts          # Tri-nation deprivation decile from LSOA/data zone
 │   └── policyengine.ts         # PolicyEngine integration (wired in, dormant)
 │
 ├── hooks/
@@ -237,7 +237,7 @@ src/
 ├── data/
 │   ├── entitlements.json       # 75 entitlements (England/Wales/Scotland), 45 dependency edges, 5 conflicts
 │   ├── benefit-rates.json      # GOV.UK rates for 2025–26 (auto-updated)
-│   ├── imd-lookup.json         # 32K LSOA → deprivation decile (IMD 2019)
+│   ├── imd-lookup.json         # 41K LSOA/data zone → deprivation decile (IMD 2019 + WIMD 2025 + SIMD 2020v2)
 │   └── quick-replies.ts        # Suggested quick reply options
 │
 └── utils/
@@ -274,7 +274,7 @@ scripts/
 ├── parse-gov-uk-rates.ts       # HTML table parser for rate pages
 ├── validate-rates.ts           # Range validation for parsed rates
 ├── check-dwp-feed.ts           # DWP Atom feed monitor
-└── build-imd-lookup.ts         # Build LSOA → IMD decile lookup
+└── build-deprivation-lookup.ts  # Build tri-nation LSOA/data zone → deprivation decile lookup
 
 infrastructure/
 ├── main.tf                     # S3, CloudFront, Lambda, API Gateway, Bedrock Guardrail, Cost Monitoring
@@ -362,7 +362,7 @@ Current GOV.UK rates (auto-updated weekly). Covers 31+ rate values across all ma
 
 ### imd-lookup.json
 
-32,844 LSOA to deprivation decile mappings from the Index of Multiple Deprivation 2019. Used for area-based eligibility (e.g., ECO4, Sure Start).
+40,959 LSOA/data zone to deprivation decile mappings across three nations: English IMD 2019, Welsh WIMD 2025, and Scottish SIMD 2020v2. Used to boost eligibility confidence for area-based schemes (ECO4, Warm Home Discount, Flying Start Wales, disadvantaged childcare).
 
 ## Testing
 
