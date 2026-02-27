@@ -15,16 +15,16 @@ These need different testing strategies. We use four layers.
 
 | Layer | Count | Runtime | API calls | Runs |
 |-------|-------|---------|-----------|------|
-| Deterministic tests (Vitest) | 398 | <1s | 0 | Every push |
+| Deterministic tests (Vitest) | 411 | <1s | 0 | Every push |
 | Single-turn AI evals | 105 | ~80s | 105 | Weekly + manual |
 | Multi-turn AI evals | 16 | ~60s | ~70 | Weekly + manual |
 | Guardrail evals | 30 | ~30s | 30 | Manual |
 
-## Layer 1: Deterministic Tests (398 tests)
+## Layer 1: Deterministic Tests (411 tests)
 
 All run via `npm test` with Vitest. No AI calls, no network, sub-second runtime.
 
-### Entitlement Matrix (134 tests)
+### Entitlement Matrix (146 tests)
 
 **File:** `tests/engine/entitlement-matrix.test.ts`
 
@@ -66,7 +66,7 @@ Verifies the system prompt contains the right guardrails by string-matching agai
 - `conflict-resolver.test.ts` — mutually exclusive resolution
 - `message-extractor.test.ts` — regex/keyword extraction patterns
 - `postcodes.test.ts` — full + partial postcode lookup
-- `deprivation.test.ts` — IMD decile lookup
+- `deprivation.test.ts` — tri-nation deprivation decile lookup (England/Wales/Scotland)
 - `validate-rates.test.ts` — benefit rate range validation
 
 ## Layer 2: Single-Turn AI Evals (105 scenarios)
@@ -234,7 +234,7 @@ Results are saved to `tests/nova-eval/results.json` and `tests/nova-eval/multi-t
 ## CI Integration
 
 ```
-Every push (vitest, 398 tests, <1s):
+Every push (vitest, 411 tests, <1s):
   ├── unit tests (engine, extraction, postcodes, rates)
   ├── entitlement-matrix.test.ts     (134 matrix tests, all 75 entitlements × 3 nations)
   ├── conversation-replay.test.ts    (12 replay scenarios)

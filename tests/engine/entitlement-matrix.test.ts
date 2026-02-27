@@ -889,5 +889,99 @@ describe('Group F: Cascade Integrity', () => {
     const cIds = cascGroup!.entitlements.map((e) => e.id)
     expect(cIds).toContain('pension_credit')
   })
+})
 
+// --- Group: Deprivation-aware eligibility ---
+
+function getConfidence(bundle: Awaited<ReturnType<typeof buildBundle>>, id: string): string | undefined {
+  const all = [
+    ...bundle.gateway_entitlements,
+    ...bundle.independent_entitlements,
+    ...bundle.cascaded_entitlements.flatMap((g) => g.entitlements),
+  ]
+  return all.find((e) => e.id === id)?.confidence
+}
+
+describe('Group: Deprivation-aware eligibility', () => {
+  // DEP-01: Low income + deprived area → eco_home_insulation likely
+  it('DEP-01: eco_home_insulation likely in deprived area with low income', async () => {
+    const b = await buildBundle(makePerson({age:35,nation:'england',employment_status:'unemployed',income_band:'under_12570',housing_tenure:'rent_social',relationship_status:'single',children:[],deprivation_decile:2}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('eco_home_insulation')
+    expect(getConfidence(b, 'eco_home_insulation')).toBe('likely')
+  })
+
+  // DEP-02: Low income + affluent area → eco_home_insulation possible
+  it('DEP-02: eco_home_insulation possible in affluent area with low income', async () => {
+    const b = await buildBundle(makePerson({age:35,nation:'england',employment_status:'unemployed',income_band:'under_12570',housing_tenure:'rent_social',relationship_status:'single',children:[],deprivation_decile:8}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('eco_home_insulation')
+    expect(getConfidence(b, 'eco_home_insulation')).toBe('possible')
+  })
+
+  // DEP-03: Medium income + deprived area → eco_home_insulation possible
+  it('DEP-03: eco_home_insulation possible with medium income in deprived area', async () => {
+    const b = await buildBundle(makePerson({age:35,nation:'england',employment_status:'employed',income_band:'under_25000',housing_tenure:'rent_private',relationship_status:'single',children:[],gross_annual_income:20000,deprivation_decile:2}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('eco_home_insulation')
+    expect(getConfidence(b, 'eco_home_insulation')).toBe('possible')
+  })
+
+  // DEP-04: Medium income + affluent area → eco_home_insulation worth_checking
+  it('DEP-04: eco_home_insulation worth_checking with medium income in affluent area', async () => {
+    const b = await buildBundle(makePerson({age:35,nation:'england',employment_status:'employed',income_band:'under_25000',housing_tenure:'rent_private',relationship_status:'single',children:[],gross_annual_income:20000,deprivation_decile:8}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('eco_home_insulation')
+    expect(getConfidence(b, 'eco_home_insulation')).toBe('worth_checking')
+  })
+
+  // DEP-05: Low income + deprived area → warm_home_discount likely
+  it('DEP-05: warm_home_discount likely in deprived area', async () => {
+    const b = await buildBundle(makePerson({age:35,nation:'england',employment_status:'unemployed',income_band:'under_12570',housing_tenure:'rent_social',relationship_status:'single',children:[],deprivation_decile:2}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('warm_home_discount')
+    expect(getConfidence(b, 'warm_home_discount')).toBe('likely')
+  })
+
+  // DEP-06: Low income + non-deprived area → warm_home_discount possible
+  it('DEP-06: warm_home_discount possible in non-deprived area', async () => {
+    const b = await buildBundle(makePerson({age:35,nation:'england',employment_status:'unemployed',income_band:'under_12570',housing_tenure:'rent_social',relationship_status:'single',children:[],deprivation_decile:7}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('warm_home_discount')
+    expect(getConfidence(b, 'warm_home_discount')).toBe('possible')
+  })
+
+  // DEP-07: Parent of 2yo in deprived Welsh area → flying_start_wales possible
+  it('DEP-07: flying_start_wales possible in deprived Welsh area', async () => {
+    const b = await buildBundle(makePerson({age:30,nation:'wales',postcode:'CF10 1AA',employment_status:'unemployed',income_band:'under_12570',housing_tenure:'rent_social',relationship_status:'single',children:[{age:2}],deprivation_decile:1}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('flying_start_wales')
+    expect(getConfidence(b, 'flying_start_wales')).toBe('possible')
+  })
+
+  // DEP-08: Parent of 2yo in affluent Welsh area → flying_start_wales worth_checking
+  it('DEP-08: flying_start_wales worth_checking in affluent Welsh area', async () => {
+    const b = await buildBundle(makePerson({age:30,nation:'wales',postcode:'CF10 1AA',employment_status:'employed',income_band:'under_25000',housing_tenure:'own_outright',relationship_status:'couple_married',children:[{age:2}],deprivation_decile:9}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('flying_start_wales')
+    expect(getConfidence(b, 'flying_start_wales')).toBe('worth_checking')
+  })
+
+  // DEP-09: Parent of 2yo, no deprivation data (partial postcode) → flying_start_wales worth_checking (no regression)
+  it('DEP-09: flying_start_wales worth_checking without deprivation data', async () => {
+    const b = await buildBundle(makePerson({age:30,nation:'wales',postcode:'CF10',employment_status:'unemployed',income_band:'under_12570',housing_tenure:'rent_social',relationship_status:'single',children:[{age:2}],postcode_partial:true}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('flying_start_wales')
+    expect(getConfidence(b, 'flying_start_wales')).toBe('worth_checking')
+  })
+
+  // DEP-10: Parent of 2yo in deprived England area, higher income → free_childcare_15hrs_disadvantaged eligible
+  it('DEP-10: free_childcare_15hrs_disadvantaged eligible in deprived area', async () => {
+    const b = await buildBundle(makePerson({age:30,nation:'england',employment_status:'employed',income_band:'under_25000',housing_tenure:'rent_private',relationship_status:'single',children:[{age:2}],gross_annual_income:20000,deprivation_decile:2}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('free_childcare_15hrs_disadvantaged')
+  })
+
+  // DEP-11: Parent of 2yo in affluent area, high income → free_childcare_15hrs_disadvantaged not eligible
+  it('DEP-11: free_childcare_15hrs_disadvantaged not eligible in affluent area with high income', async () => {
+    const b = await buildBundle(makePerson({age:30,nation:'england',employment_status:'employed',income_band:'under_50270',housing_tenure:'own_mortgage',relationship_status:'couple_married',children:[{age:2}],gross_annual_income:45000,deprivation_decile:9}), ['struggling_financially'])
+    expect(getAllIds(b)).not.toContain('free_childcare_15hrs_disadvantaged')
+  })
+
+  // DEP-12: No deprivation data → eco_home_insulation confidence unchanged (no regression)
+  it('DEP-12: eco_home_insulation possible without deprivation data (no regression)', async () => {
+    const b = await buildBundle(makePerson({age:35,nation:'england',employment_status:'unemployed',income_band:'under_12570',housing_tenure:'rent_social',relationship_status:'single',children:[]}), ['struggling_financially'])
+    expect(getAllIds(b)).toContain('eco_home_insulation')
+    expect(getConfidence(b, 'eco_home_insulation')).toBe('possible')
+  })
 })

@@ -2,6 +2,7 @@ import type { PersonData } from '../types/person.ts'
 import type { EntitlementDefinition, ConfidenceTier } from '../types/entitlements.ts'
 import type { SituationId } from '../types/conversation.ts'
 import benefitRates from '../data/benefit-rates.json'
+import { isDeprivedArea } from '../services/deprivation.ts'
 
 const SPA = benefitRates.rates.state_pension_age
 
@@ -172,18 +173,20 @@ const RULE_MAP: Record<string, RuleChecker> = {
 
   warm_home_discount: (person) => {
     // Automatic if on PC Guarantee, also available for low-income households on UC/other means-tested benefits
+    // WHD Core Group 2 uses a deprivation-weighted algorithm — deprived areas boost confidence
+    const deprived = isDeprivedArea(person.deprivation_decile ?? null)
     const age = person.age ?? 0
     if (age >= SPA)
-      return { id: 'warm_home_discount', eligible: true, confidence: 'possible' }
+      return { id: 'warm_home_discount', eligible: true, confidence: deprived ? 'likely' : 'possible' }
     const lowIncome =
       person.income_band === 'under_7400' ||
       person.income_band === 'under_12570' ||
       person.income_band === 'under_16000'
     if (lowIncome)
-      return { id: 'warm_home_discount', eligible: true, confidence: 'possible' }
+      return { id: 'warm_home_discount', eligible: true, confidence: deprived ? 'likely' : 'possible' }
     // Unemployed people will be on UC, which qualifies
     if (person.employment_status === 'unemployed')
-      return { id: 'warm_home_discount', eligible: true, confidence: 'possible' }
+      return { id: 'warm_home_discount', eligible: true, confidence: deprived ? 'likely' : 'possible' }
     return { id: 'warm_home_discount', eligible: false, confidence: 'worth_checking' }
   },
 
@@ -436,6 +439,10 @@ const RULE_MAP: Record<string, RuleChecker> = {
     // Also eligible if child has DLA/EHCP
     if (person.children.some((c) => c.age === 2 && c.has_additional_needs))
       return { id: 'free_childcare_15hrs_disadvantaged', eligible: true, confidence: 'possible' }
+    // Some LAs extend to deprived areas regardless of benefit status
+    const deprived = isDeprivedArea(person.deprivation_decile ?? null)
+    if (deprived)
+      return { id: 'free_childcare_15hrs_disadvantaged', eligible: true, confidence: 'possible' }
     return { id: 'free_childcare_15hrs_disadvantaged', eligible: false, confidence: 'likely' }
   },
 
@@ -632,14 +639,16 @@ const RULE_MAP: Record<string, RuleChecker> = {
 
   eco_home_insulation: (person) => {
     // On qualifying benefit or LA-flex (low income + poor energy efficiency)
+    // ECO4 LA-flex explicitly targets IMD deciles 1-3
+    const deprived = isDeprivedArea(person.deprivation_decile ?? null)
     if (
       person.income_band === 'under_7400' ||
       person.income_band === 'under_12570' ||
       person.income_band === 'under_16000'
     )
-      return { id: 'eco_home_insulation', eligible: true, confidence: 'possible' }
+      return { id: 'eco_home_insulation', eligible: true, confidence: deprived ? 'likely' : 'possible' }
     if (person.income_band === 'under_25000')
-      return { id: 'eco_home_insulation', eligible: true, confidence: 'worth_checking' }
+      return { id: 'eco_home_insulation', eligible: true, confidence: deprived ? 'possible' : 'worth_checking' }
     return { id: 'eco_home_insulation', eligible: false, confidence: 'likely' }
   },
 
@@ -743,8 +752,9 @@ const RULE_MAP: Record<string, RuleChecker> = {
     const hasChild2to3 = person.children.some((c) => c.age >= 2 && c.age <= 3)
     if (!hasChild2to3)
       return { id: 'flying_start_wales', eligible: false, confidence: 'likely' }
-    // Area-based — can only say worth_checking
-    return { id: 'flying_start_wales', eligible: true, confidence: 'worth_checking' }
+    // Area-based — deprived areas (WIMD decile 1-3) more likely to be Flying Start areas
+    const deprived = isDeprivedArea(person.deprivation_decile ?? null)
+    return { id: 'flying_start_wales', eligible: true, confidence: deprived ? 'possible' : 'worth_checking' }
   },
 
   pupil_development_grant_wales: (person) => {
