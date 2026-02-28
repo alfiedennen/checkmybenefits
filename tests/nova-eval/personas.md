@@ -1,6 +1,6 @@
 # Multi-Turn Eval Personas
 
-21 personas used in `multi-turn-scenarios.ts`. Each simulates a real conversation
+23 personas used in `multi-turn-scenarios.ts`. Each simulates a real conversation
 with the Check My Benefits chat, testing AI extraction, gate enforcement, and
 bundle correctness.
 
@@ -31,6 +31,8 @@ Run: `npm run eval:multi-turn`
 | MT19 | Working poverty, couple | 35 | England | — | 5 | In-work benefits, most common UC profile |
 | MT20 | Young NEET care leaver | 18 | England | — | 4 | Youth homelessness, minimal persona |
 | MT21 | Homeless rough sleeper | 40 | England | — | 4 | No fixed address, partial postcode only |
+| MT22 | England single renter | 28 | England | lost_job | 4 | CTR enrichment with precise Manchester postcode |
+| MT23 | Welsh single parent | 30 | Wales | — | 4 | CTR Wales variant with Swansea postcode |
 
 ## Detailed Personas
 
@@ -311,33 +313,63 @@ that the system doesn't break when housing_tenure is "homeless".
 
 ---
 
+### MT22: England single renter — CTR enrichment
+
+**Profile:** 28, single, unemployed (just made redundant), zero income, renting
+privately £650/month, Manchester M1 1AE.
+
+**What it tests:** CTR enrichment with a precise England postcode. When the
+MissingBenefit API is available, the bundle should contain a precise
+council_tax_support_working_age value instead of a heuristic range. Tests the
+full enrichment path for the most common CTR scenario (working-age, low income,
+renting).
+
+**Key entitlements:** universal_credit, council_tax_support_working_age
+**Expected bundle size:** 5+
+
+---
+
+### MT23: Welsh single parent — CTR Wales variant
+
+**Profile:** 30, single parent (4-year-old daughter), employed part-time
+~£8,000/year, renting privately £500/month, Swansea SA1 1DP.
+
+**What it tests:** CTR Wales variant enrichment. Verifies that
+council_tax_reduction_wales appears in the bundle with correct nation filtering.
+Also tests single parent extraction and part-time employment classification.
+
+**Key entitlements:** child_benefit, council_tax_reduction_wales
+**Expected bundle size:** 4+
+
+---
+
 ## Coverage Matrix
 
 | Dimension | Scenarios |
 |-----------|-----------|
 | **Employment** | |
-| Unemployed / job loss | MT01, MT04, MT05, MT13, MT17, MT18, MT20, MT21 |
+| Unemployed / job loss | MT01, MT04, MT05, MT13, MT17, MT18, MT20, MT21, MT22 |
 | Self-employed | MT17 |
 | Employed (in-work) | MT03, MT19 |
 | Retired / pensioner | MT02, MT07, MT09, MT11, MT14 |
 | Student | MT08 |
 | Full-time carer | MT05, MT15 |
 | **Household** | |
-| Single, no children | MT01, MT02, MT04, MT11, MT13, MT14, MT20, MT21 |
-| Single parent | MT17, MT18 |
+| Single, no children | MT01, MT02, MT04, MT11, MT13, MT14, MT20, MT21, MT22 |
+| Single parent | MT17, MT18, MT23 |
 | Couple, no children | MT07 |
 | Couple with children | MT03, MT10, MT12, MT16, MT19 |
 | **Age** | |
 | 18-25 (youth) | MT08, MT20 |
-| 25-50 (working age) | MT01, MT03, MT04, MT05, MT12, MT13, MT15, MT16, MT17, MT18, MT19, MT21 |
+| 25-50 (working age) | MT01, MT03, MT04, MT05, MT12, MT13, MT15, MT16, MT17, MT18, MT19, MT21, MT22, MT23 |
 | 50-65 (older working age) | MT15 |
 | 66+ (pension age) | MT02, MT07, MT09, MT11, MT14 |
 | **Nation** | |
-| England | MT01-MT08, MT11-MT14, MT17-MT21 |
-| Wales | MT09, MT15 |
+| England | MT01-MT08, MT11-MT14, MT17-MT22 |
+| Wales | MT09, MT15, MT23 |
 | Scotland | MT10, MT16 |
 | **Situation** | |
-| Job loss / redundancy | MT01, MT04, MT13, MT16 |
+| Job loss / redundancy | MT01, MT04, MT13, MT16, MT22 |
 | New baby | MT03, MT08, MT10, MT12, MT16 |
 | Ageing parent / carer | MT05, MT15 |
 | Disability / health | MT06, MT17 |
@@ -354,6 +386,7 @@ that the system doesn't break when housing_tenure is "homeless".
 | Disability self-disclosure | MT17 |
 | Existing benefit (PIP) | MT06 |
 | Complex income | MT14 |
+| CTR enrichment target | MT22, MT23 |
 
 ## Gaps and Future Personas
 

@@ -4,7 +4,7 @@ A conversational web app that helps UK citizens discover what benefits and suppo
 
 **Live:** [checkmybenefits.uk](https://checkmybenefits.uk)
 
-**Status:** V1.0 — 75 entitlements across England, Wales and Scotland. 48 eligibility rules. 411 deterministic tests + 105 single-turn + 16 multi-turn AI evals. Auto-updating benefit rates. Bedrock Guardrails for content safety.
+**Status:** V1.0 — 75 entitlements across England, Wales and Scotland. 48 eligibility rules. 458 deterministic tests + 105 single-turn + 23 multi-turn AI evals. Precise Council Tax Reduction calculations via MissingBenefit API. Auto-updating benefit rates. Bedrock Guardrails for content safety.
 
 ## What It Does
 
@@ -71,6 +71,7 @@ User message
 |-------|-----------|
 | Frontend | React 19 SPA, mobile-first, no backend storage |
 | AI | Amazon Nova Lite via AWS Bedrock Converse API |
+| CTR enrichment | MissingBenefit MCP API — precise council-specific Council Tax Reduction values |
 | Content safety | Bedrock Guardrails (content filters, PII blocking, topic denial) |
 | Data | Static JSON entitlement model + GOV.UK benefit rates (auto-updated) |
 | Infrastructure | Terraform — S3, CloudFront, Lambda, API Gateway, Route 53 |
@@ -85,8 +86,9 @@ All infrastructure is defined in Terraform (`infrastructure/`):
 Route 53 (DNS)
   └── CloudFront (CDN + SSL)
         ├── S3 (static site)
-        └── API Gateway → Lambda (chat API → Bedrock Nova Lite)
-                                    └── Bedrock Guardrail
+        └── API Gateway
+              ├── /api/chat → Lambda (Bedrock Nova Lite + Guardrail)
+              └── /api/ctr  → Lambda (MissingBenefit MCP proxy)
 
 SNS Topic → Email alerts
   ├── AWS Budget ($50/month Bedrock)
@@ -114,8 +116,8 @@ Bedrock spend is tracked with a $50/month budget and email alerts:
 
 | Workflow | Trigger | What it does |
 |----------|---------|-------------|
-| `deploy.yml` | Push to `main` | Build site, sync to S3, invalidate CloudFront, deploy Lambda |
-| `eval.yml` | Weekly + manual | Run 105 single-turn + 16 multi-turn AI evals against Bedrock |
+| `deploy.yml` | Push to `main` | Build site, sync to S3, invalidate CloudFront, deploy Lambdas (chat + CTR + email) |
+| `eval.yml` | Weekly + manual | Run 105 single-turn + 23 multi-turn AI evals + MB comparison eval |
 | `update-rates.yml` | Weekly cron | Fetch GOV.UK benefit rates, validate, commit if changed |
 | `check-dwp-feed.yml` | Daily cron | Monitor DWP Atom feed for rate publications, trigger update |
 
@@ -135,8 +137,8 @@ GOV.UK Content API patterns: no auth needed, 10 req/s limit. Uses `cheerio` for 
 ### Prerequisites
 
 - Node.js 20+
-- For local dev with Claude: an Anthropic API key (`sk-ant-...`)
 - For production: AWS credentials with Bedrock, S3, CloudFront, Lambda access
+- For CTR enrichment: `MISSING_BENEFIT_API_KEY` environment variable
 
 ### Setup
 
@@ -163,10 +165,11 @@ npm run dev:full
 | `npm run dev:full` | Both dev server + API proxy |
 | `npm run build` | TypeScript compile + Vite production build |
 | `npm run preview` | Preview production build locally |
-| `npm test` | Run unit tests (Vitest, 411 tests) |
+| `npm test` | Run unit tests (Vitest, 458 tests) |
 | `npm run test:watch` | Watch mode tests |
 | `npm run eval` | Run 105 single-turn AI eval scenarios (requires Bedrock) |
-| `npm run eval:multi-turn` | Run 16 multi-turn AI eval scenarios (requires Bedrock) |
+| `npm run eval:multi-turn` | Run 23 multi-turn AI eval scenarios (requires Bedrock) |
+| `npm run eval:mb-comparison` | Run MissingBenefit comparison eval (requires API key) |
 | `npm run update-rates` | Manually fetch latest GOV.UK benefit rates |
 | `npm run build-imd` | Rebuild tri-nation deprivation lookup (England/Wales/Scotland) |
 
@@ -220,6 +223,7 @@ src/
 │   ├── ai.ts                   # API client + response parser (XML tag extraction)
 │   ├── system-prompt.ts        # System prompt builder (completion gate, stage instructions)
 │   ├── message-extractor.ts    # Code-based fallback extraction (regex/keywords)
+│   ├── missing-benefit.ts      # MissingBenefit MCP API client (CTR enrichment)
 │   ├── postcodes.ts            # postcodes.io lookup (full + outcode/partial postcodes)
 │   ├── deprivation.ts          # Tri-nation deprivation decile from LSOA/data zone
 │   └── policyengine.ts         # PolicyEngine integration (wired in, dormant)
@@ -230,8 +234,9 @@ src/
 │
 ├── types/
 │   ├── person.ts               # PersonData (30+ fields), ChildData, CaredForPerson
-│   ├── entitlements.ts         # EntitlementBundle, CascadedGroup, ConflictResolution
+│   ├── entitlements.ts         # EntitlementBundle, CascadedGroup, ConflictResolution, CTRDetail
 │   ├── conversation.ts         # SituationId, ConversationStage, Message, QuickReply
+│   ├── missing-benefit.ts      # MissingBenefit MCP API types
 │   └── policyengine.ts         # PE API types
 │
 ├── data/
@@ -249,6 +254,7 @@ tests/
 │   ├── bundle-builder.test.ts
 │   ├── cascade-resolver.test.ts
 │   ├── conflict-resolver.test.ts
+│   ├── ctr-enrichment.test.ts      # 16 CTR enrichment tests (mocked MB API)
 │   ├── validate-rates.test.ts
 │   ├── deprivation.test.ts
 │   ├── postcodes.test.ts           # Full + outcode/partial postcode tests
@@ -258,12 +264,14 @@ tests/
 │   └── entitlement-matrix.test.ts  # 134 matrix tests (all 75 entitlements × 3 nations)
 ├── services/
 │   ├── message-extractor.test.ts
-│   └── system-prompt.test.ts       # 31 system prompt guardrail tests
+│   ├── missing-benefit.test.ts     # 31 MissingBenefit service tests
+│   └── system-prompt.test.ts       # 36 system prompt guardrail tests
 ├── nova-eval/                      # LLM evaluation framework
 │   ├── run-eval.ts                 # Single-turn eval runner
 │   ├── run-multi-turn-eval.ts      # Multi-turn eval runner (Bedrock conversations)
+│   ├── run-mb-comparison-eval.ts   # MissingBenefit comparison eval
 │   ├── test-scenarios.ts           # 105 single-turn scenarios across 21 categories
-│   ├── multi-turn-scenarios.ts     # 16 multi-turn conversation scenarios
+│   ├── multi-turn-scenarios.ts     # 23 multi-turn conversation scenarios
 │   ├── bedrock-client.ts
 │   ├── scoring.ts
 │   └── report.ts
@@ -282,8 +290,11 @@ infrastructure/
 ├── variables.tf
 └── outputs.tf
 
-lambda/chat/
-└── index.mjs                   # Lambda handler: Bedrock Converse API + Guardrail
+lambda/
+├── chat/
+│   └── index.mjs               # Lambda handler: Bedrock Converse API + Guardrail
+└── missing-benefit/
+    └── index.mjs               # Lambda proxy: MissingBenefit MCP API for CTR calculations
 
 .github/workflows/
 ├── deploy.yml                  # Build + deploy on push to main
@@ -320,10 +331,11 @@ The parser (`ai.ts`) extracts these tags via regex. A code-based fallback (`mess
 When the conversation reaches `complete`, `buildBundle()` runs:
 
 1. **Eligibility check** — Run deterministic rules against PersonData for all 75 entitlements (filtered by nation)
-2. **Value estimation** — Calculate estimated annual value using GOV.UK benefit rates
-3. **Cascade resolution** — Group entitlements by their gateway (what unlocks what)
-4. **Conflict resolution** — Identify mutually exclusive pairs, recommend the better option
-5. **Action plan** — Generate week-by-week steps ordered by priority and dependencies
+2. **CTR enrichment** — If Council Tax Reduction is eligible and a postcode is available, call the MissingBenefit API for a precise council-specific calculation (silent fallback to heuristic range on failure)
+3. **Value estimation** — Calculate estimated annual value using GOV.UK benefit rates (or precise MB values for CTR)
+4. **Cascade resolution** — Group entitlements by their gateway (what unlocks what)
+5. **Conflict resolution** — Identify mutually exclusive pairs, recommend the better option
+6. **Action plan** — Generate week-by-week steps ordered by priority and dependencies
 
 ### Gateway Cascade
 
@@ -370,10 +382,11 @@ The project has four test layers providing comprehensive coverage of both the de
 
 | Layer | Count | What it tests | Runs |
 |-------|-------|---------------|------|
-| Deterministic tests (Vitest) | 411 | Engine, extraction, postcodes, prompt guardrails, entitlement matrix | Every push |
+| Deterministic tests (Vitest) | 458 | Engine, extraction, postcodes, CTR enrichment, prompt guardrails, entitlement matrix | Every push |
 | Single-turn AI evals | 105 | LLM extraction quality across 21 categories | Weekly + manual |
-| Multi-turn AI evals | 16 | Full AI conversation management (field collection, gate compliance) | Weekly + manual |
-| Guardrail evals | 30 | Off-topic redirection + on-topic engagement (Bedrock) | Manual |
+| Multi-turn AI evals | 23 | Full AI conversation management (field collection, gate compliance) | Weekly + manual |
+| MB comparison eval | 23 | Our engine vs MissingBenefit API agreement on entitlements | Weekly + manual |
+| Guardrail evals | 34 | Off-topic redirection + on-topic engagement (Bedrock) | Manual |
 
 ### Key Numbers
 
@@ -397,9 +410,10 @@ The system uses a dual-layer gate to prevent premature results:
 ### Running Tests
 
 ```bash
-npm test                  # 411 deterministic tests (Vitest)
+npm test                  # 458 deterministic tests (Vitest)
 npm run eval              # 105 single-turn AI eval scenarios (requires Bedrock)
-npm run eval:multi-turn   # 16 multi-turn AI eval scenarios (requires Bedrock)
+npm run eval:multi-turn   # 23 multi-turn AI eval scenarios (requires Bedrock)
+npm run eval:mb-comparison # MissingBenefit comparison eval (requires API key)
 ```
 
 ## Deployment
@@ -422,6 +436,7 @@ git push origin main
 - `AWS_ACCESS_KEY_ID`
 - `AWS_SECRET_ACCESS_KEY`
 - `CLOUDFRONT_DISTRIBUTION_ID`
+- `MISSING_BENEFIT_API_KEY` (for CTR Lambda + MB comparison eval)
 
 ### Local Development
 
@@ -429,7 +444,7 @@ git push origin main
 npm run dev:full
 ```
 
-Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claude API (Sonnet) using the key in `.env.local`. Production uses Nova Lite via Bedrock.
+Uses the local API proxy (`dev-server.js`) which forwards chat to Nova Lite via Bedrock and CTR calculations to MissingBenefit's MCP API.
 
 ## Accessibility
 
@@ -453,7 +468,7 @@ Uses the local API proxy (`dev-server.js`) which forwards to the Anthropic Claud
 
 - **Guidance, not advice** — results are estimates, not formal benefits advice
 - **England, Wales, Scotland** — Northern Ireland has separate schemes (not yet covered)
-- **Council Tax Support varies** — 300+ local schemes, we can only say "apply to your council"
+- **Council Tax Reduction** — now enriched with precise council-specific values via MissingBenefit API for 296 councils (Band D rates). Falls back to heuristic range if the API is unavailable.
 - **No application submission** — we show what to claim and link to GOV.UK, but can't submit for you
 
 ## Design Decisions
