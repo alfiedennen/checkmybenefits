@@ -21,3 +21,9 @@ variable "monthly_budget" {
   type        = string
   default     = "50"
 }
+
+variable "missing_benefit_api_key" {
+  description = "API key for MissingBenefit MCP API"
+  type        = string
+  sensitive   = true
+}

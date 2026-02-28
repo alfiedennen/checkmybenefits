@@ -278,7 +278,48 @@ resource "aws_bedrock_guardrail_version" "chat" {
 }
 
 # -----------------------------------------------------------------------------
-# API Gateway — REST API for /api/chat
+# Lambda — CTR API (MissingBenefit MCP proxy)
+# -----------------------------------------------------------------------------
+
+resource "aws_iam_role" "missing_benefit_lambda" {
+  name = "checkmybenefits-missing-benefit-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Action    = "sts:AssumeRole"
+        Effect    = "Allow"
+        Principal = { Service = "lambda.amazonaws.com" }
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy_attachment" "missing_benefit_logs" {
+  role       = aws_iam_role.missing_benefit_lambda.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_lambda_function" "missing_benefit" {
+  filename         = "${path.module}/../lambda/missing-benefit/missing-benefit-lambda.zip"
+  function_name    = "checkmybenefits-missing-benefit"
+  role             = aws_iam_role.missing_benefit_lambda.arn
+  handler          = "index.handler"
+  runtime          = "nodejs20.x"
+  memory_size      = 256
+  timeout          = 30
+  source_code_hash = filebase64sha256("${path.module}/../lambda/missing-benefit/missing-benefit-lambda.zip")
+
+  environment {
+    variables = {
+      MISSING_BENEFIT_API_KEY = var.missing_benefit_api_key
+    }
+  }
+}
+
+# -----------------------------------------------------------------------------
+# API Gateway — REST API for /api/chat and /api/ctr
 # -----------------------------------------------------------------------------
 
 resource "aws_api_gateway_rest_api" "chat" {
@@ -368,6 +409,88 @@ resource "aws_api_gateway_integration_response" "chat_options_200" {
   }
 }
 
+# /api/ctr — MissingBenefit CTR proxy
+resource "aws_api_gateway_resource" "ctr" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  parent_id   = aws_api_gateway_resource.api.id
+  path_part   = "ctr"
+}
+
+# POST /api/ctr
+resource "aws_api_gateway_method" "ctr_post" {
+  rest_api_id   = aws_api_gateway_rest_api.chat.id
+  resource_id   = aws_api_gateway_resource.ctr.id
+  http_method   = "POST"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "ctr_post" {
+  rest_api_id             = aws_api_gateway_rest_api.chat.id
+  resource_id             = aws_api_gateway_resource.ctr.id
+  http_method             = aws_api_gateway_method.ctr_post.http_method
+  integration_http_method = "POST"
+  type                    = "AWS_PROXY"
+  uri                     = aws_lambda_function.missing_benefit.invoke_arn
+}
+
+# OPTIONS /api/ctr (CORS preflight)
+resource "aws_api_gateway_method" "ctr_options" {
+  rest_api_id   = aws_api_gateway_rest_api.chat.id
+  resource_id   = aws_api_gateway_resource.ctr.id
+  http_method   = "OPTIONS"
+  authorization = "NONE"
+}
+
+resource "aws_api_gateway_integration" "ctr_options" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  resource_id = aws_api_gateway_resource.ctr.id
+  http_method = aws_api_gateway_method.ctr_options.http_method
+  type        = "MOCK"
+
+  request_templates = {
+    "application/json" = "{\"statusCode\": 200}"
+  }
+}
+
+resource "aws_api_gateway_method_response" "ctr_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  resource_id = aws_api_gateway_resource.ctr.id
+  http_method = aws_api_gateway_method.ctr_options.http_method
+  status_code = "200"
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = true
+    "method.response.header.Access-Control-Allow-Methods" = true
+    "method.response.header.Access-Control-Allow-Origin"  = true
+  }
+
+  response_models = {
+    "application/json" = "Empty"
+  }
+}
+
+resource "aws_api_gateway_integration_response" "ctr_options_200" {
+  rest_api_id = aws_api_gateway_rest_api.chat.id
+  resource_id = aws_api_gateway_resource.ctr.id
+  http_method = aws_api_gateway_method.ctr_options.http_method
+  status_code = aws_api_gateway_method_response.ctr_options_200.status_code
+
+  response_parameters = {
+    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type'"
+    "method.response.header.Access-Control-Allow-Methods" = "'POST,OPTIONS'"
+    "method.response.header.Access-Control-Allow-Origin"  = "'*'"
+  }
+}
+
+# Allow API Gateway to invoke missing-benefit Lambda
+resource "aws_lambda_permission" "api_gateway_ctr" {
+  statement_id  = "AllowAPIGatewayInvokeCTR"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.missing_benefit.function_name
+  principal     = "apigateway.amazonaws.com"
+  source_arn    = "${aws_api_gateway_rest_api.chat.execution_arn}/*/*"
+}
+
 # Deploy the API
 resource "aws_api_gateway_deployment" "chat" {
   rest_api_id = aws_api_gateway_rest_api.chat.id
@@ -375,6 +498,8 @@ resource "aws_api_gateway_deployment" "chat" {
   depends_on = [
     aws_api_gateway_integration.chat_post,
     aws_api_gateway_integration.chat_options,
+    aws_api_gateway_integration.ctr_post,
+    aws_api_gateway_integration.ctr_options,
   ]
 
   lifecycle {

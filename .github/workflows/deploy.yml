@@ -64,6 +64,17 @@ jobs:
             --zip-file fileb://chat-lambda.zip \
             --region eu-west-2
 
+      # Deploy missing-benefit Lambda (eu-west-2)
+      - name: Deploy missing-benefit Lambda
+        run: |
+          cd lambda/missing-benefit
+          zip -r ../../missing-benefit-lambda.zip .
+          cd ../..
+          aws lambda update-function-code \
+            --function-name checkmybenefits-missing-benefit \
+            --zip-file fileb://missing-benefit-lambda.zip \
+            --region eu-west-2
+
       # Deploy email forwarder Lambda (eu-west-1)
       - name: Deploy email forwarder Lambda
         run: |

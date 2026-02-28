@@ -27,6 +27,12 @@ export function EntitlementCard({ entitlement, showWhyThisMatters = false }: Pro
 
       <p className="entitlement-card-description">{entitlement.plain_description}</p>
 
+      {entitlement.ctrDetail && (
+        <p className="entitlement-card-council">
+          Based on {entitlement.ctrDetail.councilName}'s scheme
+        </p>
+      )}
+
       {showWhyThisMatters && entitlement.why_this_matters && (
         <p className="entitlement-card-why">{entitlement.why_this_matters}</p>
       )}

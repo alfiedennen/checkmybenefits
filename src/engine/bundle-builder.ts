@@ -2,6 +2,7 @@ import type { PersonData } from '../types/person.ts'
 import type {
   EntitlementBundle,
   EntitlementResult,
+  CTRDetail,
   ActionPlanStep,
   EntitlementDefinition,
   DependencyEdge,
@@ -14,11 +15,19 @@ import { checkEligibility } from './eligibility-rules.ts'
 import { resolveCascade } from './cascade-resolver.ts'
 import { resolveConflicts } from './conflict-resolver.ts'
 import { estimateValue } from './value-estimator.ts'
+import { mapPersonToAnswers, calculateBenefits, extractCTR } from '../services/missing-benefit.ts'
 import entitlementData from '../data/entitlements.json'
 
 const allEntitlements = entitlementData.entitlements as EntitlementDefinition[]
 const dependencyEdges = entitlementData.dependency_edges as DependencyEdge[]
 const conflictEdges = entitlementData.conflict_edges as ConflictEdge[]
+
+const CTR_IDS = new Set([
+  'council_tax_support_working_age',
+  'council_tax_reduction_full',
+  'council_tax_reduction_wales',
+  'council_tax_reduction_scotland',
+])
 
 /**
  * Fix income for recently-redundant single people.
@@ -65,10 +74,38 @@ export async function buildBundle(
   const eligibilityResults = checkEligibility(nationFiltered, person, situationIds)
   const eligibleIds = new Set(eligibilityResults.map((r) => r.id))
 
-  // 2. Build EntitlementResult objects with values
+  // 2. If CTR is eligible and we have a postcode, call MissingBenefit for precise values
+  const hasCTR = eligibilityResults.some((r) => CTR_IDS.has(r.id))
+  const ctrEnrichment = hasCTR && person.postcode
+    ? await enrichCTR(person)
+    : null
+
+  // 3. Build EntitlementResult objects with values
   const entitlementResults: EntitlementResult[] = eligibilityResults.map((er) => {
     const def = allEntitlements.find((e) => e.id === er.id)!
     const value = estimateValue(def, person, null)
+
+    // Enrich CTR entitlements with precise values from MissingBenefit
+    if (CTR_IDS.has(er.id) && ctrEnrichment) {
+      return {
+        id: er.id,
+        name: def.name,
+        plain_description: def.short_description,
+        estimated_annual_value: {
+          low: ctrEnrichment.annualAmount,
+          high: ctrEnrichment.annualAmount,
+        },
+        confidence: 'likely' as const,
+        difficulty: def.claiming_difficulty,
+        application_method: formatApplicationMethod(def.application_method),
+        application_url: ctrEnrichment.applyUrl ?? def.application_url ?? undefined,
+        what_you_need: getWhatYouNeed(def.id),
+        timeline: getTimeline(def.id),
+        why_this_matters: getWhyThisMatters(def, dependencyEdges, eligibleIds),
+        ctrDetail: ctrEnrichment.detail,
+      }
+    }
+
     return {
       id: er.id,
       name: def.name,
@@ -90,7 +127,7 @@ export async function buildBundle(
   // 5. Resolve conflicts
   const conflicts = resolveConflicts(eligibleIds, conflictEdges, person, null)
 
-  // 6. Calculate totals
+  // 6. Calculate totals (use midpoint for precise CTR values where low === high)
   const allResults = [
     ...cascade.gateway_entitlements,
     ...cascade.cascaded_entitlements.flatMap((g) => g.entitlements),
@@ -229,6 +266,36 @@ function getWhyThisMatters(
 
   if (unlocked.length === 0) return undefined
   return `Claiming this first helps you qualify for: ${unlocked.join(', ')}.`
+}
+
+interface CTREnrichment {
+  annualAmount: number
+  applyUrl?: string
+  detail: CTRDetail
+}
+
+async function enrichCTR(person: PersonData): Promise<CTREnrichment | null> {
+  try {
+    const answers = mapPersonToAnswers(person)
+    const response = await calculateBenefits('/api/ctr', answers)
+    if (!response) return null
+
+    const ctr = extractCTR(response)
+    if (!ctr || !ctr.eligible || ctr.annualAmount <= 0) return null
+
+    return {
+      annualAmount: ctr.annualAmount,
+      applyUrl: ctr.applyUrl,
+      detail: {
+        councilName: ctr.councilName ?? 'your council',
+        breakdown: (ctr.breakdown ?? []).map((b) => ({ label: b.label, amount: b.amount })),
+        confidenceScore: ctr.confidenceScore ?? 0,
+      },
+    }
+  } catch {
+    // Silent fallback — heuristic values will be used
+    return null
+  }
 }
 
 function buildActionPlan(
