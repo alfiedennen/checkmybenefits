@@ -1,4 +1,4 @@
-# MissingBenefit API Integration — CTR Experimental Page
+# MissingBenefit MCP Integration — CTR Experimental Page
 
 ## Context
 
@@ -165,7 +165,7 @@ src/
 
 ### API call (Lambda proxy)
 
-The MB API key must not be exposed client-side.
+The MB MCP key must not be exposed client-side.
 
 - New Lambda function `missing-benefit-proxy` in eu-west-2
 - Client POSTs mapped MB answers → Lambda calls MB MCP endpoint → returns result
@@ -204,7 +204,7 @@ Client POST /api/experiment/ctr {answers: {...}}
 | MB-09 | Error/timeout handling | API failure → graceful fallback message |
 | MB-10 | Confidence label mapping | Score → High/Medium/Low label |
 
-### Integration tests (requires MB API key)
+### Integration tests (requires MB MCP key)
 
 | ID | Test | What it verifies |
 |----|------|-----------------|

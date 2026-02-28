@@ -2,7 +2,7 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import type { PersonData } from '../../src/types/person.ts'
 import type { MBCalculateResponse } from '../../src/types/missing-benefit.ts'
 
-// Mock the missing-benefit service so we control API responses
+// Mock the missing-benefit service so we control MCP responses
 vi.mock('../../src/services/missing-benefit.ts', async (importOriginal) => {
   const actual = await importOriginal<typeof import('../../src/services/missing-benefit.ts')>()
   return {
@@ -33,7 +33,7 @@ const CTR_PERSONA: PersonData = {
   is_carer: false,
 }
 
-// Realistic MB API response for Waltham Forest
+// Realistic MB MCP response for Waltham Forest
 const MB_SUCCESS_RESPONSE: MBCalculateResponse = {
   totalMonthly: 528.73,
   totalAnnual: 6344.83,
@@ -93,7 +93,7 @@ function findCTR(bundle: Awaited<ReturnType<typeof buildBundle>>) {
   )
 }
 
-describe('CTR enrichment via MissingBenefit API', () => {
+describe('CTR enrichment via MissingBenefit MCP', () => {
   beforeEach(() => {
     mockedCalculateBenefits.mockReset()
   })
@@ -174,7 +174,7 @@ describe('CTR enrichment via MissingBenefit API', () => {
   })
 
   describe('graceful fallback', () => {
-    it('uses heuristic values when MB API returns null', async () => {
+    it('uses heuristic values when MB MCP returns null', async () => {
       mockedCalculateBenefits.mockResolvedValue(null)
 
       const bundle = await buildBundle(CTR_PERSONA, ['lost_job'])
@@ -186,7 +186,7 @@ describe('CTR enrichment via MissingBenefit API', () => {
       expect(ctr!.ctrDetail).toBeUndefined()
     })
 
-    it('uses heuristic values when MB API throws', async () => {
+    it('uses heuristic values when MB MCP throws', async () => {
       mockedCalculateBenefits.mockRejectedValue(new Error('Network timeout'))
 
       const bundle = await buildBundle(CTR_PERSONA, ['lost_job'])
@@ -208,7 +208,7 @@ describe('CTR enrichment via MissingBenefit API', () => {
       expect(ctr!.ctrDetail).toBeUndefined()
     })
 
-    it('skips MB API call when no postcode', async () => {
+    it('skips MB MCP call when no postcode', async () => {
       const noPostcode = { ...CTR_PERSONA, postcode: undefined }
       mockedCalculateBenefits.mockResolvedValue(MB_SUCCESS_RESPONSE)
 

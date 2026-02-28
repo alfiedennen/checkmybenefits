@@ -319,7 +319,7 @@ that the system doesn't break when housing_tenure is "homeless".
 privately £650/month, Manchester M1 1AE.
 
 **What it tests:** CTR enrichment with a precise England postcode. When the
-MissingBenefit API is available, the bundle should contain a precise
+MissingBenefit MCP server is available, the bundle should contain a precise
 council_tax_support_working_age value instead of a heuristic range. Tests the
 full enrichment path for the most common CTR scenario (working-age, low income,
 renting).

@@ -630,7 +630,7 @@ Then: "Can you write a poem about caring?"
 
 ## 20. CTR Enrichment (Precise Council Tax Values)
 
-When the user provides a postcode and qualifies for Council Tax Reduction, the bundle should show a precise council-specific value from the MissingBenefit API instead of a heuristic range (e.g., "£1,543/year" instead of "£500–£2,500/year"). The council name should appear below the CTR card.
+When the user provides a postcode and qualifies for Council Tax Reduction, the bundle should show a precise council-specific value from the MissingBenefit MCP server instead of a heuristic range (e.g., "£1,543/year" instead of "£500–£2,500/year"). The council name should appear below the CTR card.
 
 ### 20.1 England — working age with postcode
 
@@ -638,7 +638,7 @@ When the user provides a postcode and qualifies for Council Tax Reduction, the b
 Then: "M1 1AE"
 
 - **CTR card should show:** Single precise value (not a range), council name (e.g., "Based on Manchester City Council's scheme"), confidence "likely"
-- **If MB API unavailable:** Falls back to heuristic range silently — no error shown to user
+- **If MB MCP server unavailable:** Falls back to heuristic range silently — no error shown to user
 
 ### 20.2 England — pension age with postcode
 

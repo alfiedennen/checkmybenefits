@@ -4,7 +4,7 @@ A conversational web app that helps UK citizens discover what benefits and suppo
 
 **Live:** [checkmybenefits.uk](https://checkmybenefits.uk)
 
-**Status:** V1.0 — 75 entitlements across England, Wales and Scotland. 48 eligibility rules. 458 deterministic tests + 105 single-turn + 23 multi-turn AI evals. Precise Council Tax Reduction calculations via MissingBenefit API. Auto-updating benefit rates. Bedrock Guardrails for content safety.
+**Status:** V1.0 — 75 entitlements across England, Wales and Scotland. 48 eligibility rules. 458 deterministic tests + 105 single-turn + 23 multi-turn AI evals. Precise Council Tax Reduction calculations via MissingBenefit MCP server. Auto-updating benefit rates. Bedrock Guardrails for content safety.
 
 ## What It Does
 
@@ -71,7 +71,7 @@ User message
 |-------|-----------|
 | Frontend | React 19 SPA, mobile-first, no backend storage |
 | AI | Amazon Nova Lite via AWS Bedrock Converse API |
-| CTR enrichment | MissingBenefit MCP API — precise council-specific Council Tax Reduction values |
+| CTR enrichment | MissingBenefit MCP server — precise council-specific Council Tax Reduction values |
 | Content safety | Bedrock Guardrails (content filters, PII blocking, topic denial) |
 | Data | Static JSON entitlement model + GOV.UK benefit rates (auto-updated) |
 | Infrastructure | Terraform — S3, CloudFront, Lambda, API Gateway, Route 53 |
@@ -223,7 +223,7 @@ src/
 │   ├── ai.ts                   # API client + response parser (XML tag extraction)
 │   ├── system-prompt.ts        # System prompt builder (completion gate, stage instructions)
 │   ├── message-extractor.ts    # Code-based fallback extraction (regex/keywords)
-│   ├── missing-benefit.ts      # MissingBenefit MCP API client (CTR enrichment)
+│   ├── missing-benefit.ts      # MissingBenefit MCP client (CTR enrichment)
 │   ├── postcodes.ts            # postcodes.io lookup (full + outcode/partial postcodes)
 │   ├── deprivation.ts          # Tri-nation deprivation decile from LSOA/data zone
 │   └── policyengine.ts         # PolicyEngine integration (wired in, dormant)
@@ -236,7 +236,7 @@ src/
 │   ├── person.ts               # PersonData (30+ fields), ChildData, CaredForPerson
 │   ├── entitlements.ts         # EntitlementBundle, CascadedGroup, ConflictResolution, CTRDetail
 │   ├── conversation.ts         # SituationId, ConversationStage, Message, QuickReply
-│   ├── missing-benefit.ts      # MissingBenefit MCP API types
+│   ├── missing-benefit.ts      # MissingBenefit MCP types
 │   └── policyengine.ts         # PE API types
 │
 ├── data/
@@ -254,7 +254,7 @@ tests/
 │   ├── bundle-builder.test.ts
 │   ├── cascade-resolver.test.ts
 │   ├── conflict-resolver.test.ts
-│   ├── ctr-enrichment.test.ts      # 16 CTR enrichment tests (mocked MB API)
+│   ├── ctr-enrichment.test.ts      # 16 CTR enrichment tests (mocked MB MCP)
 │   ├── validate-rates.test.ts
 │   ├── deprivation.test.ts
 │   ├── postcodes.test.ts           # Full + outcode/partial postcode tests
@@ -294,7 +294,7 @@ lambda/
 ├── chat/
 │   └── index.mjs               # Lambda handler: Bedrock Converse API + Guardrail
 └── missing-benefit/
-    └── index.mjs               # Lambda proxy: MissingBenefit MCP API for CTR calculations
+    └── index.mjs               # Lambda proxy: MissingBenefit MCP server for CTR calculations
 
 .github/workflows/
 ├── deploy.yml                  # Build + deploy on push to main
@@ -331,7 +331,7 @@ The parser (`ai.ts`) extracts these tags via regex. A code-based fallback (`mess
 When the conversation reaches `complete`, `buildBundle()` runs:
 
 1. **Eligibility check** — Run deterministic rules against PersonData for all 75 entitlements (filtered by nation)
-2. **CTR enrichment** — If Council Tax Reduction is eligible and a postcode is available, call the MissingBenefit API for a precise council-specific calculation (silent fallback to heuristic range on failure)
+2. **CTR enrichment** — If Council Tax Reduction is eligible and a postcode is available, call the MissingBenefit MCP server for a precise council-specific calculation (silent fallback to heuristic range on failure)
 3. **Value estimation** — Calculate estimated annual value using GOV.UK benefit rates (or precise MB values for CTR)
 4. **Cascade resolution** — Group entitlements by their gateway (what unlocks what)
 5. **Conflict resolution** — Identify mutually exclusive pairs, recommend the better option
@@ -385,7 +385,7 @@ The project has four test layers providing comprehensive coverage of both the de
 | Deterministic tests (Vitest) | 458 | Engine, extraction, postcodes, CTR enrichment, prompt guardrails, entitlement matrix | Every push |
 | Single-turn AI evals | 105 | LLM extraction quality across 21 categories | Weekly + manual |
 | Multi-turn AI evals | 23 | Full AI conversation management (field collection, gate compliance) | Weekly + manual |
-| MB comparison eval | 23 | Our engine vs MissingBenefit API agreement on entitlements | Weekly + manual |
+| MB comparison eval | 23 | Our engine vs MissingBenefit MCP server agreement on entitlements | Weekly + manual |
 | Guardrail evals | 34 | Off-topic redirection + on-topic engagement (Bedrock) | Manual |
 
 ### Key Numbers
@@ -444,7 +444,7 @@ git push origin main
 npm run dev:full
 ```
 
-Uses the local API proxy (`dev-server.js`) which forwards chat to Nova Lite via Bedrock and CTR calculations to MissingBenefit's MCP API.
+Uses the local API proxy (`dev-server.js`) which forwards chat to Nova Lite via Bedrock and CTR calculations to MissingBenefit's MCP server.
 
 ## Accessibility
 
@@ -468,7 +468,7 @@ Uses the local API proxy (`dev-server.js`) which forwards chat to Nova Lite via 
 
 - **Guidance, not advice** — results are estimates, not formal benefits advice
 - **England, Wales, Scotland** — Northern Ireland has separate schemes (not yet covered)
-- **Council Tax Reduction** — now enriched with precise council-specific values via MissingBenefit API for 296 councils (Band D rates). Falls back to heuristic range if the API is unavailable.
+- **Council Tax Reduction** — now enriched with precise council-specific values via MissingBenefit MCP server for 296 councils (Band D rates). Falls back to heuristic range if the MCP server is unavailable.
 - **No application submission** — we show what to claim and link to GOV.UK, but can't submit for you
 
 ## Design Decisions

@@ -1,5 +1,5 @@
-// MissingBenefit MCP API types
-// API endpoint: https://missingbenefit.com/mcp
+// MissingBenefit MCP server types
+// MCP endpoint: https://missingbenefit.com/mcp
 // Auth: Bearer token in Authorization header
 
 export interface MBDateOfBirth {
