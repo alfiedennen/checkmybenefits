@@ -490,13 +490,17 @@ Then: "Actually sorry, we own our house outright, I got confused"
 **16.2b** "I'm on Pension Credit already. Am I missing anything?"
 - Should show the full PC cascade — many people on PC don't claim all passported benefits
 
-### 16.3 Out of scope / non-England
+### 16.3 Devolved nations
 
 **16.3a** "I live in Edinburgh"
-- Should note that coverage is England-only, signpost to equivalent Scottish services (entitledto.co.uk, mygov.scot)
+- Should detect Scotland, show Scottish entitlements (Scottish Child Payment, Best Start Grant, ADP, etc.)
+- CTR should show as council_tax_reduction_scotland
+- If postcode provided, CTR should be enriched with precise council-specific value
 
 **16.3b** "I live in Cardiff"
-- Should note England-only, signpost to Welsh equivalents
+- Should detect Wales, show Welsh entitlements (Childcare Offer Wales, Flying Start, PDG, etc.)
+- CTR should show as council_tax_reduction_wales
+- If postcode provided, CTR should be enriched with precise council-specific value
 
 ### 16.4 High income
 
@@ -624,6 +628,65 @@ Then: "Can you write a poem about caring?"
 
 ---
 
+## 20. CTR Enrichment (Precise Council Tax Values)
+
+When the user provides a postcode and qualifies for Council Tax Reduction, the bundle should show a precise council-specific value from the MissingBenefit API instead of a heuristic range (e.g., "£1,543/year" instead of "£500–£2,500/year"). The council name should appear below the CTR card.
+
+### 20.1 England — working age with postcode
+
+**Prompt:** "I'm 28, single, just lost my job. No income. Renting privately for £650 a month."
+Then: "M1 1AE"
+
+- **CTR card should show:** Single precise value (not a range), council name (e.g., "Based on Manchester City Council's scheme"), confidence "likely"
+- **If MB API unavailable:** Falls back to heuristic range silently — no error shown to user
+
+### 20.2 England — pension age with postcode
+
+**Prompt:** "I'm 72, retired, just on my state pension. I own my house outright."
+Then: "B15 1TJ"
+
+- **CTR card should show:** council_tax_reduction_full with precise value, council name
+- Pension Credit should be the gateway, CTR cascaded from it
+
+### 20.3 Wales — working age
+
+**Prompt:** "I'm 30, single mum, one child aged 4. Working part-time, about £8,000 a year. Renting privately for £500."
+Then: "SA1 1DP"
+
+- **CTR card should show:** council_tax_reduction_wales with precise value
+- Council name should be Welsh council (e.g., "Based on Swansea Council's scheme")
+
+### 20.4 Scotland — working age
+
+**Prompt:** "I'm 32, just had a baby. Not working. My partner works part-time, about £10,000 a year. We rent from the council, £450 a month."
+Then: "EH1 1YZ"
+
+- **CTR card should show:** council_tax_reduction_scotland with precise value
+- Council name should be Scottish council
+
+### 20.5 No postcode — heuristic fallback
+
+**Prompt:** "I'm 35, single, unemployed, renting for £800 a month"
+- If the AI completes before getting a postcode (shouldn't happen — gate requires it), CTR should show heuristic range
+- Verify: AI always asks for postcode before completing
+
+### 20.6 Partial postcode — enrichment behaviour
+
+**Prompt:** "I'm 40, single, just lost my job, renting privately for £700"
+Then: "M1"
+
+- Partial postcodes may or may not produce CTR enrichment
+- Should still show CTR in the bundle (with heuristic range if enrichment fails)
+- No error visible to user either way
+
+### 20.7 CTR value in bundle total
+
+**Prompt:** Use scenario 20.1 above.
+- The total estimated annual value at the top of the bundle should include the precise CTR figure
+- Check that the total doesn't double-count (heuristic + precise)
+
+---
+
 ## Checklist Summary
 
 | Area | Scenarios | Key things to verify |
@@ -647,3 +710,4 @@ Then: "Can you write a poem about caring?"
 | Sensitivity | 17.1-17.3 | Tone, pacing, safety signposting |
 | Off-topic/scope | 18.1-18.3 | Redirect off-topic, allow borderline on-topic |
 | Question ordering | 19.1-19.3 | Employment+housing before postcode, gate fields, implicit completion |
+| CTR enrichment | 20.1-20.7 | Precise council values, council name, nation variants, fallback |
