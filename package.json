@@ -27,7 +27,7 @@
     "@aws-sdk/client-bedrock-runtime": "^3.995.0",
     "@testing-library/jest-dom": "^6.9.1",
     "@testing-library/react": "^16.3.2",
-    "@types/cheerio": "^0.22.35",
+    "@types/cheerio": "^1.0.0",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
     "@vercel/node": "^5.6.6",
