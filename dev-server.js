@@ -1,14 +1,26 @@
 /**
- * Local dev server for the /api/chat serverless function.
+ * Local dev server for serverless functions.
  * Uses Amazon Bedrock with Nova Lite to mirror production.
  * Run alongside `npm run dev` (Vite proxies /api to this).
  */
 import { createServer } from 'http'
+import { readFileSync } from 'fs'
 import { BedrockRuntimeClient, ConverseCommand } from '@aws-sdk/client-bedrock-runtime'
 
 const client = new BedrockRuntimeClient({ region: 'eu-west-2' })
 const MODEL_ID = 'amazon.nova-lite-v1:0'
 const PORT = 3001
+
+// Load .env for MissingBenefit API key
+try {
+  const envFile = readFileSync('.env', 'utf8')
+  for (const line of envFile.split('\n')) {
+    const [key, ...rest] = line.split('=')
+    if (key?.trim() && rest.length) {
+      process.env[key.trim()] = rest.join('=').trim()
+    }
+  }
+} catch { /* no .env file */ }
 
 const server = createServer(async (req, res) => {
   // CORS
@@ -19,6 +31,24 @@ const server = createServer(async (req, res) => {
   if (req.method === 'OPTIONS') {
     res.writeHead(200)
     res.end()
+    return
+  }
+
+  // Route: MissingBenefit proxy
+  if (req.method === 'POST' && req.url?.startsWith('/api/ctr')) {
+    let body = ''
+    for await (const chunk of req) body += chunk
+    try {
+      const { handler } = await import('./lambda/missing-benefit/index.mjs')
+      process.env.MISSING_BENEFIT_API_KEY = process.env.MISSING_BENEFIT_API_KEY || ''
+      const result = await handler({ body, requestContext: { http: { method: 'POST' } } })
+      res.writeHead(result.statusCode, { 'Content-Type': 'application/json' })
+      res.end(result.body)
+    } catch (err) {
+      console.error('MB proxy error:', err)
+      res.writeHead(500, { 'Content-Type': 'application/json' })
+      res.end(JSON.stringify({ error: 'MissingBenefit proxy error' }))
+    }
     return
   }
 

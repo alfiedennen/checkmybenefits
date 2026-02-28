@@ -3,6 +3,12 @@ export type ConfidenceTier = 'likely' | 'possible' | 'worth_checking'
 export type ActionPriority = 'critical' | 'important' | 'when_ready'
 export type DependencyType = 'gateway' | 'strengthens' | 'qualifies' | 'enables_for_carer' | 'triggers'
 
+export interface CTRDetail {
+  councilName: string
+  breakdown: Array<{ label: string; amount: number }>
+  confidenceScore: number
+}
+
 export interface EntitlementResult {
   id: string
   name: string
@@ -15,6 +21,7 @@ export interface EntitlementResult {
   what_you_need: string[]
   timeline: string
   why_this_matters?: string
+  ctrDetail?: CTRDetail
 }
 
 export interface CascadedGroup {
