@@ -64,7 +64,7 @@ Verifies the system prompt contains the right guardrails by string-matching agai
 
 **File:** `tests/engine/ctr-enrichment.test.ts`
 
-Tests the MissingBenefit API integration in `bundle-builder.ts` using mocked `calculateBenefits()`:
+Tests the MissingBenefit MCP integration in `bundle-builder.ts` using mocked `calculateBenefits()`:
 
 | Group | Tests | What it verifies |
 |-------|-------|-----------------|
@@ -78,7 +78,7 @@ Tests the MissingBenefit API integration in `bundle-builder.ts` using mocked `ca
 
 **File:** `tests/services/missing-benefit.test.ts`
 
-Tests the MissingBenefit MCP API client layer: `mapPersonToAnswers()` field mapping, `extractCTR()` response parsing, and `calculateBenefits()` API call handling.
+Tests the MissingBenefit MCP client layer: `mapPersonToAnswers()` field mapping, `extractCTR()` response parsing, and `calculateBenefits()` call handling.
 
 ### Other Unit Tests
 
@@ -194,7 +194,7 @@ Weights: completeness (0.4) + gate pass (0.2) + no premature complete (0.2) + bu
 
 **File:** `tests/nova-eval/run-mb-comparison-eval.ts`
 
-Takes each multi-turn persona's expected PersonData and runs it through both our engine (`buildBundle`) and the MissingBenefit API. Compares entitlement agreement, disagreement, and coverage gaps. This is a comparison eval — it identifies where our heuristics and MB's calculations diverge rather than enforcing a pass/fail threshold.
+Takes each multi-turn persona's expected PersonData and runs it through both our engine (`buildBundle`) and the MissingBenefit MCP server. Compares entitlement agreement, disagreement, and coverage gaps. This is a comparison eval — it identifies where our heuristics and MB's calculations diverge rather than enforcing a pass/fail threshold.
 
 For each scenario it reports:
 - **Agreement** — both say eligible
@@ -285,12 +285,12 @@ Results are saved to `tests/nova-eval/results.json`, `tests/nova-eval/multi-turn
 Every push (vitest, 458 tests, <1s):
   ├── unit tests (engine, extraction, postcodes, rates, CTR enrichment)
   ├── entitlement-matrix.test.ts     (146 matrix tests, all 75 entitlements × 3 nations)
-  ├── ctr-enrichment.test.ts         (16 CTR enrichment tests with mocked MB API)
+  ├── ctr-enrichment.test.ts         (16 CTR enrichment tests with mocked MB MCP)
   ├── missing-benefit.test.ts        (31 MB service tests)
   ├── conversation-replay.test.ts    (12 replay scenarios)
   └── system-prompt.test.ts          (36 guardrail tests)
 
-Weekly (eval.yml, Bedrock + MB APIs):
+Weekly (eval.yml, Bedrock + MB MCP):
   ├── run-eval.ts                    (105 single-turn scenarios)
   ├── run-multi-turn-eval.ts         (23 multi-turn scenarios)
   └── run-mb-comparison-eval.ts      (23 MB comparison scenarios)

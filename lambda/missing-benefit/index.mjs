@@ -1,5 +1,5 @@
 /**
- * Lambda proxy for MissingBenefit MCP API.
+ * Lambda proxy for MissingBenefit MCP server.
  * Accepts mapped MB answers from the client, handles the MCP session
  * lifecycle (initialize → notify → tools/call), and returns the result.
  *
@@ -30,7 +30,7 @@ export async function handler(event) {
 
     const result = await callMCP(apiKey, answers)
     if (!result) {
-      return response(502, { error: 'MissingBenefit API unavailable' })
+      return response(502, { error: 'MissingBenefit MCP server unavailable' })
     }
 
     return response(200, result)
