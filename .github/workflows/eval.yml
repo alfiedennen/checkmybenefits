@@ -29,6 +29,11 @@ jobs:
       - name: Run multi-turn eval
         run: npm run eval:multi-turn
 
+      - name: Run MB comparison eval
+        run: npm run eval:mb-comparison
+        env:
+          MISSING_BENEFIT_API_KEY: ${{ secrets.MISSING_BENEFIT_API_KEY }}
+
       - name: Upload results
         if: always()
         uses: actions/upload-artifact@v4
@@ -37,3 +42,4 @@ jobs:
           path: |
             tests/nova-eval/results.json
             tests/nova-eval/multi-turn-results.json
+            tests/nova-eval/mb-comparison-results.json

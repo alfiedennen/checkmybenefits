@@ -564,7 +564,57 @@ const MT21: MultiTurnScenario = {
   earliestCompleteTurn: 3,
 }
 
+// ── MT22: England CTR — single renter, low income (CTR enrichment target) ──
+
+const MT22: MultiTurnScenario = {
+  id: 'MT22',
+  name: 'England single renter — CTR enrichment with precise postcode',
+  turns: [
+    "Hi, I'm 28 and single, I just got made redundant last week",
+    "I'm not earning anything now, zero income",
+    "I rent a flat privately, it's £650 a month",
+    'M1 1AE',
+  ],
+  expectedSituations: ['lost_job'],
+  expectedPersonData: {
+    age: 28,
+    employment_status: 'unemployed',
+    income_band: 'under_7400',
+    housing_tenure: 'rent_private',
+    postcode: 'M1 1AE',
+    nation: 'england',
+  },
+  expectedEntitlements: ['universal_credit', 'council_tax_support_working_age'],
+  minBundleSize: 5,
+  earliestCompleteTurn: 3,
+}
+
+// ── MT23: Wales working-age CTR variant ────────────
+
+const MT23: MultiTurnScenario = {
+  id: 'MT23',
+  name: 'Welsh single parent — CTR Wales variant',
+  turns: [
+    "I'm a single mum, 30 years old, I have a 4-year-old daughter",
+    "I work part-time, about £8,000 a year",
+    'we rent privately, £500 a month',
+    'SA1 1DP',
+  ],
+  expectedSituations: [],
+  expectedPersonData: {
+    age: 30,
+    employment_status: 'employed_part_time',
+    income_band: 'under_12570',
+    housing_tenure: 'rent_private',
+    postcode: 'SA1 1DP',
+    nation: 'wales',
+  },
+  expectedEntitlements: ['child_benefit', 'council_tax_reduction_wales'],
+  minBundleSize: 4,
+  earliestCompleteTurn: 3,
+}
+
 export const ALL_MULTI_TURN_SCENARIOS: MultiTurnScenario[] = [
   MT01, MT02, MT03, MT04, MT05, MT06, MT07, MT08, MT09, MT10, MT11,
-  MT12, MT13, MT14, MT15, MT16, MT17, MT18, MT19, MT20, MT21,
+  MT12, MT13, MT14, MT15, MT16, MT17, MT18, MT19, MT20, MT21, MT22, MT23,
 ]

@@ -15,7 +15,8 @@
     "build-imd": "tsx scripts/build-deprivation-lookup.ts",
     "eval": "tsx tests/nova-eval/run-eval.ts",
     "eval:multi-turn": "tsx tests/nova-eval/run-multi-turn-eval.ts",
-    "eval:guardrail": "tsx tests/nova-eval/guardrail-eval.ts"
+    "eval:guardrail": "tsx tests/nova-eval/guardrail-eval.ts",
+    "eval:mb-comparison": "tsx tests/nova-eval/run-mb-comparison-eval.ts"
   },
   "dependencies": {
     "react": "^19.2.0",

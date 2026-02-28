@@ -15,12 +15,13 @@ These need different testing strategies. We use four layers.
 
 | Layer | Count | Runtime | API calls | Runs |
 |-------|-------|---------|-----------|------|
-| Deterministic tests (Vitest) | 411 | <1s | 0 | Every push |
+| Deterministic tests (Vitest) | 458 | <1s | 0 | Every push |
 | Single-turn AI evals | 105 | ~80s | 105 | Weekly + manual |
-| Multi-turn AI evals | 16 | ~60s | ~70 | Weekly + manual |
-| Guardrail evals | 30 | ~30s | 30 | Manual |
+| Multi-turn AI evals | 23 | ~80s | ~100 | Weekly + manual |
+| MB comparison eval | 23 | ~30s | ~23 | Weekly + manual |
+| Guardrail evals | 34 | ~30s | 34 | Manual |
 
-## Layer 1: Deterministic Tests (411 tests)
+## Layer 1: Deterministic Tests (458 tests)
 
 All run via `npm test` with Vitest. No AI calls, no network, sub-second runtime.
 
@@ -53,11 +54,31 @@ Simulates multi-turn conversations using the code extractor only (no AI). Catche
 
 End-to-end persona tests: complete PersonData objects through `buildBundle()`, verifying specific entitlements appear and the bundle structure is correct.
 
-### System Prompt Tests (31 tests)
+### System Prompt Tests (36 tests)
 
 **File:** `tests/services/system-prompt.test.ts`
 
 Verifies the system prompt contains the right guardrails by string-matching against `buildSystemPrompt()` output. Covers: completion gate fields, premature-complete guards, question ordering, scope boundary rules, implicit completion detection.
+
+### CTR Enrichment Tests (16 tests)
+
+**File:** `tests/engine/ctr-enrichment.test.ts`
+
+Tests the MissingBenefit API integration in `bundle-builder.ts` using mocked `calculateBenefits()`:
+
+| Group | Tests | What it verifies |
+|-------|-------|-----------------|
+| Successful enrichment | 7 | Precise value replaces heuristic range, ctrDetail attached (council name, breakdown, confidence), confidence upgraded to 'likely', MB apply URL used, precise value in bundle total |
+| Graceful fallback | 4 | API returns null → heuristic values, API throws → bundle still builds, CTR not eligible → heuristic, no postcode → API not called |
+| Pension-age CTR | 1 | council_tax_reduction_full enriched for pensioners |
+| Nation variants | 2 | Welsh and Scottish CTR variants enriched |
+| API call correctness | 2 | Correct endpoint, correct PersonData → MB answers mapping |
+
+### MissingBenefit Service Tests (31 tests)
+
+**File:** `tests/services/missing-benefit.test.ts`
+
+Tests the MissingBenefit MCP API client layer: `mapPersonToAnswers()` field mapping, `extractCTR()` response parsing, and `calculateBenefits()` API call handling.
 
 ### Other Unit Tests
 
@@ -116,7 +137,7 @@ Each field is scored as: exact match (100%), close match (50–70%), or missing 
 
 The code-based extraction fallback (`message-extractor.ts`) catches fields the AI misses — postcodes, ages, income patterns, housing keywords — adding 14 percentage points. This dual-layer approach is a deliberate design choice: use the AI for what it's good at (understanding intent, handling ambiguity), use code for what it's good at (pattern matching, deterministic extraction).
 
-## Layer 3: Multi-Turn AI Evals (16 scenarios)
+## Layer 3: Multi-Turn AI Evals (23 scenarios)
 
 **Files:** `tests/nova-eval/multi-turn-scenarios.ts` + `tests/nova-eval/run-multi-turn-eval.ts`
 
@@ -150,6 +171,13 @@ Weights: completeness (0.4) + gate pass (0.2) + no premature complete (0.2) + bu
 | MT14 | Complex financial | 4 | State pension + occupational pension components |
 | MT15 | Welsh carer with dialect | 5 | "mam", Swansea, 40hrs caring |
 | MT16 | Scottish family, complex | 4 | "bairn", partner redundant, EH1 postcode |
+| MT17 | Self-employed, own autism/ADHD | 6 | Disability attributed to user not child |
+| MT18 | Domestic abuse, fleeing | 5 | Sensitivity + separated status |
+| MT19 | Working poverty, couple | 5 | In-work benefits, common UC profile |
+| MT20 | Young NEET care leaver | 4 | Youth homelessness, minimal persona |
+| MT21 | Homeless rough sleeper | 4 | No fixed address, partial postcode |
+| MT22 | England single renter | 4 | CTR enrichment with precise postcode (M1) |
+| MT23 | Welsh single parent | 4 | CTR Wales variant (SA1 postcode) |
 
 ### Results
 
@@ -160,14 +188,31 @@ Weights: completeness (0.4) + gate pass (0.2) + no premature complete (0.2) + bu
 | Gate failures | 0 |
 | Premature completions | 0 |
 
-## Layer 4: Guardrail Evals (30 scenarios)
+*Note: Results above are from last full eval run (MT01–MT16). MT17–MT23 added later.*
+
+## Layer 4: MissingBenefit Comparison Eval (23 scenarios)
+
+**File:** `tests/nova-eval/run-mb-comparison-eval.ts`
+
+Takes each multi-turn persona's expected PersonData and runs it through both our engine (`buildBundle`) and the MissingBenefit API. Compares entitlement agreement, disagreement, and coverage gaps. This is a comparison eval — it identifies where our heuristics and MB's calculations diverge rather than enforcing a pass/fail threshold.
+
+For each scenario it reports:
+- **Agreement** — both say eligible
+- **Only ours** — we say eligible, MB doesn't cover or says no
+- **Only MB** — MB says eligible, we don't have it
+- **Disagreement** — both cover it but disagree on eligibility
+- **CTR detail** — council name, annual amount, confidence score from MB
+
+Requires `MISSING_BENEFIT_API_KEY` env var. Results saved to `tests/nova-eval/mb-comparison-results.json`.
+
+## Layer 5: Guardrail Evals (34 scenarios)
 
 **File:** `tests/nova-eval/guardrail-eval.ts`
 
 Tests the combination of Bedrock Guardrails (content safety, PII blocking) and system prompt scope rules (off-topic redirection).
 
 - 10 off-topic scenarios (poems, code, CVs, recipes, etc.)
-- 20 on-topic scenarios (legitimate benefits queries)
+- 24 on-topic scenarios (legitimate benefits queries, including disability disclosures)
 
 **Critical metric:** Zero false positives (legitimate queries must never be blocked).
 
@@ -225,22 +270,28 @@ npm test
 
 # AI evals (requires AWS credentials with Bedrock access)
 npm run eval              # 105 single-turn scenarios
-npm run eval:multi-turn   # 16 multi-turn scenarios
-npm run eval:guardrail    # 30 guardrail scenarios
+npm run eval:multi-turn   # 23 multi-turn scenarios
+npm run eval:guardrail    # 34 guardrail scenarios
+
+# MissingBenefit comparison (requires MISSING_BENEFIT_API_KEY)
+npm run eval:mb-comparison
 ```
 
-Results are saved to `tests/nova-eval/results.json` and `tests/nova-eval/multi-turn-results.json`.
+Results are saved to `tests/nova-eval/results.json`, `tests/nova-eval/multi-turn-results.json`, and `tests/nova-eval/mb-comparison-results.json`.
 
 ## CI Integration
 
 ```
-Every push (vitest, 411 tests, <1s):
-  ├── unit tests (engine, extraction, postcodes, rates)
-  ├── entitlement-matrix.test.ts     (134 matrix tests, all 75 entitlements × 3 nations)
+Every push (vitest, 458 tests, <1s):
+  ├── unit tests (engine, extraction, postcodes, rates, CTR enrichment)
+  ├── entitlement-matrix.test.ts     (146 matrix tests, all 75 entitlements × 3 nations)
+  ├── ctr-enrichment.test.ts         (16 CTR enrichment tests with mocked MB API)
+  ├── missing-benefit.test.ts        (31 MB service tests)
   ├── conversation-replay.test.ts    (12 replay scenarios)
-  └── system-prompt.test.ts          (31 guardrail tests)
+  └── system-prompt.test.ts          (36 guardrail tests)
 
-Weekly (eval.yml, Bedrock API):
+Weekly (eval.yml, Bedrock + MB APIs):
   ├── run-eval.ts                    (105 single-turn scenarios)
-  └── run-multi-turn-eval.ts         (16 multi-turn scenarios)
+  ├── run-multi-turn-eval.ts         (23 multi-turn scenarios)
+  └── run-mb-comparison-eval.ts      (23 MB comparison scenarios)
 ```
