@@ -36,11 +36,12 @@ export function StrategySection() {
           then surface it before they have to call.
         </p>
         <p>
-          <strong>DBT:</strong> When i.AI sunset Redbox, we rebuilt as Assist with a
-          modular tools architecture: agentic harness, retrieval-augmented generation,
-          custom agent prompts, web search, document ingest, and tool integrations with
-          auth. The same system reconfigures from a submissions check to investment
-          research. Architecture that absorbs change rather than breaking under it.
+          <strong>DBT:</strong> We had diverged from i.AI's Redbox a year before the
+          rebrand to Assist. The strategic shift was building a tools architecture:
+          instead of one monolithic chat product, discrete tools solving specific needs.
+          Investment research, submissions checking, negotiation planning. Each tool is
+          a measurable outcome. The architecture supports any number of them without
+          rebuilding the platform.
         </p>
       </div>
 
