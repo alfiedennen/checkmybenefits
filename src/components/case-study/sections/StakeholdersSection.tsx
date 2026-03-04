@@ -12,10 +12,15 @@ export function StakeholdersSection() {
             leadership divides when each director defends their team's approach. Reframe:
             "We all agree on the problem: £X in failure demand, Y% repeat contact. Let's
             agree on how we'd know if we've solved it, then work back to approach."</li>
-          <li><strong>Make the trade-offs a decision matrix, not a debate.</strong> Present options
-            with costs, timelines, risks, and reversibility. "Option A gives us speed but less
-            precision. Option B gives precision but takes 6 months longer. Which matters more
-            for the first iteration?"</li>
+          <li><strong>Name the trade-offs explicitly.</strong> Implicit disagreement creates
+            resistance. Explicit trade-offs create design decisions. Present each one with
+            costs, timelines, and reversibility:
+            <ul style={{ paddingLeft: '20px', marginTop: '8px' }}>
+              <li>Precision vs speed: do we need exact eligibility or directional triage?</li>
+              <li>Central platform vs departmental ownership: who maintains the rules?</li>
+              <li>Conversational vs form-based: which reaches more people?</li>
+            </ul>
+            "Which matters more for the first iteration?" turns a debate into a decision.</li>
           <li><strong>Give ops a seat at the table early.</strong> Operations worry about disruption
             because they're usually told about changes, not consulted. Involve contact centre leads
             in the diagnosis phase. They become advocates, not blockers.</li>
