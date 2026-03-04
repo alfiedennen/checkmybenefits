@@ -43,7 +43,9 @@ export function StakeholdersSection() {
           The most pivotal alignment tool was rapid user research: surfacing real quotes
           from line managers about the 15 hours they were losing per leaver. Stakeholder
           objections dissolve when you're presenting what real people said, not what your
-          team thinks.
+          team thinks. To ensure HR owned the service long-term, we agreed 2.5 FTE
+          responsibility for a senior HR stakeholder to act as product owner, representing
+          HR needs and providing a throughline to live service ownership.
         </p>
         <p>
           <strong>Stakeholders won't champion what they can't defend.</strong> Civil
