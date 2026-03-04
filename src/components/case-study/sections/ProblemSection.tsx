@@ -31,6 +31,26 @@ export function ProblemSection() {
         </div>
       </div>
 
+      <div className="cs-section-body">
+        <p>
+          <strong>This pattern recurs.</strong> At ScottishPower, direct debit reassessment
+          was creating massive contact centre strain and driving customer loss. Over 70% of
+          customers ended up outside their direct debit, with £300 million in outstanding
+          debit on accounts. Customers had no visibility, no control, and no reason to
+          self-serve.
+        </p>
+        <p>
+          At DBT, line managers were spending up to 15 hours offboarding a single leaver,
+          chasing payroll, IT, and facilities across separate systems. HR had effectively
+          abdicated responsibility, pushing everything onto managers.
+        </p>
+        <p>
+          The common thread: fragmented systems create failure demand. The people who
+          need the service can't navigate it. The people delivering the service are
+          overwhelmed by avoidable contact.
+        </p>
+      </div>
+
       <EvidenceCallout label="Evidence: entitlement mapping approach">
         <ul style={{ paddingLeft: '20px' }}>
           <li>GOV.UK Content API for all benefit rate tables (no auth, 10 req/s)</li>
@@ -38,17 +58,6 @@ export function ProblemSection() {
           <li>5 mutually exclusive benefit pairs with resolution logic</li>
           <li>Cross-referenced DWP unfulfilled eligibility data (FYE 2025: &pound;3.7bn)</li>
           <li>Gap analysis of entitledto, Turn2Us, GOV.UK tools</li>
-        </ul>
-      </EvidenceCallout>
-
-      <EvidenceCallout label="In practice: how I'd run this diagnosis inside a department">
-        <ul style={{ paddingLeft: '20px' }}>
-          <li><strong>Week 1:</strong> Shadow contact centre staff. Listen to 50 calls, categorise failure demand by type</li>
-          <li><strong>Week 1-2:</strong> Map the top 5 customer journeys end-to-end with service designers, including handoffs between departments</li>
-          <li><strong>Week 2:</strong> Pull management information (MI): repeat contact rates, average handling time, top call reasons, digital abandonment points</li>
-          <li><strong>Week 2-3:</strong> Interview policy leads to understand intent vs what's actually delivered</li>
-          <li><strong>Week 3:</strong> Audit existing tech: what's been built, what's in flight, where suppliers are already committed</li>
-          <li><strong>Output:</strong> A diagnosis document that names the root causes, not the symptoms. Shared with senior leadership before proposing solutions</li>
         </ul>
       </EvidenceCallout>
     </section>
