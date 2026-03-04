@@ -47,13 +47,6 @@ export function StakeholdersSection() {
           responsibility for a senior HR stakeholder to act as product owner, representing
           HR needs and providing a throughline to live service ownership.
         </p>
-        <p>
-          <strong>Stakeholders won't champion what they can't defend.</strong> Civil
-          servants stake their credibility on a tool's output. If it can't survive
-          a parliamentary question, an FOI request, or a select committee, they won't
-          back it. Auditability isn't just a tech requirement. It's a stakeholder
-          alignment tool.
-        </p>
       </div>
     </section>
   )
