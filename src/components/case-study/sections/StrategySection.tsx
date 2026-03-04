@@ -45,6 +45,13 @@ export function StrategySection() {
         </p>
       </div>
 
+      <div className="cs-section-body">
+        <p>
+          <strong>checkmybenefits:</strong> The same principle applied to benefits.
+          Four strategic shifts, each moving from system-centric to citizen-centric:
+        </p>
+      </div>
+
       <div className="cs-from-to">
         <div className="cs-from-to-item">
           <span className="cs-from-to-arrow">&rarr;</span>
