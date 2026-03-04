@@ -39,9 +39,9 @@ export function StakeholdersSection() {
           technology choice, got everyone moving in the same direction.
         </p>
         <p>
-          <strong>DBT:</strong> We built and scaled Assist from 12 users to over 3,000.
-          The most pivotal alignment tool wasn't the prototype. It was rapid user research:
-          surfacing real quotes and experiences that were basically inarguable. Stakeholder
+          <strong>DBT:</strong> The offboarding project touched HR, IT, payroll, and facilities.
+          The most pivotal alignment tool was rapid user research: surfacing real quotes
+          from line managers about the 15 hours they were losing per leaver. Stakeholder
           objections dissolve when you're presenting what real people said, not what your
           team thinks.
         </p>
