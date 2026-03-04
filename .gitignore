@@ -40,5 +40,8 @@ Thumbs.db
 # Blog drafts — personal, not part of the codebase
 blogpost*.md
 
+# Interview prep — personal docs, not part of the codebase
+CustomerFirst/
+
 # Claude Code agent data
 .claude/
