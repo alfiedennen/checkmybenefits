@@ -8,7 +8,7 @@ export function HeroSection() {
       <p className="cs-hero-subtitle">
         You asked how I'd approach introducing cross-cutting technology
         to transform the customer journey and reduce failure demand.
-        I want to show you something I built that does exactly that.
+        I want to show you something I built that could potentially do exactly that.
       </p>
     </section>
   )
