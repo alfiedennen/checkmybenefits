@@ -9,7 +9,7 @@ export function ProblemSection() {
       <div className="cs-stat-banner">
         <div className="cs-stat-banner-value">&pound;24 billion</div>
         <div className="cs-stat-banner-label">unclaimed annually &middot; 7M+ households &middot; avg &pound;3,428/year</div>
-        <div className="cs-stat-banner-source">Policy in Practice, Missing Out 2025</div>
+        <div className="cs-stat-banner-source"><a href="https://www.policyinpractice.co.uk/publication/missing-out-2025/" target="_blank" rel="noopener noreferrer">Policy in Practice, Missing Out 2025</a></div>
       </div>
 
       <div className="cs-lens-grid">
