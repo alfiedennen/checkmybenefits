@@ -10,14 +10,14 @@ export function StrategySection() {
         <p><strong>Value hypotheses:</strong></p>
         <ul style={{ paddingLeft: '20px', marginBottom: '12px' }}>
           <li>Intelligent triage reduces "am I eligible?" contact volume by 20–40% on target journeys</li>
-          <li>Gateway cascade visibility increases multi-benefit uptake</li>
+          <li>Cascade visibility increases multi-benefit uptake</li>
           <li>Conversational intake reaches people who abandon form-based tools</li>
         </ul>
         <p><strong>Key risks:</strong></p>
         <ul style={{ paddingLeft: '20px', marginBottom: '12px' }}>
           <li>Accuracy: triage that gets it wrong erodes trust faster than no triage at all. Mitigate with deterministic rules + test suite, not AI-only</li>
           <li>Departmental ownership: who maintains the eligibility rules when policy changes? Mitigate by embedding with departments, making contribution easy</li>
-          <li>Scope creep: pressure to become "the benefits platform" instead of a triage layer. Mitigate with a clear boundary. We surface and sequence, we don't calculate or process</li>
+          <li>Scope creep: pressure to become "the platform" instead of a triage layer. Mitigate with a clear boundary. We surface and sequence, we don't calculate or process</li>
         </ul>
         <p><strong>Sequencing:</strong></p>
         <ul style={{ paddingLeft: '20px' }}>
@@ -29,19 +29,18 @@ export function StrategySection() {
 
       <div className="cs-section-body">
         <p>
-          <strong>This pattern works.</strong> At ScottishPower, we used the same strategic
-          shift: from reactive contact centre servicing to proactive self-service via an app
-          with a rules engine and behavioural nudges. Consumption data drove personalised
-          "next best actions" instead of generic comms. The principle is identical: use data
-          to anticipate what someone needs, then surface it before they have to call.
+          <strong>ScottishPower:</strong> The strategic shift was from reactive contact
+          centre servicing to proactive self-service. We built an app with a rules engine
+          and behavioural nudges. Consumption data drove personalised "next best actions"
+          instead of generic communications. Use data to anticipate what someone needs,
+          then surface it before they have to call.
         </p>
         <p>
-          <strong>Build for adaptability.</strong> When i.AI sunset Redbox, we rebuilt as
-          Assist with a modular tools architecture: agentic harness, retrieval-augmented
-          generation, custom agent prompts, web search, document ingest, and tool
-          integrations with auth. The same system
-          reconfigures from a submissions check to investment research. Architecture that
-          absorbs change rather than breaking under it.
+          <strong>DBT:</strong> When i.AI sunset Redbox, we rebuilt as Assist with a
+          modular tools architecture: agentic harness, retrieval-augmented generation,
+          custom agent prompts, web search, document ingest, and tool integrations with
+          auth. The same system reconfigures from a submissions check to investment
+          research. Architecture that absorbs change rather than breaking under it.
         </p>
       </div>
 
@@ -64,7 +63,7 @@ export function StrategySection() {
         <div className="cs-from-to-item">
           <span className="cs-from-to-arrow">&rarr;</span>
           <span className="cs-from-to-from">Features shipped</span>
-          <span className="cs-from-to-to">Entitlements claimed, failure demand reduced</span>
+          <span className="cs-from-to-to">Outcomes measured</span>
         </div>
       </div>
 
